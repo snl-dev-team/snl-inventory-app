@@ -1,0 +1,31 @@
+[
+	{
+		"productName": "Buster's 30mL 2Pk",
+		"count": {
+			"#0721BLF": {
+				"specialServices": 700,
+				"inventory": {
+					"16x16x16": 15,
+					"12x18x10": 12
+				}
+			},
+			"#891TRE": {
+				"specialServices": 0,
+				"inventory": 15000
+			}
+		},
+		"expDate": {
+			"#0721BLF": "08-21-2023",
+			"#891TRE": "08-27-2024"
+		},
+		"pricePerUnitInCents": 308,
+		"countPerMC": {
+			"16x16x16": 75,
+			"12x18x10": 150
+		},
+		"changeLog": {
+			"09-23-18 13:24:30": "Liam changed #0721BLF.inventory from 5000 to 9000",
+			"09-27-19 17:01:30": "Al created new lot number #891TRE"
+		}
+	}
+]

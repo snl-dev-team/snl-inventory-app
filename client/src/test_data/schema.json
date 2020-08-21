@@ -1,31 +1,59 @@
 [
 	{
-		"productName": "Buster's 30mL 2Pk",
-		"count": {
+		"productName": "Buster's 30mL",
+		"info": {
+			"type": "finished-product",
 			"#0721BLF": {
-				"specialServices": 700,
-				"inventory": {
-					"16x16x16": 15,
-					"12x18x10": 12
-				}
-			},
-			"#891TRE": {
-				"specialServices": 0,
-				"inventory": 15000
+				"Unkitted": 10000,
+				"count": {
+					"1 Pk": {
+						"config": {
+							"FBA": {
+								"countPerMC": 100,
+								"boxSize": "16x16x16",
+								"weightInPounds": 22,
+								"quantityInInventory": 27
+							}
+						},
+						"changeLog": {
+							"09-23-18 13:24:30": "Liam changed #0721BLF.inventory from 5000 to 9000",
+							"09-27-19 17:01:30": "Al created new lot number #891TRE"
+						}
+					}
+				},
+				"expDate": "08-21-2023"
 			}
 		},
-		"expDate": {
-			"#0721BLF": "08-21-2023",
-			"#891TRE": "08-27-2024"
+		"pricePerUnitInCents": 300
+	},
+	{
+		"productName": "Veggie Capsule",
+		"info": {
+			"type": "raw-material-by-units",
+			"#0721BQZ": {
+				"units": 3000,
+				"expDate": "08-21-2023"
+			},
+			"changeLog": {
+				"09-23-18 13:24:30": "Liam changed #0721BLF.inventory from 5000 to 9000",
+				"09-27-19 17:01:30": "Al created new lot number #891TRE"
+			}
 		},
-		"pricePerUnitInCents": 308,
-		"countPerMC": {
-			"16x16x16": 75,
-			"12x18x10": 150
+		"pricePerUnitInCents": 79
+	},
+	{
+		"productName": "Nitrosigene",
+		"info": {
+			"type": "raw-material-by-weight",
+			"#0721BQZ": {
+				"weightInKg": 30,
+				"expDate": "08-21-2023"
+			},
+			"changeLog": {
+				"09-23-18 13:24:30": "Liam changed #0721BLF.inventory from 5000 to 9000",
+				"09-27-19 17:01:30": "Al created new lot number #891TRE"
+			}
 		},
-		"changeLog": {
-			"09-23-18 13:24:30": "Liam changed #0721BLF.inventory from 5000 to 9000",
-			"09-27-19 17:01:30": "Al created new lot number #891TRE"
-		}
+		"pricePerKgInCents": 79
 	}
 ]

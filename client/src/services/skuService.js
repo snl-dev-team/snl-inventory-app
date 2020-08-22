@@ -3,7 +3,7 @@ const skuService = {
 		let skuNames = [];
 
 		skuList.forEach((sku) => {
-			skuNames.append(sku.configName);
+			skuNames.push(sku.configName);
 		});
 
 		return skuNames;
@@ -17,26 +17,6 @@ const skuService = {
 		});
 
 		return skuQuantityInUnits;
-	},
-
-	getSkusInExpDateRange: (skuList, oldest, newest = new Date()) => {
-		let skusInRange = [];
-
-		skuList.forEach((sku) => {
-			const quantityInRange = 0;
-
-			sku.quantity.forEach((lot) => {
-				if (lot.expDate < oldest && lot.expDate > newest) {
-					quantityInRange += lot.mcCount * sku.countPerMC;
-				}
-			});
-
-			if (quantityInRange > 0) {
-				skusInRange.append({ sku, quantity: quantityInRange });
-			}
-		});
-
-		return skusInRange;
 	},
 
 	getSearchResults: (skuList, searchString) => {

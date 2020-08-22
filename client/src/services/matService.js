@@ -3,7 +3,7 @@ const matService = {
 		let matNames = [];
 
 		matList.forEach((mat) => {
-			matNames.append(mat.productName);
+			matNames.push(mat.productName);
 		});
 
 		return matNames;
@@ -13,7 +13,7 @@ const matService = {
 		let matValueInCents = 0;
 
 		mat.quantity.forEach((lot) => {
-			matValueInCents += lot.countInUnits * lot.pricePerUnitInCents;
+			matValueInCents += lot.countInUnits * mat.pricePerUnitInCents;
 		});
 
 		return matValueInCents;
@@ -28,17 +28,21 @@ const matService = {
 
 		matList.forEach((mat) => {
 			mat.quantity.forEach((lot) => {
-				if (lot.lotNumber === lotNumber) {
-					matsWithLotNumber.append({
+				if (lot.lotNumber.includes(lotNumber)) {
+					matsWithLotNumber.push({
 						mat,
 						quantity: lot.countInUnits,
-						units: lot.units,
+						units: mat.units,
 					});
 				}
 			});
 		});
 
 		return matsWithLotNumber;
+	},
+
+	getMatsByProductName: (matList, productName) => {
+		return matList.filter((mat) => mat.productName.includes(productName));
 	},
 };
 

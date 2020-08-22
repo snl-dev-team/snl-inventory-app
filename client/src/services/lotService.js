@@ -3,20 +3,14 @@ const lotService = {
 		let lotNames = [];
 
 		lotList.forEach((lot) => {
-			lotNames.append(lot.name);
+			lotNames.push(lot.productName);
 		});
 
 		return lotNames;
 	},
 
 	getByLotNumber: (lotList, lotNumber) => {
-		return lotList.filter((lot) => lot.lotNumber === lotNumber);
-	},
-
-	getLotsInExpDateRange: (lotList, oldest, newest = new Date()) => {
-		return lotList.filter(
-			(lot) => lot.expDate < oldest && lot.expDate > newest
-		);
+		return lotList.filter((lot) => lot.lotNumber.includes(lotNumber));
 	},
 };
 

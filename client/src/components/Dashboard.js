@@ -6,7 +6,17 @@ const Dashboard = (props) => {
 		<div>
 			<h1>Dashboard</h1>
 			<button onClick={() => app.auth().signOut()}>Sign Out</button>
-			<pre>{JSON.stringify(props.data)}</pre>
+			<div
+				style={{
+					fontFamily: 'courier new',
+					color: 'crimson',
+					backgroundColor: '#f1f1f1',
+					padding: '2px',
+					fontSize: '105%',
+				}}
+			>
+				<code>{JSON.stringify(props.data)}</code>
+			</div>
 		</div>
 	);
 };

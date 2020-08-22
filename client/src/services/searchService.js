@@ -31,7 +31,7 @@ const searchService = (data, input) => {
 	data.mats.forEach((mat) => {
 		if (!filteredData.mats.includes(mat)) {
 			if (mat.productName.toLowerCase().includes(searchString)) {
-				filteredData.mats.push(mats);
+				filteredData.mats.push(mat);
 			}
 		}
 		mat.quantity.forEach((lot) => {

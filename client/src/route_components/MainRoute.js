@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import * as resource from '../test_data/schema.json';
 import searchService from '../services/searchService';
 import Dashboard from '../components/Dashboard';
-import PrimarySearchAppBar from '../components/navBar';
+import PrimarySearchAppBar from '../components/Navbar';
 
 const MainRoute = () => {
 	const [data, setData] = useState(resource.default);
@@ -14,7 +14,7 @@ const MainRoute = () => {
 
 	return (
 		<>
-			<PrimarySearchAppBar onSearch={(s) => filterData(s)} />
+			<PrimarySearchAppBar onSearch={(s) => filterData(s)}/>
 			<Dashboard data={filteredData} />
 		</>
 	);

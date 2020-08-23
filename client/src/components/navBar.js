@@ -8,12 +8,11 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import useStyles from '../styles/NavBarStyles';
 import SearchBar from './Search';
-import Title from './Title'
+import Title from './Title';
 import CenteredTabs from './FilterButton';
 import app from '../firebase';
 
 const PrimarySearchAppBar = (props) => {
-	
 	const classes = useStyles();
 	const [anchorEl, setAnchorEl] = React.useState(null);
 	const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -44,7 +43,9 @@ const PrimarySearchAppBar = (props) => {
 			open={isMenuOpen}
 			onClose={handleMenuClose}
 		>
-			<MenuItem onClick={() => app.auth().signOut()}>Sign Out</MenuItem>
+			<MenuItem onClick={() => app.auth().signOut()}>
+				Sign Out
+			</MenuItem>
 		</Menu>
 	);
 	const mobileMenuId = 'primary-search-account-menu-mobile';
@@ -58,9 +59,15 @@ const PrimarySearchAppBar = (props) => {
 			open={isMobileMenuOpen}
 			onClose={handleMobileMenuClose}
 		>
-			<MenuItem onClick={() => props.onSet("lot")}><p>lot</p></MenuItem>
-			<MenuItem onClick={() => props.onSet("sku")}><p>Sku</p></MenuItem>
-			<MenuItem onClick={() => props.onSet("Raw Materials")}><p>Raw Materials</p></MenuItem>
+			<MenuItem onClick={() => props.onSet(0)}>
+				<p>Production</p>
+			</MenuItem>
+			<MenuItem onClick={() => props.onSet(1)}>
+				<p>Inventory</p>
+			</MenuItem>
+			<MenuItem onClick={() => props.onSet(2)}>
+				<p>Raw Materials</p>
+			</MenuItem>
 		</Menu>
 	);
 
@@ -68,12 +75,15 @@ const PrimarySearchAppBar = (props) => {
 		<div className={classes.grow}>
 			<AppBar position="static">
 				<Toolbar>
-					<Title/>
+					<Title />
 					<SearchBar onSearch={(s) => props.onSearch(s)} />
 
 					<div className={classes.grow} />
 					<div className={classes.sectionDesktop}>
-					<CenteredTabs onSet={(s) => props.onSet(s)}/>
+						<CenteredTabs
+							onSet={(s) => props.onSet(s)}
+							view={props.view}
+						/>
 					</div>
 					<div className={classes.sectionMobile}>
 						<IconButton

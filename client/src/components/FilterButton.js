@@ -3,37 +3,28 @@ import { makeStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
-
 const useStyles = makeStyles({
-  root: {
-    flexGrow: 100,
-  },
+	root: {
+		flexGrow: 100,
+	},
 });
 
 function CenteredTabs(props) {
-  const classes = useStyles();
-  const [value, setValue] = React.useState(0);
+	const classes = useStyles();
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-    
-  };
-
-  return (
-    <div className={classes.root}>
-      <Tabs
-        value={value}
-        onChange={handleChange}
-        indicatorColor="primary"
-        textColor="inherit"
-        centered
-      >
-        <Tab label="lot" onClick={() => props.onSet("lots")}/>
-        <Tab label="sku" onClick={() => props.onSet("skus")}/>
-        <Tab label="raw material" onClick={() => props.onSet("mats")}/>
-
-      </Tabs>
-    </div>
-  );
+	return (
+		<div className={classes.root}>
+			<Tabs
+				value={props.view}
+				indicatorColor="primary"
+				textColor="inherit"
+				centered
+			>
+				<Tab label="Production" onClick={() => props.onSet(0)} />
+				<Tab label="Inventory" onClick={() => props.onSet(1)} />
+				<Tab label="Raw Materials" onClick={() => props.onSet(2)} />
+			</Tabs>
+		</div>
+	);
 }
-export default CenteredTabs
+export default CenteredTabs;

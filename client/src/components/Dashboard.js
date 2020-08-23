@@ -6,7 +6,7 @@ import '../styles/Dashboard.css';
 
 const Dashboard = (props) => {
 	const renderCards = () => {
-		if (props.view === 'skus') {
+		if (props.view === 1) {
 			return props.data.skus.map((sku, i) => {
 				return (
 					<div className="grid-item-container" key={i}>
@@ -14,7 +14,7 @@ const Dashboard = (props) => {
 					</div>
 				);
 			});
-		} else if (props.view === 'lots') {
+		} else if (props.view === 0) {
 			return props.data.lots.map((lot, i) => {
 				return (
 					<div className="grid-item-container" key={i}>

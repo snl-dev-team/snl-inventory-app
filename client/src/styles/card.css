@@ -1,16 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
+
 .card {
 	display: grid;
-	background: lightgray;
+	position: relative;
+	background: #f5f4f4;
 	width: 100%;
 	max-width: 90vw;
 	height: 100%;
 	min-height: 10em;
 	border-radius: 0.5em;
 	margin: 1em;
-	box-shadow: 0 0.2em 0.2em rgba(0, 0, 0, 0.25);
+	box-shadow: 0 0.4em 0.4em rgba(0, 0, 0, 0.3);
 	transition: box-shadow 0.3s ease-in-out;
 }
 
+.text-container {
+	margin-left: 0.5em;
+	margin-top: 0.5em;
+	font-family: Roboto, sans-serif;
+}
+
+.headline {
+	font-size: 2em;
+}
+
+.sub-headline {
+	font-size: 1.5em;
+	color: #3f3f3f;
+}
+
 .card:hover {
-	box-shadow: 0 0.4em 0.4em rgba(0, 0, 0, 0.3);
+	box-shadow: 0 0.6em 1.6em rgba(0, 0, 0, 0.5);
+}
+
+.card .btn-container {
+	display: flex;
+	position: absolute;
+	bottom: 0.5em;
+	right: 0.5em;
+}
+
+.btn {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border: 0.1em solid #3f51b5;
+	background-color: white;
+	transition: background-color 0.3s ease-in-out;
+	height: 2em;
+	width: 2em;
+	border-radius: 2em;
+	margin: 0.1em;
+}
+
+.icon {
+	color: #3f51b5;
+	transition: color 0.3s ease-in-out;
+}
+
+.extended {
+	min-height: 10em;
+}
+
+/* Shit gets ridiculous below here... */
+
+#inv-btn:hover {
+	background-color: #3f51b5;
+}
+
+#inv-btn:hover .icon {
+	color: white;
+}
+
+#cnt-btn:hover {
+	background-color: #3f51b5;
+}
+
+#cnt-btn:hover .icon {
+	color: white;
+}
+
+#shp-btn:hover {
+	background-color: #3f51b5;
+}
+
+#shp-btn:hover .icon {
+	color: white;
+}
+
+#cmplt-btn:hover {
+	background-color: #3f51b5;
+}
+
+#cmplt-btn:hover .icon {
+	color: white;
+}
+
+#pin-btn:hover {
+	background-color: #3f51b5;
+}
+
+#pin-btn:hover .icon {
+	color: white;
 }

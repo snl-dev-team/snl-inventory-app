@@ -11,6 +11,13 @@ import SearchBar from './Search';
 import Title from './Title';
 import CenteredTabs from './FilterButton';
 import app from '../firebase';
+import AddIcon from '@material-ui/icons/Add';
+import { NavLink } from 'react-router-dom';
+import newProductButton from './NewProductButton';
+
+
+
+
 
 const PrimarySearchAppBar = (props) => {
 	const classes = useStyles();
@@ -77,14 +84,16 @@ const PrimarySearchAppBar = (props) => {
 				<Toolbar>
 					<Title />
 					<SearchBar onSearch={(s) => props.onSearch(s)} />
-
+					
 					<div className={classes.grow} />
 					<div className={classes.sectionDesktop}>
 						<CenteredTabs
 							onSet={(s) => props.onSet(s)}
 							view={props.view}
 						/>
+						
 					</div>
+					<newProductButton/>
 					<div className={classes.sectionMobile}>
 						<IconButton
 							aria-label="show more"

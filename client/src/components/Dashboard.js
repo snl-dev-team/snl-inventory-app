@@ -1,23 +1,41 @@
 import React from 'react';
-import app from '../firebase';
+import LotCard from './cards/LotCard';
+import SkuCard from './cards/SkuCard';
+import MatCard from './cards/MatCard';
+import '../styles/Dashboard.css';
 
 const Dashboard = (props) => {
+	const renderCards = () => {
+		if (props.view === 'skus') {
+			return props.data.skus.map((sku, i) => {
+				return (
+					<div className="grid-item-container" key={i}>
+						<SkuCard sku={sku} />
+					</div>
+				);
+			});
+		} else if (props.view === 'lots') {
+			return props.data.lots.map((lot, i) => {
+				return (
+					<div className="grid-item-container" key={i}>
+						<LotCard lot={lot} />
+					</div>
+				);
+			});
+		} else {
+			return props.data.mats.map((mat, i) => {
+				return (
+					<div className="grid-item-container" key={i}>
+						<MatCard mat={mat} />
+					</div>
+				);
+			});
+		}
+	};
 	return (
-		<div>
-			<h1>Dashboard</h1>
-			<button onClick={() => app.auth().signOut()}>Sign Out</button>
-			<div
-				style={{
-					fontFamily: 'courier new',
-					color: 'crimson',
-					backgroundColor: '#f1f1f1',
-					padding: '2px',
-					fontSize: '105%',
-				}}
-			>
-				<code>{JSON.stringify(props.data)}</code>
-			</div>
-		</div>
+		<>
+			<div className="card-grid">{renderCards()}</div>
+		</>
 	);
 };
 

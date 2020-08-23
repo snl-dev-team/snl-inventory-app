@@ -44,6 +44,16 @@ const matService = {
 	getMatsByProductName: (matList, productName) => {
 		return matList.filter((mat) => mat.productName.includes(productName));
 	},
+
+	getLotArrayByMat: (mat) => {
+		let lotArray = [];
+
+		mat.quantity.forEach((lot) => {
+			lotArray.push(lot.lotNumber);
+		});
+
+		return lotArray;
+	},
 };
 
 export default matService;

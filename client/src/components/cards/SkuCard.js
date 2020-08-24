@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import skuService from '../../services/skuService';
 import '../../styles/card.css';
 import AssignmentIcon from '@material-ui/icons/Assignment';
@@ -22,12 +22,6 @@ const InventoryForm = (props) => {
 								onChange={(e) => {
 									newSku.quantity[i].mcCount =
 										e.target.value;
-									console.log(
-										newSku.quantity[i].mcCount
-									);
-									console.log(
-										props.sku.quantity[i].mcCount
-									);
 								}}
 								step="1"
 							/>
@@ -42,10 +36,6 @@ const InventoryForm = (props) => {
 const SkuCard = (props) => {
 	// none // inv // count // ship //
 	const [menu, setMenu] = useState('none');
-
-	useEffect(() => {
-		console.log(menu);
-	}, [menu]);
 
 	const renderMenu = () => {
 		if (menu === 'none') return <></>;

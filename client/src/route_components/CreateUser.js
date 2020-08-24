@@ -45,7 +45,7 @@ const Copyright = () => {
 	);
 };
 
-const SignUp = ({ history }) => {
+const CreateUser = ({ history }) => {
 	const handleSignUp = useCallback(
 		async (event) => {
 			event.preventDefault();
@@ -57,6 +57,7 @@ const SignUp = ({ history }) => {
 						email.value,
 						password.value
 					);
+				app.auth().signOut();
 				history.push('/');
 			} catch (error) {
 				alert(error);
@@ -72,7 +73,7 @@ const SignUp = ({ history }) => {
 			<CssBaseline />
 			<div className={classes.paper}>
 				<Typography component="h1" variant="h5">
-					Sign up
+					Create User
 				</Typography>
 				<form className={classes.form} onSubmit={handleSignUp}>
 					<Grid container spacing={2}>
@@ -107,15 +108,19 @@ const SignUp = ({ history }) => {
 						color="primary"
 						className={classes.submit}
 					>
-						Sign Up
+						Create User
 					</Button>
-					<Grid container justify="flex-end">
-						<Grid item>
-							<NavLink to="/login" variant="body2">
-								Already have an account? Sign in
-							</NavLink>
-						</Grid>
-					</Grid>
+					<Button fullWidth variant="contained" color="primary">
+						<NavLink
+							to="/"
+							style={{
+								textDecoration: 'none',
+								color: 'white',
+							}}
+						>
+							Cancel
+						</NavLink>
+					</Button>
 				</form>
 			</div>
 			<Box mt={5}>
@@ -125,4 +130,4 @@ const SignUp = ({ history }) => {
 	);
 };
 
-export default withRouter(SignUp);
+export default withRouter(CreateUser);

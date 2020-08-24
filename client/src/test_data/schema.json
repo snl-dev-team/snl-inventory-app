@@ -1,90 +1,179 @@
 {
-	"data": {
-		"skus": [
-			{
-				"configName": "Thyroid FBA",
-				"MCSize": "16x16x16",
-				"countPerMC": 150,
-				"productBoxes": true,
-				"productName": "Thyroid",
-				"quantity": [
-					{
-						"lotNumber": "#OL22QZ",
-						"expDate": "09-27-2023",
-						"mcCount": 12
-					},
-					{
-						"lotNumber": "#45TYE",
-						"expDate": "12-05-2021",
-						"mcCount": 48
-					}
-				],
-				"changeLog": [
-					{
-						"dateTime": "09-18-2024-17:03:01",
-						"message": "Liam changed this"
-					}
-				]
-			}
-		],
-		"lots": [
-			{
-				"productName": "Buster's 30mL Hemp Oil",
-				"lotNumber": "#OL22B8",
-				"expDate": "09-17-2020",
-				"quantity": 3000,
-				"completed": false,
-				"changeLog": [
-					{
-						"dateTime": "09-18-2024-17:03:01",
-						"message": "Liam changed this"
-					}
-				]
-			}
-		],
-		"mats": [
-			{
-				"productName": "Veggie Capsules",
-				"quantity": [
-					{
-						"lotNumber": "#OL32B8",
-						"countInUnits": 30
-					},
-					{
-						"lotNumber": "#OL32EW",
-						"countInUnits": 600
-					}
-				],
-				"pricePerUnitInCents": 300,
-				"units": "units",
-				"changeLog": [
-					{
-						"dateTime": "09-18-2024-17:03:01",
-						"message": "Liam changed this"
-					}
-				]
-			},
-			{
-				"productName": "Argenine Powder",
-				"quantity": [
-					{
-						"lotNumber": "#OL32B8",
-						"countInUnits": 30
-					},
-					{
-						"lotNumber": "#OL32EW",
-						"countInUnits": 600
-					}
-				],
-				"pricePerUnitInCents": 400,
-				"units": "kg",
-				"changeLog": [
-					{
-						"dateTime": "09-18-2024-17:03:01",
-						"message": "Liam changed this"
-					}
-				]
-			}
-		]
-	}
+  "data": {
+    "skus": [
+      {
+        "configName": "Thyroid FBA",
+        "MCSize": "16x16x16",
+        "countPerMC": 150,
+        "productBoxes": true,
+        "productName": "Thyroid",
+        "quantity": [
+          {
+            "lotNumber": "#OL22QZ",
+            "expDate": "09-27-2023",
+            "mcCount": 12
+          },
+          {
+            "lotNumber": "#45TYE",
+            "expDate": "12-05-2021",
+            "mcCount": 48
+          }
+        ],
+        "changeLog": [
+          {
+            "dateTime": "09-18-2024-17:03:01",
+            "message": "Liam changed this"
+          }
+        ]
+      }
+    ],
+    "lots": [
+      {
+        "productName": "Buster's 30mL Hemp Oil",
+        "lotNumber": "#OL22B8",
+        "expDate": "09-17-2020",
+        "quantity": 3000,
+        "completed": false,
+        "changeLog": [
+          {
+            "dateTime": "09-18-2024-17:03:01",
+            "message": "Liam changed this"
+          }
+        ]
+      }
+    ],
+    "mats": [
+      {
+        "productName": "Veggie Capsules",
+        "quantity": [
+          {
+            "lotNumber": "#OL32B8",
+            "countInUnits": 30
+          },
+          {
+            "lotNumber": "#OL32EW",
+            "countInUnits": 600
+          }
+        ],
+        "pricePerUnitInCents": 300,
+        "units": "units",
+        "changeLog": [
+          {
+            "dateTime": "09-18-2024-17:03:01",
+            "message": "Liam changed this"
+          }
+        ]
+      },
+      {
+        "productName": "Argenine Powder",
+        "quantity": [
+          {
+            "lotNumber": "#OL32B8",
+            "countInUnits": 30
+          },
+          {
+            "lotNumber": "#OL32EW",
+            "countInUnits": 600
+          }
+        ],
+        "pricePerUnitInCents": 400,
+        "units": "kg",
+        "changeLog": [
+          {
+            "dateTime": "09-18-2024-17:03:01",
+            "message": "Liam changed this"
+          }
+        ]
+      }
+    ]
+  =======
+    "data": {
+      "skus": [
+        {
+          "configName": "Thyroid FBA",
+          "MCSize": "16x16x16",
+          "countPerMC": 150,
+          "productBoxes": true,
+          "productName": "Thyroid",
+          "quantity": [
+            {
+              "lotNumber": "#OL22QZ",
+              "expDate": "09-27-2023",
+              "mcCount": 12
+            },
+            {
+              "lotNumber": "#45TYE",
+              "expDate": "12-05-2021",
+              "mcCount": 48
+            }
+          ],
+          "changeLog": [
+            {
+              "dateTime": "09-18-2024-17:03:01",
+              "message": "Liam changed this"
+            }
+          ]
+        }
+      ],
+      "lots": [
+        {
+          "productName": "Buster's 30mL Hemp Oil",
+          "lotNumber": "#OL22B8",
+          "expDate": "09-17-2020",
+          "quantity": 3000,
+          "completed": false,
+          "changeLog": [
+            {
+              "dateTime": "09-18-2024-17:03:01",
+              "message": "Liam changed this"
+            }
+          ]
+        }
+      ],
+      "mats": [
+        {
+          "productName": "Veggie Capsules",
+          "quantity": [
+            {
+              "lotNumber": "#OL32B8",
+              "countInUnits": 30
+            },
+            {
+              "lotNumber": "#OL32EW",
+              "countInUnits": 600
+            }
+          ],
+          "pricePerUnitInCents": 300,
+          "units": "units",
+          "changeLog": [
+            {
+              "dateTime": "09-18-2024-17:03:01",
+              "message": "Liam changed this"
+            }
+          ]
+        },
+        {
+          "productName": "Argenine Powder",
+          "quantity": [
+            {
+              "lotNumber": "#OL32B8",
+              "countInUnits": 30
+            },
+            {
+              "lotNumber": "#OL32EW",
+              "countInUnits": 600
+            }
+          ],
+          "pricePerUnitInCents": 400,
+          "units": "kg",
+          "changeLog": [
+            {
+              "dateTime": "09-18-2024-17:03:01",
+              "message": "Liam changed this"
+            }
+          ]
+        }
+      ]
+    }
+  }
 }

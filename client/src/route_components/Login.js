@@ -1,6 +1,5 @@
 import React, { useCallback, useContext } from 'react';
 import { withRouter, Redirect } from 'react-router';
-import { NavLink } from 'react-router-dom';
 import app from '../firebase';
 import { AuthContext } from '../Auth';
 import Button from '@material-ui/core/Button';
@@ -117,11 +116,6 @@ const Login = ({ history }) => {
 							<Link href="#" variant="body2">
 								Forgot password?
 							</Link>
-						</Grid>
-						<Grid item>
-							<NavLink to="/signup" variant="body2">
-								{"Don't have an account? Sign Up"}
-							</NavLink>
 						</Grid>
 					</Grid>
 				</form>

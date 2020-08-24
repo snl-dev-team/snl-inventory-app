@@ -11,6 +11,7 @@ import SearchBar from './Search';
 import Title from './Title';
 import CenteredTabs from './FilterButton';
 import app from '../firebase';
+import { NavLink } from 'react-router-dom';
 
 const PrimarySearchAppBar = (props) => {
 	const classes = useStyles();
@@ -43,8 +44,19 @@ const PrimarySearchAppBar = (props) => {
 			open={isMenuOpen}
 			onClose={handleMenuClose}
 		>
+			<MenuItem>
+				<NavLink
+					to="/create-user"
+					style={{
+						textDecoration: 'none',
+						color: 'black',
+					}}
+				>
+					Create User
+				</NavLink>
+			</MenuItem>
 			<MenuItem onClick={() => app.auth().signOut()}>
-				Sign Out
+				Sign Out ({app.auth().currentUser.email})
 			</MenuItem>
 		</Menu>
 	);

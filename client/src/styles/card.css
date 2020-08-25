@@ -47,9 +47,9 @@
 	border: 0.1em solid #3f51b5;
 	background-color: white;
 	transition: background-color 0.3s ease-in-out;
-	height: 2em;
-	width: 2em;
-	border-radius: 2em;
+	height: 2.5em;
+	width: 2.5em;
+	border-radius: 2.5em;
 	margin: 0.1em;
 }
 
@@ -72,19 +72,11 @@
 	color: white;
 }
 
-#cnt-btn:hover {
+#more-btn:hover {
 	background-color: #3f51b5;
 }
 
-#cnt-btn:hover .icon {
-	color: white;
-}
-
-#shp-btn:hover {
-	background-color: #3f51b5;
-}
-
-#shp-btn:hover .icon {
+#more-btn:hover .icon {
 	color: white;
 }
 

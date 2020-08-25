@@ -1,8 +1,8 @@
 import React from 'react';
 import LotCard from './cards/LotCard';
-import SkuCard from './cards/SkuCard';
 import MatCard from './cards/MatCard';
 import '../styles/Dashboard.css';
+import SkuCardMutationLayer from './cards/SkuCard';
 
 const Dashboard = (props) => {
 	const renderCards = () => {
@@ -10,7 +10,7 @@ const Dashboard = (props) => {
 			return props.data.skus.map((sku, i) => {
 				return (
 					<div className="grid-item-container" key={i}>
-						<SkuCard sku={sku} />
+						<SkuCardMutationLayer sku={sku} />
 					</div>
 				);
 			});

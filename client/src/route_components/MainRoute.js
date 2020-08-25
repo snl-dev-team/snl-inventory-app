@@ -39,9 +39,15 @@ const AppContainer = (props) => {
 		const { data } = props;
 		if (data === null || !data.skus || !data.mats || !data.lots) return;
 		const newData = {
-			skus: Object.values(data.skus).map((sku) => sku),
-			lots: Object.values(data.lots).map((lot) => lot),
-			mats: Object.values(data.mats).map((mat) => mat),
+			skus: Object.entries(data.skus).map((skuEntry) => {
+				return { ...skuEntry[1], id: skuEntry[0] };
+			}),
+			lots: Object.entries(data.lots).map((lotEntry) => {
+				return { ...lotEntry[1], id: lotEntry[0] };
+			}),
+			mats: Object.entries(data.mats).map((matEntry) => {
+				return { ...matEntry[1], id: matEntry[0] };
+			}),
 		};
 		setFilteredData(searchService(newData, searchString));
 	}, [props, searchString]);

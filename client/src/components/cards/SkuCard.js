@@ -1,48 +1,95 @@
 import React, { useState } from 'react';
 import skuService from '../../services/skuService';
 import '../../styles/card.css';
+import '../../styles/invForm.css';
 import AssignmentIcon from '@material-ui/icons/Assignment';
-import CreateIcon from '@material-ui/icons/Create';
-import LocalShippingIcon from '@material-ui/icons/LocalShipping';
+import { FirebaseDatabaseMutation } from '@react-firebase/database';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
 const InventoryForm = (props) => {
 	let newSku = { ...props.sku };
 
+	const handleSubmit = (e, newSku) => {
+		e.preventDefault();
+		delete newSku.id;
+		props.onInv(e, newSku);
+	};
+
 	return (
-		<form>
-			{newSku.quantity.map((lot, i) => {
-				return (
-					<div key={i}>
-						<label htmlFor={lot.lotNumber}>
-							{lot.lotNumber}
-							<input
-								name={lot.lotNumber}
-								type="number"
-								defaultValue={lot.mcCount}
-								onChange={(e) => {
-									newSku.quantity[i].mcCount =
-										e.target.value;
-								}}
-								step="1"
-							/>
-						</label>
-					</div>
-				);
-			})}
-		</form>
+		<div className="form-container">
+			<form onSubmit={(e) => handleSubmit(e, newSku)} className="form">
+				{newSku.quantity.map((lot, i) => {
+					return (
+						<div key={i} className="form-item">
+							<label htmlFor={lot.lotNumber}>
+								{`Lot: ${lot.lotNumber}`}
+								<input
+									name={lot.lotNumber}
+									type="number"
+									defaultValue={
+										newSku.quantity[i].mcCount
+									}
+									onChange={(e) => {
+										newSku.quantity[i].mcCount =
+											e.target.value;
+									}}
+									step="1"
+								/>
+							</label>
+						</div>
+					);
+				})}
+				<button type="submit">Done</button>
+			</form>
+		</div>
+	);
+};
+
+const SkuCardMutationLayer = (props) => {
+	const handleMutation = async (e, runMutation, obj) => {
+		e.preventDefault();
+		await runMutation(obj);
+	};
+
+	return (
+		<>
+			<FirebaseDatabaseMutation
+				type="set"
+				path={`data/skus/${props.sku.id}`}
+			>
+				{({ runMutation }) => {
+					return (
+						<SkuCard
+							onInv={async (e, obj) => {
+								handleMutation(e, runMutation, obj);
+							}}
+							sku={props.sku}
+						/>
+					);
+				}}
+			</FirebaseDatabaseMutation>
+		</>
 	);
 };
 
 const SkuCard = (props) => {
-	// none // inv // count // ship //
+	// none // inv // more //
 	const [menu, setMenu] = useState('none');
+
+	const handleInv = (e, newSku) => {
+		props.onInv(e, newSku);
+		setMenu('none');
+	};
 
 	const renderMenu = () => {
 		if (menu === 'none') return <></>;
 		if (menu === 'inv')
 			return (
 				<div className="extended">
-					<InventoryForm sku={props.sku} />
+					<InventoryForm
+						sku={props.sku}
+						onInv={(e, newSku) => handleInv(e, newSku)}
+					/>
 				</div>
 			);
 		if (menu === 'count') return <></>;
@@ -70,21 +117,12 @@ const SkuCard = (props) => {
 					</div>
 					<div
 						className="btn"
-						id="cnt-btn"
+						id="more-btn"
 						onClick={() =>
-							setMenu(menu === 'count' ? 'none' : 'count')
+							setMenu(menu === 'more' ? 'none' : 'more')
 						}
 					>
-						<CreateIcon className="icon pen" />
-					</div>
-					<div
-						className="btn"
-						id="shp-btn"
-						onClick={() => {
-							setMenu(menu === 'ship' ? 'none' : 'ship');
-						}}
-					>
-						<LocalShippingIcon className="icon ship" />
+						<MoreHorizIcon className="icon dots" />
 					</div>
 				</div>
 				<div>{renderMenu()}</div>
@@ -93,4 +131,4 @@ const SkuCard = (props) => {
 	);
 };
 
-export default SkuCard;
+export default SkuCardMutationLayer;

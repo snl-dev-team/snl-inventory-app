@@ -101,7 +101,10 @@ const SkuCard = (props) => {
 			<div className="card">
 				<div className="text-container">
 					<div className="headline">{props.sku.configName}</div>
-					<div className="sub-headline">{`Inventory: ${skuService.getSkuQuantityInUnits(
+					<div className="sub-headline">{`${
+						skuService.getSkuQuantityInUnits(props.sku) /
+						props.sku.countPerMC
+					} MCs / ${skuService.getSkuQuantityInUnits(
 						props.sku
 					)} units`}</div>
 				</div>

@@ -1,9 +1,8 @@
 import React from 'react';
 import '../../styles/card.css';
 import AssignmentIcon from '@material-ui/icons/Assignment';
-import CreateIcon from '@material-ui/icons/Create';
-import LocalShippingIcon from '@material-ui/icons/LocalShipping';
 import matService from '../../services/matService';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
 const MatCard = (props) => {
 	const getFormattedLotString = () => {
@@ -24,11 +23,8 @@ const MatCard = (props) => {
 					<div className="btn" id="inv-btn">
 						<AssignmentIcon className="icon clipboard" />
 					</div>
-					<div className="btn" id="cnt-btn">
-						<CreateIcon className="icon pen" />
-					</div>
-					<div className="btn" id="shp-btn">
-						<LocalShippingIcon className="icon ship" />
+					<div className="btn" id="more-btn">
+						<MoreHorizIcon className="icon more" />
 					</div>
 				</div>
 			</div>

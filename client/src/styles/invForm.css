@@ -11,6 +11,8 @@
 .form-item input {
 	position: absolute;
 	right: 0.5em;
+	width: 10em;
+	max-width: 25%;
 }
 
 .form button {

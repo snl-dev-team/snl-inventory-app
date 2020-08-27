@@ -1,26 +1,38 @@
-import React, { Component } from "react"
+import React, { useContext } from "react";
+import SimpleMenu from "../components/NewProductPage/DropDownButton";
+import ContainedButton from "../components/NewProductPage/CreateProduct";
+import { makeStyles } from "@material-ui/core/styles";
+import Forms from "../components/Forms";
+import ProductContext from "../context/ProductContext";
 
+const Styles = makeStyles((theme) => ({
+  root: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+}));
+const NewProductPage = (props) => {
+  const classes = Styles();
+  const { setProduct } = useContext(ProductContext);
+  const changeProduct = (s) => {
+    setProduct(s);
+  };
 
+  return (
+    <div>
+      <h1 className={classes.root}>
+        <span>CREATE A NEW PRODUCT</span>
+      </h1>
+      <SimpleMenu onChoose={(s) => changeProduct(s)} />
+      <div className={classes.root}></div>
+      <div className={classes.root}></div>
+      <div className={classes.root}></div>
+      <div className={classes.root}>
+        <ContainedButton />
+      </div>
+    </div>
+  );
+};
 
-
-  const newProductPage = () => {
-    return(
-      <form className="new-product-form">
-        <h1>
-          <span className="font-weight-bold">Create New Product</span>
-        </h1>
-        <div class="dropdown">
-          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Product type
-          </button>
-          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <a class="dropdown-item" href="#">Action</a>
-            <a class="dropdown-item" href="#">Another action</a>
-            <a class="dropdown-item" href="#">Something else here</a>
-          </div>
-        </div>
-        <button className="btn-lg btn-dark btn-block">Create Product</button>
-      </form>
-    );
-  }
-export default newProductPage
+export default NewProductPage;

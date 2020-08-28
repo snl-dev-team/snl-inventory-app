@@ -60,6 +60,8 @@
 
 .extended {
 	min-height: 10em;
+	max-height: 20em;
+	overflow: scroll;
 }
 
 /* Shit gets ridiculous below here... */
@@ -94,4 +96,23 @@
 
 #pin-btn:hover .icon {
 	color: white;
+}
+
+#history-btn:hover {
+	background-color: #3f51b5;
+}
+
+#history-btn:hover .icon {
+	color: white;
+}
+
+/* needs to be factored out */
+
+.detail-container {
+	margin-left: 0.5em;
+	margin-top: 0.5em;
+}
+
+.detail-item {
+	margin-top: 0.25em;
 }

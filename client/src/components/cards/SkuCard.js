@@ -5,6 +5,8 @@ import '../../styles/invForm.css';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import { FirebaseDatabaseMutation } from '@react-firebase/database';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import HistoryIcon from '@material-ui/icons/History';
+import ChangeLog from '../ChangeLog';
 
 const InventoryForm = (props) => {
 	let newSku = { ...props.sku };
@@ -45,6 +47,14 @@ const InventoryForm = (props) => {
 	);
 };
 
+const SkuDetailView = ({ sku }) => {
+	return (
+		<div className="detail-container">
+			<div className="detail-item">{`MC Config: ${sku.countPerMC} units in a ${sku.MCSize} box.`}</div>
+		</div>
+	);
+};
+
 const SkuCardMutationLayer = (props) => {
 	const handleMutation = async (e, runMutation, obj) => {
 		e.preventDefault();
@@ -73,7 +83,7 @@ const SkuCardMutationLayer = (props) => {
 };
 
 const SkuCard = (props) => {
-	// none // inv // more //
+	// none // inv // history // more //
 	const [menu, setMenu] = useState('none');
 
 	const handleInv = (e, newSku) => {
@@ -92,8 +102,20 @@ const SkuCard = (props) => {
 					/>
 				</div>
 			);
-		if (menu === 'count') return <></>;
-		if (menu === 'ship') return <></>;
+		if (menu === 'more')
+			return (
+				<div className="extended">
+					<SkuDetailView sku={props.sku} />
+				</div>
+			);
+		if (menu === 'history')
+			return (
+				<div>
+					<div className="extended">
+						<ChangeLog obj={props.sku} />
+					</div>
+				</div>
+			);
 	};
 
 	return (
@@ -117,6 +139,17 @@ const SkuCard = (props) => {
 						}
 					>
 						<AssignmentIcon className="icon clipboard" />
+					</div>
+					<div
+						className="btn"
+						id="history-btn"
+						onClick={() =>
+							setMenu(
+								menu === 'history' ? 'none' : 'history'
+							)
+						}
+					>
+						<HistoryIcon className="icon clock" />
 					</div>
 					<div
 						className="btn"

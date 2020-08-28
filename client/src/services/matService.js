@@ -54,6 +54,16 @@ const matService = {
 
 		return lotArray;
 	},
+
+	getTotalQuantity: (mat) => {
+		let totalQ = 0;
+
+		mat.quantity.forEach((lot) => {
+			totalQ += lot.countInUnits;
+		});
+
+		return totalQ;
+	},
 };
 
 export default matService;

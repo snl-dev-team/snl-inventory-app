@@ -2,14 +2,12 @@ import React from 'react';
 import CheckIcon from '@material-ui/icons/Check';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import { FirebaseDatabaseMutation } from '@react-firebase/database';
+import lotService from '../../services/lotService';
 import '../../styles/card.css';
 
 const LotCardMutationLayer = (props) => {
-	const handleMutation = async (runMutation) => {
-		let newLot = { ...props.lot };
-		newLot.completed = !newLot.completed;
-		delete newLot.id;
-		await runMutation(newLot);
+	const handleMutation = async (newLot, runMutation) => {
+		await runMutation(lotService.unFormatLot(newLot));
 	};
 
 	return (
@@ -22,8 +20,8 @@ const LotCardMutationLayer = (props) => {
 					return (
 						<LotCardView
 							lot={props.lot}
-							onCheck={async () => {
-								handleMutation(runMutation);
+							onCheck={async (newLot) => {
+								handleMutation(newLot, runMutation);
 							}}
 						/>
 					);
@@ -34,6 +32,12 @@ const LotCardMutationLayer = (props) => {
 };
 
 const LotCardView = (props) => {
+	const handleComplete = () => {
+		let newLot = { ...props.lot };
+		newLot.completed = !newLot.completed;
+		props.onCheck(newLot);
+	};
+
 	return (
 		<>
 			<div className="card">
@@ -47,7 +51,7 @@ const LotCardView = (props) => {
 					<div className="btn">
 						<AssignmentIcon className="icon" />
 					</div>
-					<div className="btn" onClick={props.onCheck}>
+					<div className="btn" onClick={handleComplete}>
 						<CheckIcon className="icon" />
 					</div>
 				</div>

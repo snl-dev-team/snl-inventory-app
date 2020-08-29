@@ -2,22 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Dashboard from './dashboard/Dashboard';
 import PrimarySearchAppBar from './navbar/PrimarySearchAppBar';
 import searchService from '../services/searchService';
-
-const filterData = ({ skus, lots, mats }) => {
-	let filteredData = {
-		skus: Object.entries(skus).map((skuEntry) => {
-			return { ...skuEntry[1], id: skuEntry[0] };
-		}),
-		lots: Object.entries(lots).map((lotEntry) => {
-			return { ...lotEntry[1], id: lotEntry[0] };
-		}),
-		mats: Object.entries(mats).map((matEntry) => {
-			return { ...matEntry[1], id: matEntry[0] };
-		}),
-	};
-	console.log(filteredData);
-	return filteredData;
-};
+import filterService from '../services/filterService';
 
 const AppContainer = (props) => {
 	const [filteredData, setFilteredData] = useState({
@@ -32,7 +17,7 @@ const AppContainer = (props) => {
 	useEffect(() => {
 		const { data } = props;
 		if (data === null || !data.skus || !data.mats || !data.lots) return;
-		setFilteredData(searchService(filterData(data), searchString));
+		setFilteredData(searchService(filterService(data), searchString));
 	}, [props, searchString]);
 
 	return (

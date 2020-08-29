@@ -26,6 +26,24 @@ const skuService = {
 	getSkusInProductBoxes: (skuList) => {
 		return skuList.filter((sku) => sku.productBoxes);
 	},
+
+	unFormatSku: (sku) => {
+		let unFormattedSku = { ...sku };
+		if (unFormattedSku.hasOwnProperty('id')) {
+			delete unFormattedSku.id;
+		}
+		unFormattedSku.quantity.forEach((lot) => {
+			if (lot.hasOwnProperty('id')) {
+				delete lot.id;
+			}
+		});
+		unFormattedSku.changeLog.forEach((change) => {
+			if (change.hasOwnProperty('id')) {
+				delete change.id;
+			}
+		});
+		return unFormattedSku;
+	},
 };
 
 export default skuService;

@@ -64,6 +64,24 @@ const matService = {
 
 		return totalQ;
 	},
+
+	unFormatMat: (mat) => {
+		let unFormattedMat = { ...mat };
+		if (unFormattedMat.hasOwnProperty('id')) {
+			delete unFormattedMat.id;
+		}
+		unFormattedMat.quantity.forEach((lot) => {
+			if (lot.hasOwnProperty('id')) {
+				delete lot.id;
+			}
+		});
+		unFormattedMat.changeLog.forEach((change) => {
+			if (change.hasOwnProperty('id')) {
+				delete change.id;
+			}
+		});
+		return unFormattedMat;
+	},
 };
 
 export default matService;

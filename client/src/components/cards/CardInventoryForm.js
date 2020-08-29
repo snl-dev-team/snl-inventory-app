@@ -7,7 +7,6 @@ const CardInventoryForm = (props) => {
 
 	const handleSubmit = (e, newObj) => {
 		e.preventDefault();
-		delete newObj.id;
 		props.onInv(e, newObj);
 	};
 

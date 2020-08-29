@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
@@ -11,12 +11,15 @@ import SearchBar from './SearchBar';
 import Title from './Title';
 import CenteredTabs from './FilterButton';
 import app from '../../config/firebase';
+import AddIcon from '@material-ui/icons/Add';
 import { NavLink } from 'react-router-dom';
+import NewProductButton from './NewProductButton';
 
 const PrimarySearchAppBar = (props) => {
 	const classes = useStyles();
-	const [anchorEl, setAnchorEl] = useState(null);
-	const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
+	const [anchorEl, setAnchorEl] = React.useState(null);
+	const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+
 	const handleProfileMenuOpen = (event) => {
 		setAnchorEl(event.currentTarget);
 	};
@@ -44,19 +47,8 @@ const PrimarySearchAppBar = (props) => {
 			open={isMenuOpen}
 			onClose={handleMenuClose}
 		>
-			<MenuItem>
-				<NavLink
-					to="/create-user"
-					style={{
-						textDecoration: 'none',
-						color: 'black',
-					}}
-				>
-					Create User
-				</NavLink>
-			</MenuItem>
 			<MenuItem onClick={() => app.auth().signOut()}>
-				Sign Out ({app.auth().currentUser.email})
+				Sign Out
 			</MenuItem>
 		</Menu>
 	);
@@ -97,6 +89,15 @@ const PrimarySearchAppBar = (props) => {
 							view={props.view}
 						/>
 					</div>
+					<NavLink to="/create-product" variant="body2">
+						{
+							<div claseName="create new product">
+								<IconButton color="white">
+									<AddIcon />
+								</IconButton>
+							</div>
+						}
+					</NavLink>
 					<div className={classes.sectionMobile}>
 						<IconButton
 							aria-label="show more"

@@ -8,7 +8,7 @@ const ChangeLog = ({ obj }) => {
 	return (
 		<div className="log-container">
 			{log.map((item) => {
-				return <h1>{`${item.dateTime}: ${item.message}`}</h1>;
+				return <h1 key={item.id}>{`${item.dateTime}: ${item.message}`}</h1>;
 			})}
 		</div>
 	);

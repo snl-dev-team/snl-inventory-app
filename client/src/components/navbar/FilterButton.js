@@ -9,7 +9,7 @@ const useStyles = makeStyles({
 	},
 });
 
-function CenteredTabs(props) {
+const FilterButton = (props) => {
 	const classes = useStyles();
 
 	return (
@@ -26,5 +26,5 @@ function CenteredTabs(props) {
 			</Tabs>
 		</div>
 	);
-}
-export default CenteredTabs;
+};
+export default FilterButton;

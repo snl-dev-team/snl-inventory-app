@@ -1,61 +1,14 @@
 import React, { useState } from 'react';
-import skuService from '../../services/skuService';
-import '../../styles/card.css';
-import '../../styles/invForm.css';
 import AssignmentIcon from '@material-ui/icons/Assignment';
-import { FirebaseDatabaseMutation } from '@react-firebase/database';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import HistoryIcon from '@material-ui/icons/History';
-import ChangeLog from '../ChangeLog';
+import { FirebaseDatabaseMutation } from '@react-firebase/database';
+import ChangeLog from './ChangeLog';
+import CardInventoryForm from './CardInventoryForm';
+import skuService from '../../services/skuService';
+import '../../styles/card.css';
 
-const InventoryForm = (props) => {
-	let newSku = { ...props.sku };
-
-	const handleSubmit = (e, newSku) => {
-		e.preventDefault();
-		delete newSku.id;
-		props.onInv(e, newSku);
-	};
-
-	return (
-		<div className="form-container">
-			<form onSubmit={(e) => handleSubmit(e, newSku)} className="form">
-				{newSku.quantity.map((lot, i) => {
-					return (
-						<div key={i} className="form-item">
-							<label htmlFor={lot.lotNumber}>
-								{`Lot: ${lot.lotNumber}`}
-								<input
-									name={lot.lotNumber}
-									type="number"
-									defaultValue={
-										newSku.quantity[i].mcCount
-									}
-									onChange={(e) => {
-										newSku.quantity[i].mcCount =
-											e.target.value;
-									}}
-									step="1"
-								/>
-							</label>
-						</div>
-					);
-				})}
-				<button type="submit">Done</button>
-			</form>
-		</div>
-	);
-};
-
-const SkuDetailView = ({ sku }) => {
-	return (
-		<div className="detail-container">
-			<div className="detail-item">{`MC Config: ${sku.countPerMC} units in a ${sku.MCSize} box.`}</div>
-		</div>
-	);
-};
-
-const SkuCardMutationLayer = (props) => {
+const SkuMutationLayer = (props) => {
 	const handleMutation = async (e, runMutation, obj) => {
 		e.preventDefault();
 		await runMutation(obj);
@@ -69,7 +22,7 @@ const SkuCardMutationLayer = (props) => {
 			>
 				{({ runMutation }) => {
 					return (
-						<SkuCard
+						<SkuCardView
 							onInv={async (e, obj) => {
 								handleMutation(e, runMutation, obj);
 							}}
@@ -82,9 +35,20 @@ const SkuCardMutationLayer = (props) => {
 	);
 };
 
-const SkuCard = (props) => {
+const SkuCardView = (props) => {
 	// none // inv // history // more //
 	const [menu, setMenu] = useState('none');
+
+	const toggleMenu = (view) => {
+		if (
+			view !== 'none' &&
+			view !== 'inv' &&
+			view !== 'history' &&
+			view !== 'more'
+		)
+			return;
+		setMenu(menu === view ? 'none' : view);
+	};
 
 	const handleInv = (e, newSku) => {
 		props.onInv(e, newSku);
@@ -96,8 +60,9 @@ const SkuCard = (props) => {
 		if (menu === 'inv')
 			return (
 				<div className="extended">
-					<InventoryForm
-						sku={props.sku}
+					<CardInventoryForm
+						obj={props.sku}
+						type="sku"
 						onInv={(e, newSku) => handleInv(e, newSku)}
 					/>
 				</div>
@@ -110,10 +75,8 @@ const SkuCard = (props) => {
 			);
 		if (menu === 'history')
 			return (
-				<div>
-					<div className="extended">
-						<ChangeLog obj={props.sku} />
-					</div>
+				<div className="extended">
+					<ChangeLog obj={props.sku} />
 				</div>
 			);
 	};
@@ -131,34 +94,20 @@ const SkuCard = (props) => {
 					)} units`}</div>
 				</div>
 				<div className="btn-container">
-					<div
-						className="btn"
-						id="inv-btn"
-						onClick={() =>
-							setMenu(menu === 'inv' ? 'none' : 'inv')
-						}
-					>
-						<AssignmentIcon className="icon clipboard" />
+					<div className="btn" onClick={() => toggleMenu('inv')}>
+						<AssignmentIcon className="icon" />
 					</div>
 					<div
 						className="btn"
-						id="history-btn"
-						onClick={() =>
-							setMenu(
-								menu === 'history' ? 'none' : 'history'
-							)
-						}
+						onClick={() => toggleMenu('history')}
 					>
-						<HistoryIcon className="icon clock" />
+						<HistoryIcon className="icon" />
 					</div>
 					<div
 						className="btn"
-						id="more-btn"
-						onClick={() =>
-							setMenu(menu === 'more' ? 'none' : 'more')
-						}
+						onClick={() => toggleMenu('more')}
 					>
-						<MoreHorizIcon className="icon dots" />
+						<MoreHorizIcon className="icon" />
 					</div>
 				</div>
 				<div>{renderMenu()}</div>
@@ -167,4 +116,23 @@ const SkuCard = (props) => {
 	);
 };
 
-export default SkuCardMutationLayer;
+const SkuDetailView = ({ sku }) => {
+	return (
+		<div className="detail-container">
+			<div className="detail-item">{`MC Config: ${
+				sku.countPerMC
+			} units of ${sku.productBoxes ? 'kitted ' : ''}${
+				sku.productName
+			} in a ${sku.MCSize} box.`}</div>
+			{sku.quantity.map((lot, i) => {
+				return (
+					<div className="detail-item" key={i}>{`${
+						lot.mcCount * sku.countPerMC
+					} units expiring ${lot.expDate}`}</div>
+				);
+			})}
+		</div>
+	);
+};
+
+export default SkuMutationLayer;

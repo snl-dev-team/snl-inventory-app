@@ -1,56 +1,16 @@
 import React, { useState } from 'react';
-import '../../styles/card.css';
 import AssignmentIcon from '@material-ui/icons/Assignment';
-import matService from '../../services/matService';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-import { FirebaseDatabaseMutation } from '@react-firebase/database';
 import HistoryIcon from '@material-ui/icons/History';
-
-const InventoryForm = (props) => {
-	let newMat = { ...props.mat };
-
-	const handleSubmit = (e, newSku) => {
-		e.preventDefault();
-		delete newSku.id;
-		props.onInv(e, newSku);
-	};
-
-	return (
-		<div className="form-container">
-			<form onSubmit={(e) => handleSubmit(e, newMat)} className="form">
-				{newMat.quantity.map((lot, i) => {
-					return (
-						<div key={i} className="form-item">
-							<label htmlFor={lot.lotNumber}>
-								{`Lot: ${lot.lotNumber}`}
-								<input
-									name={lot.lotNumber}
-									type="number"
-									defaultValue={
-										newMat.quantity[i]
-											.countInUnits
-									}
-									onChange={(e) => {
-										newMat.quantity[
-											i
-										].countInUnits =
-											e.target.value;
-									}}
-									step="1"
-								/>
-							</label>
-						</div>
-					);
-				})}
-				<button type="submit">Done</button>
-			</form>
-		</div>
-	);
-};
+import CardInventoryForm from './CardInventoryForm';
+import { FirebaseDatabaseMutation } from '@react-firebase/database';
+import matService from '../../services/matService';
+import '../../styles/card.css';
 
 const MatCardMutationLayer = (props) => {
 	const handleMutation = async (e, runMutation, obj) => {
 		e.preventDefault();
+		delete obj.id;
 		await runMutation(obj);
 	};
 
@@ -78,13 +38,25 @@ const MatCardMutationLayer = (props) => {
 const MatCard = (props) => {
 	const [menu, setMenu] = useState('none');
 
+	const toggleMenu = (view) => {
+		if (
+			view !== 'none' &&
+			view !== 'inv' &&
+			view !== 'history' &&
+			view !== 'more'
+		)
+			return;
+		setMenu(menu === view ? 'none' : view);
+	};
+
 	const renderMenu = () => {
 		if (menu === 'none') return <></>;
 		if (menu === 'inv')
 			return (
 				<div className="extended">
-					<InventoryForm
-						mat={props.mat}
+					<CardInventoryForm
+						obj={props.mat}
+						type="mat"
 						onInv={(e, newMat) => handleInv(e, newMat)}
 					/>
 				</div>
@@ -108,34 +80,20 @@ const MatCard = (props) => {
 					)} ${props.mat.units}`}</div>
 				</div>
 				<div className="btn-container">
-					<div
-						className="btn"
-						id="inv-btn"
-						onClick={() =>
-							setMenu(menu === 'inv' ? 'none' : 'inv')
-						}
-					>
-						<AssignmentIcon className="icon clipboard" />
+					<div className="btn" onClick={() => toggleMenu('inv')}>
+						<AssignmentIcon className="icon" />
 					</div>
 					<div
 						className="btn"
-						id="history-btn"
-						onClick={() =>
-							setMenu(
-								menu === 'history' ? 'none' : 'history'
-							)
-						}
+						onClick={() => toggleMenu('history')}
 					>
-						<HistoryIcon className="icon clock" />
+						<HistoryIcon className="icon" />
 					</div>
 					<div
 						className="btn"
-						id="more-btn"
-						onClick={() =>
-							setMenu(menu === 'more' ? 'none' : 'more')
-						}
+						onClick={() => toggleMenu('more')}
 					>
-						<MoreHorizIcon className="icon dots" />
+						<MoreHorizIcon className="icon" />
 					</div>
 				</div>
 				<div>{renderMenu()}</div>

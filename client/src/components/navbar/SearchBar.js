@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import useStyles from '../styles/NavBarStyles';
+import useStyles from '../../styles/NavBarStyles';
 import InputBase from '@material-ui/core/InputBase';
 import SearchIcon from '@material-ui/icons/Search';
 

@@ -1,10 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { AuthProvider } from './Auth';
+import { AuthProvider } from './config/Auth';
 import Login from './route_components/Login';
 import CreateUser from './route_components/CreateUser';
 import MainRoute from './route_components/MainRoute';
-import PrivateRoute from './PrivateRoute';
+import PrivateRoute from './route_components/PrivateRoute';
 
 const App = () => {
 	return (

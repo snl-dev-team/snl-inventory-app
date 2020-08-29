@@ -11,7 +11,7 @@ import '../../styles/card.css';
 const SkuMutationLayer = (props) => {
 	const handleMutation = async (e, runMutation, obj) => {
 		e.preventDefault();
-		await runMutation(obj);
+		await runMutation(skuService.unFormatSku(obj));
 	};
 
 	return (

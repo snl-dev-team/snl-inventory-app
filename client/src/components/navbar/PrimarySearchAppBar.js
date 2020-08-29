@@ -91,8 +91,8 @@ const PrimarySearchAppBar = (props) => {
 					</div>
 					<NavLink to="/create-product" variant="body2">
 						{
-							<div claseName="create new product">
-								<IconButton color="white">
+							<div className="create new product">
+								<IconButton>
 									<AddIcon />
 								</IconButton>
 							</div>

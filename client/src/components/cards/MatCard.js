@@ -10,8 +10,7 @@ import '../../styles/card.css';
 const MatCardMutationLayer = (props) => {
 	const handleMutation = async (e, runMutation, obj) => {
 		e.preventDefault();
-		delete obj.id;
-		await runMutation(obj);
+		await runMutation(matService.unFormatMat(obj));
 	};
 
 	return (

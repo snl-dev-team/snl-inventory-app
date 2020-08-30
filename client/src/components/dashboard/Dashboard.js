@@ -4,18 +4,41 @@ import LotCard from '../cards/LotCard';
 import MatCard from '../cards/MatCard';
 import '../../styles/dashboard.css';
 
-const Dashboard = ({ data, view }) => {
-	const { skus, lots, mats } = data;
+const LotDashboard = ({ lots }) => {
+	const incomplete = lots.filter((lot) => !lot.completed);
+	const completed = lots.filter((lot) => lot.completed);
 
-	const renderCards = () => {
-		if (view === 0)
-			return lots.map((lot, i) => {
+	return (
+		<>
+			<div className="grid-section-title">
+				<h3>Unkitted</h3>
+			</div>
+			{incomplete.map((lot, i) => {
 				return (
 					<div className="grid-item-container" key={i}>
 						<LotCard lot={lot} />
 					</div>
 				);
-			});
+			})}
+			<div className="grid-section-title">
+				<h3>Kitted</h3>
+			</div>
+			{completed.map((lot, i) => {
+				return (
+					<div className="grid-item-container" key={i}>
+						<LotCard lot={lot} />
+					</div>
+				);
+			})}
+		</>
+	);
+};
+
+const Dashboard = ({ data, view }) => {
+	const { skus, lots, mats } = data;
+
+	const renderCards = () => {
+		if (view === 0) return <LotDashboard lots={lots} />;
 		else if (view === 1)
 			return skus.map((sku, i) => {
 				return (

@@ -1,5 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
+
 :root {
 	--grid-columns: 4;
+}
+
+.grid-section-title {
+	grid-column: 1 / span var(--grid-columns);
+	min-height: min-content;
+	max-height: max-content;
+	display: flex;
+	justify-content: center;
+}
+
+.grid-section-title h3 {
+	font-size: 2em;
+	font-family: Roboto, sans-serif;
+	font-weight: 300;
+	text-decoration: underline;
+	color: #3f3f3f;
 }
 
 .grid-item-container {

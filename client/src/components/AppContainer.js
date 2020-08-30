@@ -12,7 +12,7 @@ const AppContainer = (props) => {
 	});
 	const [searchString, setSearchString] = useState('');
 	// lot = 0; sku = 1; mat = 2
-	const [view, setView] = useState(1);
+	const [view, setView] = useState(0);
 
 	useEffect(() => {
 		const { data } = props;
@@ -27,6 +27,11 @@ const AppContainer = (props) => {
 				onSet={(v) => setView(v)}
 				view={view}
 			/>
+			<div
+				style={{
+					height: '5em',
+				}}
+			></div>
 			<Dashboard data={filteredData} view={view} />
 		</>
 	);

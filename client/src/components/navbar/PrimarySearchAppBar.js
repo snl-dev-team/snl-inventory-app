@@ -47,8 +47,19 @@ const PrimarySearchAppBar = (props) => {
 			open={isMenuOpen}
 			onClose={handleMenuClose}
 		>
+			<MenuItem>
+				<NavLink
+					to="/create-user"
+					style={{
+						textDecoration: 'none',
+						color: 'black',
+					}}
+				>
+					Create User
+				</NavLink>
+			</MenuItem>
 			<MenuItem onClick={() => app.auth().signOut()}>
-				Sign Out
+				Sign Out ({app.auth().currentUser.email})
 			</MenuItem>
 		</Menu>
 	);
@@ -76,53 +87,61 @@ const PrimarySearchAppBar = (props) => {
 	);
 
 	return (
-		<div className={classes.grow}>
-			<AppBar position="static">
-				<Toolbar>
-					<Title />
-					<SearchBar onSearch={(s) => props.onSearch(s)} />
+		<div
+			style={{
+				position: 'fixed',
+				width: '100%',
+				zIndex: '100',
+			}}
+		>
+			<div className={classes.grow}>
+				<AppBar position="static">
+					<Toolbar>
+						<Title />
+						<SearchBar onSearch={(s) => props.onSearch(s)} />
 
-					<div className={classes.grow} />
-					<div className={classes.sectionDesktop}>
-						<CenteredTabs
-							onSet={(s) => props.onSet(s)}
-							view={props.view}
-						/>
-					</div>
-					<NavLink to="/create-product" variant="body2">
-						{
-							<div className="create new product">
-								<IconButton>
-									<AddIcon />
-								</IconButton>
-							</div>
-						}
-					</NavLink>
-					<div className={classes.sectionMobile}>
-						<IconButton
-							aria-label="show more"
-							aria-controls={mobileMenuId}
-							aria-haspopup="true"
-							onClick={handleMobileMenuOpen}
-							color="inherit"
-						>
-							<MoreIcon />
-						</IconButton>
-					</div>
-					<div onClick={handleProfileMenuOpen}>
-						<IconButton
-							aria-label="account of current user"
-							aria-controls="primary-search-account-menu"
-							aria-haspopup="true"
-							color="inherit"
-						>
-							<AccountCircle />
-						</IconButton>
-					</div>
-				</Toolbar>
-			</AppBar>
-			{renderMobileMenu}
-			{renderMenu}
+						<div className={classes.grow} />
+						<div className={classes.sectionDesktop}>
+							<CenteredTabs
+								onSet={(s) => props.onSet(s)}
+								view={props.view}
+							/>
+						</div>
+						<NavLink to="/create-product" variant="body2">
+							{
+								<div className="create new product">
+									<IconButton>
+										<AddIcon />
+									</IconButton>
+								</div>
+							}
+						</NavLink>
+						<div className={classes.sectionMobile}>
+							<IconButton
+								aria-label="show more"
+								aria-controls={mobileMenuId}
+								aria-haspopup="true"
+								onClick={handleMobileMenuOpen}
+								color="inherit"
+							>
+								<MoreIcon />
+							</IconButton>
+						</div>
+						<div onClick={handleProfileMenuOpen}>
+							<IconButton
+								aria-label="account of current user"
+								aria-controls="primary-search-account-menu"
+								aria-haspopup="true"
+								color="inherit"
+							>
+								<AccountCircle />
+							</IconButton>
+						</div>
+					</Toolbar>
+				</AppBar>
+				{renderMobileMenu}
+				{renderMenu}
+			</div>
 		</div>
 	);
 };

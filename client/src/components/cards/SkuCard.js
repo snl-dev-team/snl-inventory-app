@@ -76,7 +76,7 @@ const SkuCardView = (props) => {
 		if (menu === 'history')
 			return (
 				<div className="extended">
-					<ChangeLog obj={props.sku} />
+					<ChangeLog log={props.sku.changeLog} />
 				</div>
 			);
 	};

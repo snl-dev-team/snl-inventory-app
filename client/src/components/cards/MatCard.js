@@ -6,8 +6,9 @@ import CardInventoryForm from './CardInventoryForm';
 import { FirebaseDatabaseMutation } from '@react-firebase/database';
 import matService from '../../services/matService';
 import '../../styles/card.css';
+import ChangeLog from './ChangeLog';
 
-const MatCardMutationLayer = (props) => {
+const MatCardViewMutationLayer = (props) => {
 	const handleMutation = async (e, runMutation, obj) => {
 		e.preventDefault();
 		await runMutation(matService.unFormatMat(obj));
@@ -21,7 +22,7 @@ const MatCardMutationLayer = (props) => {
 			>
 				{({ runMutation }) => {
 					return (
-						<MatCard
+						<MatCardView
 							mat={props.mat}
 							onInv={async (e, obj) => {
 								handleMutation(e, runMutation, obj);
@@ -34,7 +35,7 @@ const MatCardMutationLayer = (props) => {
 	);
 };
 
-const MatCard = (props) => {
+const MatCardView = (props) => {
 	const [menu, setMenu] = useState('none');
 
 	const toggleMenu = (view) => {
@@ -60,8 +61,18 @@ const MatCard = (props) => {
 					/>
 				</div>
 			);
-		if (menu === 'more') return <div className="extended"></div>;
-		if (menu === 'history') return <div className="extended"></div>;
+		if (menu === 'more')
+			return (
+				<div className="extended">
+					<MatDetailView mat={props.mat} />
+				</div>
+			);
+		if (menu === 'history')
+			return (
+				<div className="extended">
+					<ChangeLog log={props.mat.changeLog} />
+				</div>
+			);
 	};
 
 	const handleInv = (e, newMat) => {
@@ -101,4 +112,17 @@ const MatCard = (props) => {
 	);
 };
 
-export default MatCardMutationLayer;
+const MatDetailView = ({ mat }) => {
+	return (
+		<div className="detail-container">
+			<div className="detail-item">{`Inventory Value: $${
+				matService.getMatValueInCents(mat) / 100
+			}`}</div>
+			<div className="detail-item">{`Price per ${mat.units}: $${
+				mat.pricePerUnitInCents / 100
+			}`}</div>
+		</div>
+	);
+};
+
+export default MatCardViewMutationLayer;

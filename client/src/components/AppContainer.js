@@ -12,7 +12,7 @@ const AppContainer = (props) => {
 	});
 	const [searchString, setSearchString] = useState('');
 	// lot = 0; sku = 1; mat = 2
-	const [view, setView] = useState(1);
+	const [view, setView] = useState(0);
 
 	useEffect(() => {
 		const { data } = props;

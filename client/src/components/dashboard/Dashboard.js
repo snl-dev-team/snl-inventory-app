@@ -13,10 +13,10 @@ const LotDashboard = ({ lots }) => {
 			<div className="grid-section-title">
 				<h3>Unkitted</h3>
 			</div>
-			{incomplete.map((lot, i) => {
+			{incomplete.map((lot) => {
 				return (
-					<div className="grid-item-container" key={i}>
-						<LotCard lot={lot} />
+					<div className="grid-item-container" key={lot.id}>
+						<LotCard lot={lot} key={lot.id} />
 					</div>
 				);
 			})}
@@ -25,8 +25,8 @@ const LotDashboard = ({ lots }) => {
 			</div>
 			{completed.map((lot, i) => {
 				return (
-					<div className="grid-item-container" key={i}>
-						<LotCard lot={lot} />
+					<div className="grid-item-container" key={lot.id}>
+						<LotCard lot={lot} key={lot.id} />
 					</div>
 				);
 			})}
@@ -34,7 +34,8 @@ const LotDashboard = ({ lots }) => {
 	);
 };
 
-const Dashboard = ({ data, view }) => {
+const Dashboard = (props) => {
+	const { data, view } = props;
 	const { skus, lots, mats } = data;
 
 	const renderCards = () => {

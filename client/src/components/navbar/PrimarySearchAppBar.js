@@ -13,7 +13,6 @@ import CenteredTabs from './FilterButton';
 import app from '../../config/firebase';
 import AddIcon from '@material-ui/icons/Add';
 import { NavLink } from 'react-router-dom';
-import NewProductButton from './NewProductButton';
 
 const PrimarySearchAppBar = (props) => {
 	const classes = useStyles();

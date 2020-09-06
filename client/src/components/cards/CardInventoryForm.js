@@ -1,7 +1,5 @@
-import React, { useRef, useEffect } from 'react';
-import logService from '../../services/logService';
+import React from 'react';
 import '../../styles/inventory.css';
-import app from '../../config/firebase';
 
 const CardInventoryForm = (props) => {
 	let newObj = { ...props.obj };
@@ -9,38 +7,6 @@ const CardInventoryForm = (props) => {
 
 	const handleSubmit = (e, newObj) => {
 		e.preventDefault();
-		if (type === 'lot') {
-			newObj.changeLog.push({
-				dateTime: new Date().toLocaleString(),
-				message: logService(
-					logService.logLotChange(
-						app.auth().currentUser.email,
-						props.obj,
-						newObj
-					)
-				),
-			});
-		} else if (type === 'mat') {
-			newObj.changeLog.push({
-				dateTime: new Date().toLocaleString(),
-				message: logService.logMatChange(
-					app.auth().currentUser.email,
-					props.obj,
-					newObj
-				),
-			});
-		} else if (type === 'sku') {
-			console.log(props.obj);
-			console.log(newObj);
-			newObj.changeLog.push({
-				dateTime: new Date().toLocaleString(),
-				message: logService.logSkuChange(
-					app.auth().currentUser.email,
-					props.obj,
-					newObj
-				),
-			});
-		}
 		props.onInv(e, newObj);
 	};
 

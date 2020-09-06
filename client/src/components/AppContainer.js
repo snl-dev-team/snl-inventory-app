@@ -1,30 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Dashboard from './dashboard/Dashboard';
 import PrimarySearchAppBar from './navbar/PrimarySearchAppBar';
 import searchService from '../services/searchService';
-import filterService from '../services/filterService';
 
 const AppContainer = (props) => {
-	const [filteredData, setFilteredData] = useState({
+	const { view, data } = props;
+	const [searchString, setSearchString] = useState('');
+	const [searchData, setSearchData] = useState({
 		skus: [],
 		lots: [],
 		mats: [],
 	});
-	const [searchString, setSearchString] = useState('');
-	// lot = 0; sku = 1; mat = 2
-	const [view, setView] = useState(1);
 
 	useEffect(() => {
-		const { data } = props;
 		if (data === null || !data.skus || !data.mats || !data.lots) return;
-		setFilteredData(searchService(filterService(data), searchString));
-	}, [props, searchString]);
+		setSearchData(searchService(data, searchString));
+	}, [data, searchString]);
 
 	return (
 		<>
 			<PrimarySearchAppBar
 				onSearch={(s) => setSearchString(s)}
-				onSet={(v) => setView(v)}
+				onSet={(v) => props.onSetView(v)}
 				view={view}
 			/>
 			<div
@@ -32,7 +29,7 @@ const AppContainer = (props) => {
 					height: '5em',
 				}}
 			></div>
-			<Dashboard data={filteredData} view={view} />
+			<Dashboard data={searchData} view={view} />
 		</>
 	);
 };

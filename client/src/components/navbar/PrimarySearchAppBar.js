@@ -6,13 +6,32 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MoreIcon from '@material-ui/icons/MoreVert';
-import useStyles from '../../styles/NavBarStyles';
 import SearchBar from './SearchBar';
 import Title from './Title';
 import CenteredTabs from './FilterButton';
 import app from '../../config/firebase';
 import AddIcon from '@material-ui/icons/Add';
 import { NavLink } from 'react-router-dom';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme) => ({
+	grow: {
+		flexGrow: 1,
+	},
+
+	sectionDesktop: {
+		display: 'none',
+		[theme.breakpoints.up('md')]: {
+			display: 'flex',
+		},
+	},
+	sectionMobile: {
+		display: 'flex',
+		[theme.breakpoints.up('md')]: {
+			display: 'none',
+		},
+	},
+}));
 
 const PrimarySearchAppBar = (props) => {
 	const classes = useStyles();

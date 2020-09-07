@@ -56,10 +56,7 @@ const LotForm = (props) => {
 					<TextField
 						type="text"
 						defaultValue={pName}
-						onChange={() => {
-							setExists(!exists);
-							setPName('');
-						}}
+						onChange={(e) => setPName(e.target.value)}
 						label="Product Name"
 						helperText="ex: Buster's 30mL Hemp Oil"
 						variant="outlined"

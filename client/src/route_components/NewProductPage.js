@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useState } from 'react';
 import SimpleMenu from '../components/forms/DropDownButton';
 import ContainedButton from '../components/forms/CreateProduct';
 import { makeStyles } from '@material-ui/core/styles';
@@ -15,9 +15,10 @@ const Styles = makeStyles((theme) => ({
 
 const NewProductPage = (props) => {
 	const classes = Styles();
-	const { setProduct } = useContext(ProductContext);
+	//const { setProduct } = useContext(ProductContext);
+	const [form, setForm] = useState(0);
 	const changeProduct = (s) => {
-		setProduct(s);
+		console.log(s.target.value);
 	};
 
 	return (
@@ -25,12 +26,12 @@ const NewProductPage = (props) => {
 			<h1 className={classes.root}>
 				<span>CREATE A NEW PRODUCT</span>
 			</h1>
-			<SimpleMenu onChoose={(s) => changeProduct(s)} />
+			<SimpleMenu handleChoose={(s) => changeProduct(s)} />
 			<div className={classes.root}></div>
 			<div className={classes.root}></div>
 			<div className={classes.root}></div>
 			<div className={classes.root}>
-				<ContainedButton />
+				<ContainedButton onChoose={setForm(e)} />
 			</div>
 		</div>
 	);

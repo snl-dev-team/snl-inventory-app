@@ -12,6 +12,7 @@ export default function SimpleMenu(props) {
 
 	const handleChoose = (e) => {
 		setDropText(e.target.innerText);
+		props.onChoose(e.target.value)
 		setAnchorEl(null);
 	};
 	const handleClose = (e) => {
@@ -40,13 +41,13 @@ export default function SimpleMenu(props) {
 				open={Boolean(anchorEl)}
 				onClose={handleClose}
 			>
-				<MenuItem onClick={(e) => handleChoose(e)}>
+				<MenuItem value="0" onClick={(e) => handleChoose(e)}>
 					Production
 				</MenuItem>
-				<MenuItem onClick={(e) => handleChoose(e)}>
+				<MenuItem value="1" onClick={(e) => handleChoose(e)}>
 					Inventory
 				</MenuItem>
-				<MenuItem onClick={(e) => handleChoose(e)}>
+				<MenuItem value="2" onClick={(e) => handleChoose(e)}>
 					Raw Materials
 				</MenuItem>
 			</Menu>

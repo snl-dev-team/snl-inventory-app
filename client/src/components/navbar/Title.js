@@ -1,6 +1,15 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
-import useStyles from '../../styles/NavBarStyles';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme) => ({
+	title: {
+		display: 'none',
+		[theme.breakpoints.up('sm')]: {
+			display: 'block',
+		},
+	},
+}));
 
 const Title = () => {
 	const classes = useStyles();

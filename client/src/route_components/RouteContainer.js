@@ -6,6 +6,7 @@ import Login from './Login';
 import PrivateRoute from './PrivateRoute';
 import CreateUser from './CreateUser';
 import FormContainer from './FormContainer';
+import PasswordReset from './PasswordReset';
 
 const RouteContainer = (props) => {
 	const [filteredData, setFilteredData] = useState({
@@ -27,6 +28,11 @@ const RouteContainer = (props) => {
 			<Router>
 				<div>
 					<Route exact path="/login" component={Login} />
+					<Route
+						exact
+						path="/forgot-password"
+						component={PasswordReset}
+					/>
 					<PrivateRoute
 						exact
 						path="/"

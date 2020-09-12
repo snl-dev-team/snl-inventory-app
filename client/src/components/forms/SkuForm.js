@@ -4,6 +4,8 @@ import TextField from '@material-ui/core/TextField';
 import { useForm } from 'react-hook-form';
 import { Checkbox, InputLabel, Button } from '@material-ui/core';
 import ProductNameSelect from './ProductNameSelect';
+import { Link } from 'react-router-dom';
+import app from '../../config/firebase';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -21,14 +23,26 @@ const SkuForm = (props) => {
 	const [pName, setPName] = useState('');
 	const { register, handleSubmit } = useForm();
 	const onSubmit = (data) => {
-		console.log({
+		props.onCreate({
 			configName: data.configName,
 			MCSize: data.MCSize,
 			countPerMC: data.countPerMC,
 			productBoxes: data.productBoxes,
 			productName: pName,
 			quantity: [],
-			changeLog: [],
+			changeLog: [
+				{
+					dateTime: new Date().toLocaleString(),
+					message: `${app
+						.auth()
+						.currentUser.email.substr(
+							0,
+							app.auth().currentUser.email.indexOf('@')
+						)} created new shipping configuration ${
+						data.configName
+					}`,
+				},
+			],
 		});
 	};
 	return (
@@ -53,9 +67,10 @@ const SkuForm = (props) => {
 					data={props.data}
 					onSelect={(val) => setPName(val)}
 				/>
-				<InputLabel htmlFor="productBoxes">
+				<InputLabel htmlFor="product-boxes">
 					<Checkbox
 						name="productBoxes"
+						id="product-boxes"
 						inputProps={{
 							ref: register,
 						}}
@@ -82,6 +97,14 @@ const SkuForm = (props) => {
 
 				<Button variant="contained" color="primary" type="submit">
 					Submit
+				</Button>
+				<Button
+					variant="contained"
+					color="primary"
+					component={Link}
+					to="/"
+				>
+					Cancel
 				</Button>
 			</form>
 		</div>

@@ -5,7 +5,7 @@ import AppContainer from '../components/AppContainer';
 import Login from './Login';
 import PrivateRoute from './PrivateRoute';
 import CreateUser from './CreateUser';
-import FormContainer from '../components/forms/FormContainer';
+import FormContainer from './FormContainer';
 
 const RouteContainer = (props) => {
 	const [filteredData, setFilteredData] = useState({

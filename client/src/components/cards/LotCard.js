@@ -6,6 +6,8 @@ import lotService from '../../services/lotService';
 import '../../styles/card.css';
 import CardInventoryForm from './CardInventoryForm';
 import '../../styles/inventory.css';
+import ChangeLog from './ChangeLog';
+import HistoryIcon from '@material-ui/icons/History';
 
 const LotMutationLayer = (props) => {
 	const handleMutation = async (e, runMutation, obj) => {
@@ -45,7 +47,7 @@ const LotCardView = (props) => {
 	const [menu, setMenu] = useState('none');
 
 	const toggleMenu = (view) => {
-		if (view !== 'none' && view !== 'inv') return;
+		if (view !== 'none' && view !== 'inv' && view !== 'history') return;
 		setMenu(menu === view ? 'none' : view);
 	};
 
@@ -72,6 +74,12 @@ const LotCardView = (props) => {
 					/>
 				</div>
 			);
+		if (menu === 'history')
+			return (
+				<div className="extended">
+					<ChangeLog log={props.lot.changeLog} />
+				</div>
+			);
 	};
 
 	return (
@@ -86,6 +94,12 @@ const LotCardView = (props) => {
 				<div className="btn-container">
 					<div className="btn" onClick={() => toggleMenu('inv')}>
 						<AssignmentIcon className="icon" />
+					</div>
+					<div
+						className="btn"
+						onClick={() => toggleMenu('history')}
+					>
+						<HistoryIcon className="icon" />
 					</div>
 					<div className="btn" onClick={handleComplete}>
 						<CheckIcon className="icon" />

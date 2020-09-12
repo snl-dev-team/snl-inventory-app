@@ -8,7 +8,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import useStyles from '../../styles/NavBarStyles';
 import SearchBar from './SearchBar';
-import Title from './Title';
+import Typography from '@material-ui/core/Typography';
 import CenteredTabs from './FilterButton';
 import app from '../../config/firebase';
 import AddIcon from '@material-ui/icons/Add';
@@ -96,7 +96,13 @@ const PrimarySearchAppBar = (props) => {
 			<div className={classes.grow}>
 				<AppBar position="static">
 					<Toolbar>
-						<Title />
+						<Typography
+							className={classes.title}
+							variant="h6"
+							noWrap
+						>
+							Sawgrass Nutra Labs
+						</Typography>
 						<SearchBar onSearch={(s) => props.onSearch(s)} />
 
 						<div className={classes.grow} />

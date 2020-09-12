@@ -4,6 +4,8 @@ import TextField from '@material-ui/core/TextField';
 import { useForm } from 'react-hook-form';
 import { Button, InputLabel, Checkbox } from '@material-ui/core';
 import ProductNameSelect from './ProductNameSelect';
+import { Link } from 'react-router-dom';
+import app from '../../config/firebase';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -21,25 +23,78 @@ const MatForm = (props) => {
 	const { register, handleSubmit } = useForm();
 	const [exists, setExists] = useState(true);
 	const [pName, setPName] = useState('');
+
 	const onSubmit = (data) => {
-		console.log({
-			productName: data.productName,
-			quantity: [
+		if (!exists) {
+			props.onCreate(
 				{
-					lotNumber: data.lotNumber,
-					countInUnits: Number(data.count),
+					productName: pName,
+					quantity: [
+						{
+							lotNumber: data.lotNumber,
+							countInUnits: Number(data.count),
+						},
+					],
+					pricePerUnitInCents: Math.round(
+						100 *
+							parseFloat(
+								data.pricePerUnitInCents.replace(
+									/[$,]/g,
+									''
+								)
+							)
+					),
+					units: data.units,
+					changeLog: [
+						{
+							dateTime: new Date().toLocaleString(),
+							message: `${app
+								.auth()
+								.currentUser.email.substr(
+									0,
+									app
+										.auth()
+										.currentUser.email.indexOf(
+											'@'
+										)
+								)} created a new material`,
+						},
+					],
 				},
-			],
-			pricePerUnitInCents: Math.round(
-				100 *
-					parseFloat(
-						data.pricePerUnitInCents.replace(/[$,]/g, '')
-					)
-			),
-			units: data.units,
-			changeLog: [],
-		});
+				exists
+			);
+		} else {
+			console.log('call existing');
+			props.onCreate(
+				{
+					productName: pName,
+					quantity: [
+						{
+							lotNumber: data.lotNumber,
+							countInUnits: Number(data.count),
+						},
+					],
+					changeLog: [
+						{
+							dateTime: new Date().toLocaleString(),
+							message: `${app
+								.auth()
+								.currentUser.email.substr(
+									0,
+									app
+										.auth()
+										.currentUser.email.indexOf(
+											'@'
+										)
+								)} created new lot ${data.lotNumber}`,
+						},
+					],
+				},
+				exists
+			);
+		}
 	};
+
 	return (
 		<div className={classes.root}>
 			<form
@@ -48,9 +103,10 @@ const MatForm = (props) => {
 				autoComplete="off"
 				onSubmit={handleSubmit(onSubmit)}
 			>
-				<InputLabel htmlFor="existingProduct">
+				<InputLabel htmlFor="existing-product">
 					<Checkbox
 						name="existingProduct"
+						id="existing-product"
 						checked={exists}
 						onChange={() => {
 							setExists(!exists);
@@ -78,18 +134,15 @@ const MatForm = (props) => {
 					/>
 				)}
 
-				{exists ? (
-					<></>
-				) : (
-					<TextField
-						type="text"
-						helperText="ex: #0L32B6"
-						name="lotNumber"
-						label="Lot Number"
-						inputProps={{ ref: register }}
-						variant="outlined"
-					/>
-				)}
+				<TextField
+					type="text"
+					helperText="ex: #0L32B6"
+					name="lotNumber"
+					label="Lot Number"
+					defaultValue="#"
+					inputProps={{ ref: register }}
+					variant="outlined"
+				/>
 
 				<TextField
 					type="number"
@@ -99,25 +152,37 @@ const MatForm = (props) => {
 					inputProps={{ ref: register }}
 					variant="outlined"
 				/>
-				<TextField
-					type="text"
-					helperText="ex: kg, L, units, etc."
-					name="units"
-					label="Unit Type"
-					inputProps={{ ref: register }}
-					variant="outlined"
-				/>
-				<TextField
-					type="text"
-					helperText="ex: $3.99"
-					name="pricePerUnitInCents"
-					label="Price Per Unit"
-					inputProps={{ ref: register }}
-					variant="outlined"
-					defaultValue="$"
-				/>
+				{!exists && (
+					<TextField
+						type="text"
+						helperText="ex: kg, L, units, etc."
+						name="units"
+						label="Unit Type"
+						inputProps={{ ref: register }}
+						variant="outlined"
+					/>
+				)}
+				{!exists && (
+					<TextField
+						type="text"
+						helperText="ex: $3.99"
+						name="pricePerUnitInCents"
+						label="Price Per Unit"
+						inputProps={{ ref: register }}
+						variant="outlined"
+						defaultValue="$"
+					/>
+				)}
 				<Button variant="contained" color="primary" type="submit">
 					Submit
+				</Button>
+				<Button
+					variant="contained"
+					color="primary"
+					component={Link}
+					to="/"
+				>
+					Cancel
 				</Button>
 			</form>
 		</div>

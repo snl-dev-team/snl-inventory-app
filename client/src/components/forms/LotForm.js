@@ -3,6 +3,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useForm } from 'react-hook-form';
 import { Checkbox, InputLabel, TextField, Button } from '@material-ui/core';
 import ProductNameSelect from './ProductNameSelect';
+import { Link } from 'react-router-dom';
+import app from '../../config/firebase';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -20,14 +22,34 @@ const LotForm = (props) => {
 	const { register, handleSubmit } = useForm();
 	const [exists, setExists] = useState(true);
 	const [pName, setPName] = useState('');
+
 	const onSubmit = (data) => {
-		console.log({
-			productName: pName,
-			lotNumber: data.lotNumber,
-			expDate: data.expDate,
-			quantity: data.quantity,
-			changeLog: [],
-		});
+		props.onCreate(
+			{
+				productName: pName,
+				lotNumber: data.lotNumber,
+				expDate: data.expDate,
+				quantity: data.quantity,
+				changeLog: [
+					{
+						dateTime: new Date().toLocaleDateString(),
+						message: `${app
+							.auth()
+							.currentUser.email.substr(
+								0,
+								app
+									.auth()
+									.currentUser.email.indexOf('@')
+							)} created new lot ${
+							data.lotNumber
+						} for ${pName} with an initial count of ${
+							data.quantity
+						}`,
+					},
+				],
+			},
+			exists
+		);
 	};
 	return (
 		<div className={classes.root}>
@@ -37,11 +59,15 @@ const LotForm = (props) => {
 				autoComplete="off"
 				onSubmit={handleSubmit(onSubmit)}
 			>
-				<InputLabel htmlFor="existingProduct">
+				<InputLabel htmlFor="existing-product">
 					<Checkbox
-						name="existingProduct"
+						name="existing-product"
+						id="existing-product"
 						checked={exists}
-						onChange={() => setExists(!exists)}
+						onChange={() => {
+							setExists(!exists);
+							setPName('');
+						}}
 					/>
 					Existing Product
 				</InputLabel>
@@ -56,7 +82,9 @@ const LotForm = (props) => {
 					<TextField
 						type="text"
 						defaultValue={pName}
-						onChange={(e) => setPName(e.target.value)}
+						onChange={(e) => {
+							setPName(e.target.value);
+						}}
 						label="Product Name"
 						helperText="ex: Buster's 30mL Hemp Oil"
 						variant="outlined"
@@ -96,6 +124,14 @@ const LotForm = (props) => {
 
 				<Button variant="contained" color="primary" type="submit">
 					Submit
+				</Button>
+				<Button
+					variant="contained"
+					color="primary"
+					component={Link}
+					to="/"
+				>
+					Cancel
 				</Button>
 			</form>
 		</div>

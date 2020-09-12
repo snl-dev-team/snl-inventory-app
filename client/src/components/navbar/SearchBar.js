@@ -42,6 +42,7 @@ const useStyles = makeStyles((theme) => ({
 		},
 	},
 }));
+
 const SearchBar = (props) => {
 	const classes = useStyles();
 	const [searchString, setSearchString] = useState('');

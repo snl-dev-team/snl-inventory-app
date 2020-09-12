@@ -3,6 +3,28 @@ import { Select } from '@material-ui/core';
 
 // props: data: {}, selected: String, onSelect: () => {}, mat: bool
 const ProductNameSelect = (props) => {
+	const { data } = props;
+
+	const getMatNames = () => {
+		let uniqueNames = [];
+		data.mats.forEach((mat) => {
+			if (!uniqueNames.includes(mat.productName)) {
+				uniqueNames.push(mat.productName);
+			}
+		});
+		return uniqueNames;
+	};
+
+	const getLotNames = () => {
+		let uniqueNames = [];
+		data.lots.forEach((lot) => {
+			if (!uniqueNames.includes(lot.productName)) {
+				uniqueNames.push(lot.productName);
+			}
+		});
+		return uniqueNames;
+	};
+
 	return (
 		<div>
 			<Select
@@ -14,17 +36,17 @@ const ProductNameSelect = (props) => {
 			>
 				<option value="">Select Product Name</option>
 				{props.mat
-					? props.data.mats.map((mat, i) => {
+					? getMatNames().map((name, i) => {
 							return (
-								<option value={mat.productName} key={i}>
-									{mat.productName}
+								<option value={name} key={i}>
+									{name}
 								</option>
 							);
 					  })
-					: props.data.lots.map((lot, i) => {
+					: getLotNames().map((name, i) => {
 							return (
-								<option value={lot.productName} key={i}>
-									{lot.productName}
+								<option value={name} key={i}>
+									{name}
 								</option>
 							);
 					  })}

@@ -8,6 +8,7 @@ import CardInventoryForm from './CardInventoryForm';
 import '../../styles/inventory.css';
 import ChangeLog from './ChangeLog';
 import HistoryIcon from '@material-ui/icons/History';
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 
 const LotMutationLayer = (props) => {
 	const handleMutation = async (e, runMutation, obj) => {
@@ -52,7 +53,9 @@ const LotCardView = (props) => {
 	};
 
 	const handleInv = (e, newLot) => {
-		props.onInv(e, newLot);
+		let lotCopy = { ...newLot };
+		lotCopy.completed = !lotCopy.completed;
+		props.onInv(e, lotCopy);
 		setMenu('none');
 	};
 
@@ -102,7 +105,11 @@ const LotCardView = (props) => {
 						<HistoryIcon className="icon" />
 					</div>
 					<div className="btn" onClick={handleComplete}>
-						<CheckIcon className="icon" />
+						{props.lot.completed ? (
+							<ArrowUpwardIcon className="icon" />
+						) : (
+							<CheckIcon className="icon" />
+						)}
 					</div>
 				</div>
 				<div>{renderMenu()}</div>

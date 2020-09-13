@@ -4,11 +4,10 @@ import AssignmentIcon from '@material-ui/icons/Assignment';
 import { FirebaseDatabaseMutation } from '@react-firebase/database';
 import lotService from '../../services/lotService';
 import '../../styles/card.css';
-import CardInventoryForm from './CardInventoryForm';
-import '../../styles/inventory.css';
 import ChangeLog from './ChangeLog';
 import HistoryIcon from '@material-ui/icons/History';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+import { Button, Input } from '@material-ui/core';
 
 const LotMutationLayer = (props) => {
 	const handleMutation = async (e, runMutation, obj) => {
@@ -43,6 +42,42 @@ const LotMutationLayer = (props) => {
 	);
 };
 
+const LotCardInventoryForm = (props) => {
+	let newLot = { ...props.lot };
+
+	return (
+		<form
+			onSubmit={(e) => {
+				e.preventDefault();
+				props.onInv(e, newLot);
+			}}
+		>
+			<div className="card-form-items-container">
+				<div className="card-form-item">
+					<label htmlFor={`lot-${newLot.id}`}>
+						<div className="thin-callout">{`Quantity: `}</div>
+					</label>
+					<div className="card-form-spacer"></div>
+					<Input
+						id={`lot-${newLot.id}`}
+						type="number"
+						defaultValue={newLot.quantity}
+						onChange={(e) => {
+							newLot.quantity = Number(e.target.value);
+						}}
+						step="1"
+					/>
+				</div>
+				<div className="card-form-btn-container">
+					<Button type="submit" variant="outlined">
+						Done
+					</Button>
+				</div>
+			</div>
+		</form>
+	);
+};
+
 const LotCardView = (props) => {
 	// none // inv //
 	const [menu, setMenu] = useState('none');
@@ -54,7 +89,9 @@ const LotCardView = (props) => {
 
 	const handleInv = (e, newLot) => {
 		let lotCopy = { ...newLot };
-		lotCopy.completed = !lotCopy.completed;
+		if (lotCopy.completed) {
+			lotCopy.completed = !lotCopy.completed;
+		}
 		props.onInv(e, lotCopy);
 		setMenu('none');
 	};
@@ -70,8 +107,8 @@ const LotCardView = (props) => {
 		if (menu === 'inv')
 			return (
 				<div className="extended">
-					<CardInventoryForm
-						obj={props.lot}
+					<LotCardInventoryForm
+						lot={props.lot}
 						type="lot"
 						onInv={(e, newLot) => handleInv(e, newLot)}
 					/>

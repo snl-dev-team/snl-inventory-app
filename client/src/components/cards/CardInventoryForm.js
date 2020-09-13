@@ -13,7 +13,7 @@ const CardInventoryForm = (props) => {
 	const renderForm = () => {
 		if (type === 'sku' || type === 'mat') {
 			return (
-				<>
+				<div>
 					{newObj.quantity.map((lot, i) => {
 						return (
 							<div key={i} className="form-item">
@@ -51,7 +51,7 @@ const CardInventoryForm = (props) => {
 							</div>
 						);
 					})}
-				</>
+				</div>
 			);
 		} else if (type === 'lot') {
 			return (
@@ -82,7 +82,7 @@ const CardInventoryForm = (props) => {
 	return (
 		<div className="form-container">
 			<form onSubmit={(e) => handleSubmit(e, newObj)} className="form">
-				{renderForm()}
+				<div>{renderForm()}</div>
 				<button type="submit">Done</button>
 			</form>
 		</div>

@@ -5,6 +5,7 @@ import MatForm from '../components/forms/MatForm';
 import { Select } from '@material-ui/core';
 import { FirebaseDatabaseMutation } from '@react-firebase/database';
 import unFilterService from '../services/unFilterService.js';
+import '../styles/form.css';
 
 const FormMutationLayer = (props) => {
 	const { data, view } = props;
@@ -21,6 +22,7 @@ const FormMutationLayer = (props) => {
 						mcCount: 0,
 						id: data.skus[i].quantity.length,
 					});
+					sku.changeLog.push(newLot.changeLog[0]);
 				}
 			});
 		}
@@ -51,7 +53,6 @@ const FormMutationLayer = (props) => {
 		if (!isExistingProduct) {
 			newData.mats.push({ ...newMat, id: data.mats.length });
 		} else {
-			console.log('handle existing');
 			newData.mats.forEach((mat) => {
 				if (mat.productName === String(newMat.productName)) {
 					mat.quantity.push({
@@ -141,32 +142,28 @@ const FormContainer = (props) => {
 	};
 
 	return (
-		<div
-			style={{
-				display: 'flex',
-				flexDirection: 'column',
-				alignItems: 'center',
-				justifyContent: 'center',
-				backgroundColor: 'white',
-				width: 'fit-content',
-				padding: '1em',
-			}}
-		>
-			<div>
-				<Select
-					value={view}
-					onChange={(e) =>
-						props.onSetView(Number(e.target.value))
-					}
-					variant="outlined"
-					native={true}
-				>
-					<option value={0}>New Lot</option>
-					<option value={1}>New Shipping Config</option>
-					<option value={2}>New Material</option>
-				</Select>
+		<div className="form-page">
+			<div className="form-container">
+				<div>
+					<div className="form-item">
+						<Select
+							value={view}
+							onChange={(e) =>
+								props.onSetView(Number(e.target.value))
+							}
+							variant="outlined"
+							native={true}
+						>
+							<option value={0}>New Lot</option>
+							<option value={1}>
+								New Shipping Config
+							</option>
+							<option value={2}>New Material</option>
+						</Select>
+					</div>
+					<div className="form-container">{renderForm()}</div>
+				</div>
 			</div>
-			{renderForm()}
 		</div>
 	);
 };

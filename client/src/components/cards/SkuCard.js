@@ -93,6 +93,7 @@ const SkuCardView = (props) => {
 						props.sku
 					)} units`}</div>
 				</div>
+				<div className="menu-container">{renderMenu()}</div>
 				<div className="btn-container">
 					<div className="btn" onClick={() => toggleMenu('inv')}>
 						<AssignmentIcon className="icon" />
@@ -110,7 +111,6 @@ const SkuCardView = (props) => {
 						<MoreHorizIcon className="icon" />
 					</div>
 				</div>
-				<div>{renderMenu()}</div>
 			</div>
 		</>
 	);
@@ -119,18 +119,33 @@ const SkuCardView = (props) => {
 const SkuDetailView = ({ sku }) => {
 	return (
 		<div className="detail-container">
-			<div className="detail-item">{`MC Config: ${
+			<div className="detail-item callout">{`${
 				sku.countPerMC
 			} units of ${sku.productBoxes ? 'kitted ' : ''}${
 				sku.productName
 			} in a ${sku.MCSize} box.`}</div>
-			{sku.quantity.map((lot, i) => {
-				return (
-					<div className="detail-item" key={i}>{`${
-						lot.mcCount * sku.countPerMC
-					} units expiring ${lot.expDate}`}</div>
-				);
-			})}
+			<ul>
+				{sku.quantity
+					.slice(0)
+					.sort((a, b) => {
+						return b.mcCount - a.mcCount;
+					})
+					.map((lot, i) => {
+						if (lot.mcCount > 0) {
+							return (
+								<li className="detail-item" key={i}>{`${
+									lot.mcCount * sku.countPerMC
+								} units expiring ${lot.expDate}`}</li>
+							);
+						} else {
+							return (
+								<React.Fragment
+									key={i}
+								></React.Fragment>
+							);
+						}
+					})}
+			</ul>
 		</div>
 	);
 };

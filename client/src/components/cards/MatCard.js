@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import HistoryIcon from '@material-ui/icons/History';
-import CardInventoryForm from './CardInventoryForm';
 import { FirebaseDatabaseMutation } from '@react-firebase/database';
 import matService from '../../services/matService';
 import '../../styles/card.css';
 import ChangeLog from './ChangeLog';
+import { Button, Input } from '@material-ui/core';
 
 const MatCardViewMutationLayer = (props) => {
 	const handleMutation = async (e, runMutation, obj) => {
@@ -35,6 +35,54 @@ const MatCardViewMutationLayer = (props) => {
 	);
 };
 
+const MatCardInventoryFrom = (props) => {
+	let newMat = { ...props.mat };
+
+	return (
+		<form
+			onSubmit={(e) => {
+				e.preventDefault();
+				props.onInv(e, newMat);
+			}}
+		>
+			<div className="card-form-items-container">
+				{newMat.quantity.map((lot, i) => {
+					return (
+						<div key={i} className="card-form-item">
+							<label htmlFor={`lot-${i}`}>
+								<div className="thin-callout">
+									{`Lot: ${lot.lotNumber}`}
+								</div>
+							</label>
+							<div className="card-form-spacer"></div>
+							<Input
+								id={`lot-${i}`}
+								type="number"
+								defaultValue={
+									newMat.quantity[i].countInUnits
+								}
+								onChange={(e) => {
+									newMat.quantity[
+										i
+									].countInUnits = Number(
+										e.target.value
+									);
+								}}
+								step="1"
+							/>
+						</div>
+					);
+				})}
+			</div>
+			<div className="card-form-btn-container">
+				<Button type="submit" variant="outlined">
+					Done
+				</Button>
+			</div>
+		</form>
+	);
+};
+
 const MatCardView = (props) => {
 	const [menu, setMenu] = useState('none');
 
@@ -54,9 +102,8 @@ const MatCardView = (props) => {
 		if (menu === 'inv')
 			return (
 				<div className="extended">
-					<CardInventoryForm
-						obj={props.mat}
-						type="mat"
+					<MatCardInventoryFrom
+						mat={props.mat}
 						onInv={(e, newMat) => handleInv(e, newMat)}
 					/>
 				</div>

@@ -4,9 +4,9 @@ import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import HistoryIcon from '@material-ui/icons/History';
 import { FirebaseDatabaseMutation } from '@react-firebase/database';
 import ChangeLog from './ChangeLog';
-import CardInventoryForm from './CardInventoryForm';
 import skuService from '../../services/skuService';
 import '../../styles/card.css';
+import { Button, Input } from '@material-ui/core';
 
 const SkuMutationLayer = (props) => {
 	const handleMutation = async (e, runMutation, obj) => {
@@ -35,6 +35,52 @@ const SkuMutationLayer = (props) => {
 	);
 };
 
+const SkuCardInventoryForm = (props) => {
+	let newSku = { ...props.sku };
+
+	return (
+		<form
+			onSubmit={(e) => {
+				e.preventDefault();
+				props.onInv(e, newSku);
+			}}
+		>
+			<div className="card-form-items-container">
+				{newSku.quantity.map((lot, i) => {
+					return (
+						<div key={i} className="card-form-item">
+							<label htmlFor={`lot-${i}`}>
+								<div className="thin-callout">
+									{`Lot: ${lot.lotNumber}`}
+								</div>
+							</label>
+							<div className="card-form-spacer"></div>
+							<Input
+								id={`lot-${i}`}
+								type="number"
+								defaultValue={
+									newSku.quantity[i].mcCount
+								}
+								onChange={(e) => {
+									newSku.quantity[
+										i
+									].mcCount = Number(e.target.value);
+								}}
+								step="1"
+							/>
+						</div>
+					);
+				})}
+			</div>
+			<div className="card-form-btn-container">
+				<Button type="submit" variant="outlined">
+					Done
+				</Button>
+			</div>
+		</form>
+	);
+};
+
 const SkuCardView = (props) => {
 	// none // inv // history // more //
 	const [menu, setMenu] = useState('none');
@@ -60,9 +106,8 @@ const SkuCardView = (props) => {
 		if (menu === 'inv')
 			return (
 				<div className="extended">
-					<CardInventoryForm
-						obj={props.sku}
-						type="sku"
+					<SkuCardInventoryForm
+						sku={props.sku}
 						onInv={(e, newSku) => handleInv(e, newSku)}
 					/>
 				</div>

@@ -64,7 +64,6 @@ const MatForm = (props) => {
 				exists
 			);
 		} else {
-			console.log('call existing');
 			props.onCreate(
 				{
 					productName: pName,

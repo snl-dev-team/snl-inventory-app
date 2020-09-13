@@ -94,6 +94,7 @@ const LotCardView = (props) => {
 						{props.lot.productName} / {props.lot.quantity}
 					</div>
 				</div>
+				<div className="menu-container">{renderMenu()}</div>
 				<div className="btn-container">
 					<div className="btn" onClick={() => toggleMenu('inv')}>
 						<AssignmentIcon className="icon" />
@@ -112,7 +113,6 @@ const LotCardView = (props) => {
 						)}
 					</div>
 				</div>
-				<div>{renderMenu()}</div>
 			</div>
 		</>
 	);

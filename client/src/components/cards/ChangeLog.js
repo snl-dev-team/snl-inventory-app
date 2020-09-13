@@ -4,9 +4,12 @@ import '../../styles/changeLog.css';
 const ChangeLog = ({ log }) => {
 	return (
 		<div className="log-container">
-			{log.map((change, i) => {
-				return <Change change={change} key={i} />;
-			})}
+			{log
+				.slice(0)
+				.reverse()
+				.map((change, i) => {
+					return <Change change={change} key={i} />;
+				})}
 		</div>
 	);
 };

@@ -29,6 +29,12 @@
 	color: #3f3f3f;
 }
 
+.callout {
+	color: #3f3f3f;
+	font-size: 1.25em;
+	font-weight: bold;
+}
+
 .card:hover {
 	box-shadow: 0 0.6em 1.6em rgba(0, 0, 0, 0.5);
 }
@@ -60,7 +66,7 @@
 
 .extended {
 	min-height: 10em;
-	max-height: 20em;
+	max-height: 15em;
 	overflow-y: auto;
 }
 
@@ -95,7 +101,11 @@
 	margin-left: 0.5em;
 	margin-top: 0.5em;
 }
-
 .detail-item {
 	margin-top: 0.25em;
+}
+
+.menu-container {
+	padding-bottom: 3em;
+	margin-bottom: 1em;
 }

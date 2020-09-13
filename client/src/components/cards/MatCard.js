@@ -89,6 +89,7 @@ const MatCardView = (props) => {
 						props.mat
 					)} ${props.mat.units}`}</div>
 				</div>
+				<div className="menu-container">{renderMenu()}</div>
 				<div className="btn-container">
 					<div className="btn" onClick={() => toggleMenu('inv')}>
 						<AssignmentIcon className="icon" />
@@ -106,7 +107,6 @@ const MatCardView = (props) => {
 						<MoreHorizIcon className="icon" />
 					</div>
 				</div>
-				<div>{renderMenu()}</div>
 			</div>
 		</>
 	);
@@ -115,12 +115,40 @@ const MatCardView = (props) => {
 const MatDetailView = ({ mat }) => {
 	return (
 		<div className="detail-container">
-			<div className="detail-item">{`Inventory Value: $${
+			<div className="detail-item callout">{`Total Inventory Value: $${(
 				matService.getMatValueInCents(mat) / 100
-			}`}</div>
-			<div className="detail-item">{`Price per ${mat.units}: $${
-				mat.pricePerUnitInCents / 100
-			}`}</div>
+			).toFixed(2)}`}</div>
+			<div className="detail-item callout">{`Price per ${
+				mat.units
+			}: $${(mat.pricePerUnitInCents / 100).toFixed(2)}`}</div>
+			<ul>
+				{mat.quantity
+					.slice(0)
+					.sort((a, b) => {
+						return b.countInUnits - a.countInUnits;
+					})
+					.map((lot, i) => {
+						if (lot.countInUnits > 0) {
+							return (
+								<li className="detail-item" key={i}>
+									{`Lot ${lot.lotNumber}: ${
+										lot.countInUnits
+									} ${mat.units} -- $${(
+										(mat.pricePerUnitInCents *
+											lot.countInUnits) /
+										100
+									).toFixed(2)}`}
+								</li>
+							);
+						} else {
+							return (
+								<React.Fragment
+									key={i}
+								></React.Fragment>
+							);
+						}
+					})}
+			</ul>
 		</div>
 	);
 };

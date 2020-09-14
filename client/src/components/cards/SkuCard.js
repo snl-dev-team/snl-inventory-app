@@ -178,7 +178,10 @@ const SkuDetailView = ({ sku }) => {
 					.map((lot, i) => {
 						if (lot.mcCount > 0) {
 							return (
-								<li className="detail-item" key={i}>{`${
+								<li
+									className="detail-item"
+									key={i}
+								>{`Lot ${lot.lotNumber}: ${
 									lot.mcCount * sku.countPerMC
 								} units expiring ${lot.expDate}`}</li>
 							);

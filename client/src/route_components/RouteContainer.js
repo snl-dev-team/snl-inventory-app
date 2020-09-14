@@ -7,6 +7,7 @@ import PrivateRoute from './PrivateRoute';
 import CreateUser from './CreateUser';
 import FormContainer from './FormContainer';
 import PasswordReset from './PasswordReset';
+import DeleteProductForm from './DeleteProductForm';
 
 const RouteContainer = (props) => {
 	const [filteredData, setFilteredData] = useState({
@@ -54,6 +55,17 @@ const RouteContainer = (props) => {
 						path="/create-product"
 						component={() => (
 							<FormContainer
+								data={filteredData}
+								view={view}
+								onSetView={(v) => setView(v)}
+							/>
+						)}
+					/>
+					<PrivateRoute
+						exact
+						path="/delete-product"
+						component={() => (
+							<DeleteProductForm
 								data={filteredData}
 								view={view}
 								onSetView={(v) => setView(v)}

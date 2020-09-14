@@ -144,25 +144,21 @@ const FormContainer = (props) => {
 	return (
 		<div className="form-page">
 			<div className="form-container">
-				<div>
-					<div className="form-item">
-						<Select
-							value={view}
-							onChange={(e) =>
-								props.onSetView(Number(e.target.value))
-							}
-							variant="outlined"
-							native={true}
-						>
-							<option value={0}>New Lot</option>
-							<option value={1}>
-								New Shipping Config
-							</option>
-							<option value={2}>New Material</option>
-						</Select>
-					</div>
-					<div className="form-container">{renderForm()}</div>
+				<div className="form-item">
+					<Select
+						value={view}
+						onChange={(e) =>
+							props.onSetView(Number(e.target.value))
+						}
+						variant="outlined"
+						native={true}
+					>
+						<option value={0}>New Lot</option>
+						<option value={1}>New Shipping Config</option>
+						<option value={2}>New Material</option>
+					</Select>
 				</div>
+				<div className="form-subcontainer">{renderForm()}</div>
 			</div>
 		</div>
 	);

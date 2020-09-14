@@ -32,7 +32,7 @@ const SkuForm = (props) => {
 			quantity: [],
 			changeLog: [
 				{
-					dateTime: new Date().toLocaleString(),
+					dateTime: new Date().toLocaleDateString(),
 					message: `${app
 						.auth()
 						.currentUser.email.substr(

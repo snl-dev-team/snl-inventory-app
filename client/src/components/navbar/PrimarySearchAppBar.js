@@ -13,6 +13,7 @@ import app from '../../config/firebase';
 import AddIcon from '@material-ui/icons/Add';
 import { NavLink } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 
 const useStyles = makeStyles((theme) => ({
 	grow: {
@@ -131,14 +132,15 @@ const PrimarySearchAppBar = (props) => {
 								view={props.view}
 							/>
 						</div>
+						<NavLink to="/delete-product" variant="body2">
+							<IconButton>
+								<DeleteOutlineIcon htmlColor="white" />
+							</IconButton>
+						</NavLink>
 						<NavLink to="/create-product" variant="body2">
-							{
-								<div className="create new product">
-									<IconButton>
-										<AddIcon />
-									</IconButton>
-								</div>
-							}
+							<IconButton>
+								<AddIcon htmlColor="white" />
+							</IconButton>
 						</NavLink>
 						<div className={classes.sectionMobile}>
 							<IconButton

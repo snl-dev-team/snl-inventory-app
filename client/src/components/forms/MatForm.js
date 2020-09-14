@@ -47,7 +47,7 @@ const MatForm = (props) => {
 					units: data.units,
 					changeLog: [
 						{
-							dateTime: new Date().toLocaleString(),
+							dateTime: new Date().toLocaleDateString(),
 							message: `${app
 								.auth()
 								.currentUser.email.substr(
@@ -75,7 +75,7 @@ const MatForm = (props) => {
 					],
 					changeLog: [
 						{
-							dateTime: new Date().toLocaleString(),
+							dateTime: new Date().toLocaleDateString(),
 							message: `${app
 								.auth()
 								.currentUser.email.substr(

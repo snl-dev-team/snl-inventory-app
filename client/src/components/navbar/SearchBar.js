@@ -53,7 +53,7 @@ const SearchBar = (props) => {
 	return (
 		<div className={classes.search}>
 			<div className={classes.searchIcon}>
-				<SearchIcon />
+				<SearchIcon htmlColor="white" />
 			</div>
 			<InputBase
 				placeholder="Search…"

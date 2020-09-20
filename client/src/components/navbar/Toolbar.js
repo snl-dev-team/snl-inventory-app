@@ -26,7 +26,6 @@ const Toolbar = (props) => {
 			anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
 			id={menuId}
 			keepMounted
-			transformOrigin={{ vertical: 'top', horizontal: 'right' }}
 			open={isMenuOpen}
 			onClose={handleMenuClose}
 		>
@@ -57,19 +56,20 @@ const Toolbar = (props) => {
 				<div className="toolbar__navigation-items">
 					<ul>
 						<IconButton>
-							<AddIcon />
+							<AddIcon htmlColor="white" />
 						</IconButton>
 						<IconButton>
-							<DeleteIcon />
+							<DeleteIcon htmlColor="white" />
 						</IconButton>
-						<div onClick={handleProfileMenuOpen} />
+						<div />
 						<IconButton
+							onClick={handleProfileMenuOpen}
 							aria-label="account of current user"
 							aria-controls="primary-search-account-menu"
 							aria-haspopup="true"
 							color="inherit"
 						>
-							<AccountCircle />
+							<AccountCircle htmlColor="white" />
 						</IconButton>
 					</ul>
 				</div>

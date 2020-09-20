@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Dashboard from './dashboard/Dashboard';
-import PrimarySearchAppBar from './navbar/PrimarySearchAppBar';
+import Toolbar from './navbar/Toolbar';
 import searchService from '../services/searchService';
 
 const AppContainer = (props) => {
@@ -19,7 +19,7 @@ const AppContainer = (props) => {
 
 	return (
 		<>
-			<PrimarySearchAppBar
+			<Toolbar
 				onSearch={(s) => setSearchString(s)}
 				onSet={(v) => props.onSetView(v)}
 				view={view}

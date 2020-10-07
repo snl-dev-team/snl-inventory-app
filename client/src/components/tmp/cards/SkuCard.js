@@ -3,9 +3,8 @@ import AssignmentIcon from '@material-ui/icons/Assignment';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import HistoryIcon from '@material-ui/icons/History';
 import { FirebaseDatabaseMutation } from '@react-firebase/database';
-import ChangeLog from './ChangeLog';
-import skuService from '../../services/skuService';
-import '../../styles/card.css';
+import skuService from '../../../services/skuService';
+import '../../../styles/card.css';
 import { Button, Input } from '@material-ui/core';
 
 const SkuMutationLayer = (props) => {
@@ -116,12 +115,6 @@ const SkuCardView = (props) => {
 			return (
 				<div className="extended">
 					<SkuDetailView sku={props.sku} />
-				</div>
-			);
-		if (menu === 'history')
-			return (
-				<div className="extended">
-					<ChangeLog log={props.sku.changeLog} />
 				</div>
 			);
 	};

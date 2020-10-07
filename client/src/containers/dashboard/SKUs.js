@@ -2,6 +2,8 @@ import React from 'react';
 import Fab from '@material-ui/core/Fab';
 import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
+import SkuGrid from '../../components/tmp/Grids/SkusGridlist';
+import { data } from '../../test_data/schema.json';
 
 const useStyles = makeStyles((theme) => ({
 	margin: {
@@ -21,7 +23,7 @@ const SKUsDashboard = () => {
 	const classes = useStyles();
 	return (
 		<div>
-			SKUs
+			<SkuGrid {...data} />
 			<Fab
 				size="medium"
 				color="secondary"

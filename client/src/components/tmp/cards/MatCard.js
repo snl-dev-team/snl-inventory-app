@@ -3,9 +3,9 @@ import AssignmentIcon from '@material-ui/icons/Assignment';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import HistoryIcon from '@material-ui/icons/History';
 import { FirebaseDatabaseMutation } from '@react-firebase/database';
-import matService from '../../services/matService';
-import '../../styles/card.css';
-import ChangeLog from './ChangeLog';
+import matService from '../../../services/matService';
+import '../../../styles/card.css';
+
 import { Button, Input } from '@material-ui/core';
 
 const MatCardViewMutationLayer = (props) => {
@@ -112,12 +112,6 @@ const MatCardView = (props) => {
 			return (
 				<div className="extended">
 					<MatDetailView mat={props.mat} />
-				</div>
-			);
-		if (menu === 'history')
-			return (
-				<div className="extended">
-					<ChangeLog log={props.mat.changeLog} />
 				</div>
 			);
 	};

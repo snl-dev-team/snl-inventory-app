@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import CheckIcon from '@material-ui/icons/Check';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import { FirebaseDatabaseMutation } from '@react-firebase/database';
-import lotService from '../../services/lotService';
-import '../../styles/card.css';
-import ChangeLog from './ChangeLog';
+import lotService from '../../../services/lotService';
+import '../../../styles/card.css';
 import HistoryIcon from '@material-ui/icons/History';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import { Button, Input } from '@material-ui/core';
@@ -112,12 +111,6 @@ const LotCardView = (props) => {
 						type="lot"
 						onInv={(e, newLot) => handleInv(e, newLot)}
 					/>
-				</div>
-			);
-		if (menu === 'history')
-			return (
-				<div className="extended">
-					<ChangeLog log={props.lot.changeLog} />
 				</div>
 			);
 	};

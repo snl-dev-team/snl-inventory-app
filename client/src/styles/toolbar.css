@@ -1,3 +1,23 @@
+:root {
+	--buttons-display: flex;
+	--buttons-select-display: none;
+	--logo-word-display: flex;
+}
+.logo-div {
+	display: var(--logo-display);
+	padding-right: 10px;
+}
+.logo-word-div {
+	display: var(--logo-word-display);
+}
+.button-div {
+	display: var(--buttons-display);
+}
+
+.button-select-div {
+	display: var(--buttons-select-display);
+}
+
 .toolbar {
 	position: fixed;
 	width: 100%;
@@ -30,4 +50,16 @@
 }
 .spacer {
 	flex: 1;
+}
+@media (max-width: 1200px) {
+	:root {
+		--logo-word-display: none;
+	}
+}
+@media (max-width: 600px) {
+	:root {
+		--buttons-display: none;
+		--buttons-select-display: flex;
+		--logo-display: none;
+	}
 }

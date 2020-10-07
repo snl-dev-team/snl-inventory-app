@@ -42,9 +42,3 @@
 		--grid-columns: 2;
 	}
 }
-
-@media (max-width: 875px) {
-	:root {
-		--grid-columns: 1;
-	}
-}

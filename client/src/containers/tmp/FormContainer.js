@@ -3,7 +3,6 @@ import SkuForm from '../components/forms/SkuForm';
 import LotForm from '../components/forms/LotForm';
 import MatForm from '../components/forms/MatForm';
 import { Select } from '@material-ui/core';
-import { FirebaseDatabaseMutation } from '@react-firebase/database';
 import unFilterService from '../services/unFilterService.js';
 import '../styles/form.css';
 
@@ -70,44 +69,7 @@ const FormMutationLayer = (props) => {
 		window.location.href = '../';
 	};
 
-	return (
-		<>
-			<FirebaseDatabaseMutation type="set" path="data">
-				{({ runMutation }) => {
-					return (
-						<FormContainer
-							data={data}
-							view={view}
-							onSetView={(v) => props.onSetView(v)}
-							onCreateLot={async (
-								newLot,
-								isExistingProduct
-							) => {
-								await handleNewLot(
-									newLot,
-									isExistingProduct,
-									runMutation
-								);
-							}}
-							onCreateSku={async (newSku) => {
-								await handleNewSku(newSku, runMutation);
-							}}
-							onCreateMat={async (
-								newMat,
-								isExistingProduct
-							) =>
-								await handleNewMat(
-									newMat,
-									isExistingProduct,
-									runMutation
-								)
-							}
-						/>
-					);
-				}}
-			</FirebaseDatabaseMutation>
-		</>
-	);
+	return <></>;
 };
 
 const FormContainer = (props) => {

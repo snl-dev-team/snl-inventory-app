@@ -3,8 +3,7 @@ import { Route, Redirect } from 'react-router-dom';
 import { AuthContext } from '../config/Auth';
 
 const PrivateRoute = ({ component: RouteComponent, ...rest }) => {
-	const { currentUser } = useContext(AuthContext);
-
+	let currentUser = null;
 	return (
 		<Route
 			{...rest}
@@ -12,7 +11,7 @@ const PrivateRoute = ({ component: RouteComponent, ...rest }) => {
 				!!currentUser ? (
 					<RouteComponent {...routeProps} />
 				) : (
-					<Redirect to={'/login'} />
+					<Redirect to={'/'} />
 				)
 			}
 		/>

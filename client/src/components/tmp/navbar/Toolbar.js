@@ -63,9 +63,7 @@ const Toolbar = (props) => {
 					Create User
 				</NavLink>
 			</MenuItem>
-			<MenuItem onClick={() => app.auth().signOut()}>
-				Sign Out ({app.auth().currentUser.email})
-			</MenuItem>
+			<MenuItem onClick={() => {}}>Sign Out ()</MenuItem>
 		</Menu>
 	);
 	return (

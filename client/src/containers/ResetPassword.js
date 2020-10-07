@@ -10,7 +10,6 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import firebase from 'firebase';
 
 const useStyles = makeStyles((theme) => ({
 	paper: {
@@ -45,13 +44,12 @@ const Copyright = () => {
 	);
 };
 
-const PasswordReset = ({ history }) => {
+const ResetPassword = ({ history }) => {
 	const handleReset = useCallback(
 		async (event) => {
 			event.preventDefault();
 			const { email } = event.target.elements;
 			try {
-				await firebase.auth().sendPasswordResetEmail(email.value);
 				history.push('/');
 			} catch (error) {
 				alert(error);
@@ -111,4 +109,4 @@ const PasswordReset = ({ history }) => {
 	);
 };
 
-export default withRouter(PasswordReset);
+export default withRouter(ResetPassword);

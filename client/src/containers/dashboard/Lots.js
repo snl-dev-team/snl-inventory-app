@@ -4,6 +4,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import LotGrid from '../../components/tmp/Grids/LotsGridList';
 import { data } from '../../test_data/schema.json';
+import Popover from '@material-ui/core/Popover';
+import LotForm from '../../components/tmp/forms/LotForm';
 
 const useStyles = makeStyles((theme) => ({
 	margin: {
@@ -21,6 +23,19 @@ const useStyles = makeStyles((theme) => ({
 
 const LotsDashboard = () => {
 	const classes = useStyles();
+	const [anchorEl, setAnchorEl] = React.useState(null);
+
+	const handleClick = (event) => {
+		setAnchorEl(event.currentTarget);
+	};
+
+	const handleClose = () => {
+		setAnchorEl(null);
+	};
+
+	const open = Boolean(anchorEl);
+	const id = open ? 'simple-popover' : undefined;
+
 	return (
 		<div>
 			<LotGrid {...data} />
@@ -29,9 +44,29 @@ const LotsDashboard = () => {
 				color="secondary"
 				aria-label="add"
 				className={classes.margin}
+				aria-describedby={id}
+				variant="contained"
+				color="primary"
+				onClick={handleClick}
 			>
 				<AddIcon />
 			</Fab>
+			<Popover
+				id={id}
+				open={open}
+				anchorEl={anchorEl}
+				onClose={handleClose}
+				anchorOrigin={{
+					vertical: 'bottom',
+					horizontal: 'center',
+				}}
+				transformOrigin={{
+					vertical: 'top',
+					horizontal: 'center',
+				}}
+			>
+				<LotForm />
+			</Popover>
 		</div>
 	);
 };

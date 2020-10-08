@@ -15,15 +15,9 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import AddIcon from '@material-ui/icons/Add';
-import DeleteIcon from '@material-ui/icons/Delete';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
 import CasinoIcon from '@material-ui/icons/Casino';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import GridOnIcon from '@material-ui/icons/GridOn';
@@ -291,46 +285,3 @@ export default function MiniDrawer() {
 		</div>
 	);
 }
-
-// import React, { useEffect, useState } from 'react';
-// import Dashboard from './dashboard/Dashboard';
-// import Toolbar from './navbar/Toolbar';
-// import searchService from '../services/searchService';
-
-// const Dashboard = (props) => {
-// 	const { view, data } = props;
-// 	const [searchString, setSearchString] = useState('');
-// 	const classes = useStyles();
-// 	const [searchData, setSearchData] = useState({
-// 		skus: [],
-// 		lots: [],
-// 		mats: [],
-// 	});
-
-// 	useEffect(() => {
-// 		if (data === null || !data.skus || !data.mats || !data.lots) return;
-// 		setSearchData(searchService(data, searchString));
-// 	}, [data, searchString]);
-
-// 	return (
-// 		<>
-// 			;
-// 			<Toolbar
-// 				onSearch={(s) => setSearchString(s)}
-// 				onSet={(v) => props.onSetView(v)}
-// 				view={view}
-// 			/>
-// 			<div>
-//
-// 			</div>
-// 			<div
-// 				style={{
-// 					height: '5em',
-// 				}}
-// 			></div>
-// 			<Dashboard data={searchData} view={view} />
-// 		</>
-// 	);
-// };
-
-// export default Dashboard;

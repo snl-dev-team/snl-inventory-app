@@ -2,7 +2,8 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import SkuCard from '../cards/SkuCard';
+import LotCard from '../cards/LotCard';
+
 const useStyles = makeStyles((theme) => ({
 	root: {
 		flexGrow: 1,
@@ -16,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export default function SkuGrid(props) {
+export default function MatsGrid(props) {
 	const classes = useStyles();
 	const { data } = props;
 	const { skus, lots, mats } = data;
@@ -27,19 +28,21 @@ export default function SkuGrid(props) {
 				<Grid container justify="center" spacing={2}>
 					<Grid>
 						<Paper className={classes.paper}>
-							{skus.map((sku, i) => {
+							{lots.map((lot) => {
 								return (
 									<div
 										className="grid-item-container"
-										key={i}
+										key={lot.id}
 									>
-										<SkuCard sku={sku} />
+										<LotCard
+											lot={lot}
+											key={lot.id}
+										/>
 									</div>
 								);
 							})}
 						</Paper>
 					</Grid>
-					))}
 				</Grid>
 			</Grid>
 		</Grid>

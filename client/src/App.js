@@ -1,30 +1,25 @@
 import React from 'react';
-import { AuthProvider } from './config/Auth';
-import {
-	FirebaseDatabaseProvider,
-	FirebaseDatabaseNode,
-} from '@react-firebase/database';
 import firebase from 'firebase';
-import config from './config/firebase';
-import RouteContainer from './route_components/RouteContainer';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+import Home from './containers/dashboard/Dashboard';
+import SignIn from './containers/SignIn';
+import SignUp from './containers/SignUp';
+import ResetPassword from './containers/ResetPassword';
 
 const App = () => {
 	return (
-		<AuthProvider>
-			<FirebaseDatabaseProvider firebase={firebase} {...config}>
-				<div>
-					<FirebaseDatabaseNode path="data">
-						{(d) => {
-							return (
-								<>
-									<RouteContainer data={d.value} />
-								</>
-							);
-						}}
-					</FirebaseDatabaseNode>
-				</div>
-			</FirebaseDatabaseProvider>
-		</AuthProvider>
+		<Router>
+			<div>
+				<Route exact path="/signin" component={SignIn} />
+				<Route exact path="/signup" component={SignUp} />
+				<Route
+					exact
+					path="/reset-password"
+					component={ResetPassword}
+				/>
+				<Route exact path="/" component={Home} />
+			</div>
+		</Router>
 	);
 };
 

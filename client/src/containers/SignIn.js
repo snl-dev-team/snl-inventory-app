@@ -1,7 +1,6 @@
-import React, { useCallback } from 'react';
-import { withRouter } from 'react-router';
-import app from '../config/firebase';
-import { NavLink } from 'react-router-dom';
+import React, { useCallback, useContext } from 'react';
+import { withRouter, Redirect } from 'react-router';
+import { AuthContext } from '../config/Auth';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
@@ -25,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 	form: {
 		width: '100%', // Fix IE 11 issue.
-		marginTop: theme.spacing(3),
+		marginTop: theme.spacing(1),
 	},
 	submit: {
 		margin: theme.spacing(3, 0, 2),
@@ -45,19 +44,12 @@ const Copyright = () => {
 	);
 };
 
-const CreateUser = ({ history }) => {
-	const handleSignUp = useCallback(
+const SignIn = ({ history }) => {
+	const handleLogin = useCallback(
 		async (event) => {
 			event.preventDefault();
 			const { email, password } = event.target.elements;
 			try {
-				await app
-					.auth()
-					.createUserWithEmailAndPassword(
-						email.value,
-						password.value
-					);
-				app.auth().signOut();
 				history.push('/');
 			} catch (error) {
 				alert(error);
@@ -66,41 +58,43 @@ const CreateUser = ({ history }) => {
 		[history]
 	);
 
+	const { currentUser } = useContext(AuthContext);
 	const classes = useStyles();
+
+	if (currentUser) {
+		return <Redirect to="/" />;
+	}
 
 	return (
 		<Container component="main" maxWidth="xs">
 			<CssBaseline />
 			<div className={classes.paper}>
 				<Typography component="h1" variant="h5">
-					Create User
+					Sign in
 				</Typography>
-				<form className={classes.form} onSubmit={handleSignUp}>
-					<Grid container spacing={2}>
-						<Grid item xs={12}>
-							<TextField
-								variant="outlined"
-								required
-								fullWidth
-								id="email"
-								label="Email Address"
-								name="email"
-								autoComplete="email"
-							/>
-						</Grid>
-						<Grid item xs={12}>
-							<TextField
-								variant="outlined"
-								required
-								fullWidth
-								name="password"
-								label="Password"
-								type="password"
-								id="password"
-								autoComplete="current-password"
-							/>
-						</Grid>
-					</Grid>
+				<form className={classes.form} onSubmit={handleLogin}>
+					<TextField
+						variant="outlined"
+						margin="normal"
+						required
+						fullWidth
+						id="email"
+						label="Email Address"
+						name="email"
+						autoComplete="email"
+						autoFocus
+					/>
+					<TextField
+						variant="outlined"
+						margin="normal"
+						required
+						fullWidth
+						name="password"
+						label="Password"
+						type="password"
+						id="password"
+						autoComplete="current-password"
+					/>
 					<Button
 						type="submit"
 						fullWidth
@@ -108,26 +102,25 @@ const CreateUser = ({ history }) => {
 						color="primary"
 						className={classes.submit}
 					>
-						Create User
+						Sign In
 					</Button>
-					<Button fullWidth variant="contained" color="primary">
-						<NavLink
-							to="/"
-							style={{
-								textDecoration: 'none',
-								color: 'white',
-							}}
-						>
-							Cancel
-						</NavLink>
-					</Button>
+					<Grid container>
+						<Grid item xs>
+							<Link
+								href="/forgot-password"
+								variant="body2"
+							>
+								Forgot password?
+							</Link>
+						</Grid>
+					</Grid>
 				</form>
 			</div>
-			<Box mt={5}>
+			<Box mt={8}>
 				<Copyright />
 			</Box>
 		</Container>
 	);
 };
 
-export default withRouter(CreateUser);
+export default withRouter(SignIn);

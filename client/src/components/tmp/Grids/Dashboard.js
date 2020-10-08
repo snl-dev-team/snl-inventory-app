@@ -3,6 +3,7 @@ import SkuCard from '../cards/SkuCard';
 import LotCard from '../cards/LotCard';
 import MatCard from '../cards/MatCard';
 import '../../styles/dashboard.css';
+import sidebar from '../Sidebar/Sidebar';
 
 const LotDashboard = ({ lots }) => {
 	const incomplete = lots.filter((lot) => !lot.completed);

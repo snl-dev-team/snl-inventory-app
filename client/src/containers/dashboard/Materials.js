@@ -6,6 +6,9 @@ import MatsGrid from '../../components/tmp/Grids/MatsGridlist';
 import { data } from '../../test_data/schema.json';
 import Popover from '@material-ui/core/Popover';
 import MatForm from '../../components/tmp/forms/MatForm';
+import { useSelector, useDispatch } from 'redux';
+import { fetchMats } from '../../actions';
+
 const useStyles = makeStyles((theme) => ({
 	margin: {
 		margin: 0,
@@ -21,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const MaterialsDashboard = () => {
+	const dispatch = useDispatch();
 	const classes = useStyles();
 	const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -31,7 +35,9 @@ const MaterialsDashboard = () => {
 	const handleClose = () => {
 		setAnchorEl(null);
 	};
-
+	useEffect(() => {
+		dispatch(fetchMats());
+	});
 	const open = Boolean(anchorEl);
 	const id = open ? 'simple-popover' : undefined;
 

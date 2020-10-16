@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form';
 import { Checkbox, InputLabel, TextField, Button } from '@material-ui/core';
 import ProductNameSelect from './ProductNameSelect';
 import { Link } from 'react-router-dom';
-import app from '../../config/firebase';
 
 const useStyles = makeStyles((theme) => ({
 	root: {

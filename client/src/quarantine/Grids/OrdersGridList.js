@@ -39,7 +39,6 @@ export default function MatsGrid(props) {
 							})}
 						</Paper>
 					</Grid>
-					))}
 				</Grid>
 			</Grid>
 		</Grid>

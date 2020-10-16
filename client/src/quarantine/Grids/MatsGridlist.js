@@ -2,8 +2,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import LotCard from '../cards/LotCard';
-
+import MatCard from '../cards/MatCard';
 const useStyles = makeStyles((theme) => ({
 	root: {
 		flexGrow: 1,
@@ -28,22 +27,18 @@ export default function MatsGrid(props) {
 				<Grid container justify="center" spacing={2}>
 					<Grid>
 						<Paper className={classes.paper}>
-							{lots.map((lot) => {
+							{mats.map((mat, i) => {
 								return (
 									<div
 										className="grid-item-container"
-										key={lot.id}
+										key={i}
 									>
-										<LotCard
-											lot={lot}
-											key={lot.id}
-										/>
+										<MatCard mat={mat} />
 									</div>
 								);
 							})}
 						</Paper>
 					</Grid>
-					))}
 				</Grid>
 			</Grid>
 		</Grid>

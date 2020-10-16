@@ -1,5 +1,4 @@
 import React from 'react';
-import firebase from 'firebase';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Home from './containers/dashboard/Dashboard';
 import SignIn from './containers/SignIn';

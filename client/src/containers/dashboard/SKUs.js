@@ -6,6 +6,8 @@ import SkuGrid from '../../components/tmp/Grids/SkusGridlist';
 import { data } from '../../test_data/schema.json';
 import Popover from '@material-ui/core/Popover';
 import SkuForm from '../../components/tmp/forms/SkuForm';
+import { useSelector, useDispatch } from 'redux';
+import { fetchSkus } from '../../actions';
 
 const useStyles = makeStyles((theme) => ({
 	margin: {
@@ -22,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const SKUsDashboard = () => {
+	const dispatch = useDispatch();
 	const classes = useStyles();
 	const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -35,6 +38,9 @@ const SKUsDashboard = () => {
 
 	const open = Boolean(anchorEl);
 	const id = open ? 'simple-popover' : undefined;
+	useEffect(() => {
+		dispatch(fetchSkus());
+	});
 
 	return (
 		<div>

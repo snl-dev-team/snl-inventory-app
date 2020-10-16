@@ -6,6 +6,8 @@ import LotGrid from '../../components/tmp/Grids/LotsGridList';
 import { data } from '../../test_data/schema.json';
 import Popover from '@material-ui/core/Popover';
 import LotForm from '../../components/tmp/forms/LotForm';
+import { useSelector, useDispatch } from 'redux';
+import { fetchLots } from '../../actions';
 
 const useStyles = makeStyles((theme) => ({
 	margin: {
@@ -22,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const LotsDashboard = () => {
+	const dispatch = useDispatch();
 	const classes = useStyles();
 	const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -32,7 +35,9 @@ const LotsDashboard = () => {
 	const handleClose = () => {
 		setAnchorEl(null);
 	};
-
+	useEffect(() => {
+		dispatch(fetchLots());
+	});
 	const open = Boolean(anchorEl);
 	const id = open ? 'simple-popover' : undefined;
 

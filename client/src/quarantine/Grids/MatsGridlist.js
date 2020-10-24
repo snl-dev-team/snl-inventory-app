@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import MatCard from '../cards/MatCard';
+import { ReactReduxContext } from 'react-redux';
 const useStyles = makeStyles((theme) => ({
 	root: {
 		flexGrow: 1,
@@ -22,25 +23,27 @@ export default function MatsGrid(props) {
 	const { skus, lots, mats } = data;
 
 	return (
-		<Grid container className={classes.root} spacing={2}>
-			<Grid item xs={12}>
-				<Grid container justify="center" spacing={2}>
-					<Grid>
-						<Paper className={classes.paper}>
-							{mats.map((mat, i) => {
-								return (
-									<div
-										className="grid-item-container"
-										key={i}
-									>
-										<MatCard mat={mat} />
-									</div>
-								);
-							})}
-						</Paper>
+		<ReactReduxContext.provider>
+			<Grid container className={classes.root} spacing={2}>
+				<Grid item xs={12}>
+					<Grid container justify="center" spacing={2}>
+						<Grid>
+							<Paper className={classes.paper}>
+								{mats.map((mat, i) => {
+									return (
+										<div
+											className="grid-item-container"
+											key={i}
+										>
+											<MatCard mat={mat} />
+										</div>
+									);
+								})}
+							</Paper>
+						</Grid>
 					</Grid>
 				</Grid>
 			</Grid>
-		</Grid>
+		</ReactReduxContext.provider>
 	);
 }

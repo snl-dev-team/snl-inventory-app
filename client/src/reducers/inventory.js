@@ -1,4 +1,21 @@
-import { FETCH_ORDERS, FETCH_LOTS, FETCH_MATS, FETCH_SKUS } from './types';
+import {
+	FETCH_ORDERS,
+	FETCH_LOTS,
+	FETCH_MATS,
+	FETCH_SKUS,
+	CREATE_LOTS,
+	CREATE_MATS,
+	CREATE_ORDERS,
+	CREATE_SKUS,
+	DELETE_LOTS,
+	DELETE_MATS,
+	DELETE_ORDERS,
+	DELETE_SKUS,
+	UPDATE_LOTS,
+	UPDATE_MATS,
+	UPDATE_ORDERS,
+	UPDATE_SKUS,
+} from '../actions/types';
 
 const INITIAL_STATE = {
 	orders: [],
@@ -7,7 +24,7 @@ const INITIAL_STATE = {
 	skus: [],
 };
 
-export default function inventoryFetchReducer(state = INITIAL_STATE, action) {
+function inventoryReducer(state = INITIAL_STATE, action) {
 	const { type, payload } = action;
 	switch (type) {
 		case `${FETCH_ORDERS}_FULFILLED`:
@@ -39,7 +56,7 @@ export default function inventoryFetchReducer(state = INITIAL_STATE, action) {
 
 		case CREATE_MATS:
 
-		case CREATE_ORDERS:
+		case CREATE_SKUS:
 
 		case DELETE_ORDERS:
 
@@ -61,3 +78,5 @@ export default function inventoryFetchReducer(state = INITIAL_STATE, action) {
 			return state;
 	}
 }
+
+export default inventoryReducer;

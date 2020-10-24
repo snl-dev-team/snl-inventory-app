@@ -1,25 +1,31 @@
 import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Home from './containers/dashboard/Dashboard';
-import SignIn from './containers/SignIn';
 import SignUp from './containers/SignUp';
-import ResetPassword from './containers/ResetPassword';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
+import rootReducer from './reducers';
+const AppWrapper = () => {
+	const store = createStore(rootReducer);
+
+	return (
+		<Provider store={store}>
+			{' '}
+			<App />
+		</Provider>
+	);
+};
 
 const App = () => {
 	return (
 		<Router>
 			<div>
-				<Route exact path="/signin" component={SignIn} />
 				<Route exact path="/signup" component={SignUp} />
-				<Route
-					exact
-					path="/reset-password"
-					component={ResetPassword}
-				/>
+
 				<Route exact path="/" component={Home} />
 			</div>
 		</Router>
 	);
 };
 
-export default App;
+export default AppWrapper;

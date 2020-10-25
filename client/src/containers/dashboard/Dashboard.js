@@ -22,10 +22,11 @@ import CasinoIcon from '@material-ui/icons/Casino';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import GridOnIcon from '@material-ui/icons/GridOn';
 import LocalPharmacyIcon from '@material-ui/icons/LocalPharmacy';
-import LotsDashboard from './Lots';
+import ProductsDashboard from './Products';
 import MaterialsDashboard from './Materials';
 import OrdersDashboard from './Orders';
-import SKUsDashboard from './SKUs';
+import MasterCasesDashboard from './MasterCases';
+import { Route, useHistory } from 'react-router-dom';
 
 const drawerWidth = 240;
 
@@ -82,7 +83,6 @@ const useStyles = makeStyles((theme) => ({
 		alignItems: 'center',
 		justifyContent: 'flex-end',
 		padding: theme.spacing(0, 1),
-		// necessary for content to be below app bar
 		...theme.mixins.toolbar,
 	},
 	content: {
@@ -137,18 +137,11 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-const VIEWS = {
-	LOTS: 'LOTS',
-	MATERIALS: 'MATERIALS',
-	ORDERS: 'ORDERS',
-	SKUS: 'SKUS',
-};
-
 export default function MiniDrawer() {
 	const classes = useStyles();
 	const theme = useTheme();
-	const [open, setOpen] = useState(false);
-	const [view, setView] = useState(VIEWS.MATERIALS);
+	const [open, setOpen] = useState(true);
+	const history = useHistory();
 
 	const handleDrawerOpen = () => {
 		setOpen(true);
@@ -236,7 +229,7 @@ export default function MiniDrawer() {
 					<ListItem
 						button
 						key={'Orders'}
-						onClick={() => setView(VIEWS.ORDERS)}
+						onClick={() => { history.push('/dashboard/orders'); }}
 					>
 						<ListItemIcon>
 							<ShoppingCartIcon />
@@ -245,18 +238,18 @@ export default function MiniDrawer() {
 					</ListItem>
 					<ListItem
 						button
-						key={'Lots'}
-						onClick={() => setView(VIEWS.LOTS)}
+						key={'Products'}
+						onClick={() => { history.push('/dashboard/products'); }}
 					>
 						<ListItemIcon>
 							<CasinoIcon />
 						</ListItemIcon>
-						<ListItemText primary={'Lots'} />
+						<ListItemText primary={'Products'} />
 					</ListItem>
 					<ListItem
 						button
 						key={'Materials'}
-						onClick={() => setView(VIEWS.MATERIALS)}
+						onClick={() => { history.push('/dashboard/materials'); }}
 					>
 						<ListItemIcon>
 							<LocalPharmacyIcon />
@@ -265,22 +258,22 @@ export default function MiniDrawer() {
 					</ListItem>
 					<ListItem
 						button
-						key={'SKUs'}
-						onClick={() => setView(VIEWS.SKUS)}
+						key={'Master Cases'}
+						onClick={() => { history.push('/dashboard/master-cases'); }}
 					>
 						<ListItemIcon>
 							<GridOnIcon />
 						</ListItemIcon>
-						<ListItemText primary={'SKUs'} />
+						<ListItemText primary={'Master Cases'} />
 					</ListItem>
 				</List>
 			</Drawer>
 			<main className={classes.content}>
 				<div className={classes.toolbar} />
-				{view === VIEWS.MATERIALS ? <MaterialsDashboard /> : null}
-				{view === VIEWS.ORDERS ? <OrdersDashboard /> : null}
-				{view === VIEWS.SKUS ? <SKUsDashboard /> : null}
-				{view === VIEWS.LOTS ? <LotsDashboard /> : null}
+				<Route exact path="/dashboard/materials" component={MaterialsDashboard} />
+				<Route exact path="/dashboard/orders" component={OrdersDashboard} />
+				<Route exact path="/dashboard/master-cases" component={MasterCasesDashboard} />
+				<Route exact path="/dashboard/products" component={ProductsDashboard} />
 			</main>
 		</div>
 	);

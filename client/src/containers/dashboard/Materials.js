@@ -2,11 +2,11 @@ import React, { useEffect } from 'react';
 import Fab from '@material-ui/core/Fab';
 import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
-import { useSelector, useDispatch, ReactReduxContext } from 'react-redux';
-import { fetchMats } from '../../actions';
-import Paper from '@material-ui/core/Paper';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchMaterials } from '../../actions/material';
+import MaterialsCard from '../../components/MaterialsCard';
 import Grid from '@material-ui/core/Grid';
-import axios from 'axios';
+
 
 const useStyles = makeStyles((theme) => ({
 	margin: {
@@ -22,49 +22,42 @@ const useStyles = makeStyles((theme) => ({
 	},
 	root: {
 		flexGrow: 1,
-	},
-	paper: {
-		padding: theme.spacing(2),
-		textAlign: 'center',
-		color: theme.palette.text.secondary,
-	},
+	}
 }));
+
+const groupArray = (data, n) => {
+    var group = [];
+    for (var i = 0, j = 0; i < data.length; i++) {
+        if (i >= n && i % n === 0)
+            j++;
+        group[j] = group[j] || [];
+        group[j].push(data[i])
+    }
+    return group;
+}
 
 const MaterialsDashboard = () => {
 	const dispatch = useDispatch();
+
+	useEffect(() => {
+		dispatch(fetchMaterials());
+	}, [dispatch]);
+
+	const materials = useSelector(state => Object.keys(state.materials), (before, after) => Object.keys(before).length === Object.keys(after).length);
+
 	const classes = useStyles();
 
-	const [anchorEl, setAnchorEl] = React.useState(null);
-
-	const handleClick = (event) => {
-		setAnchorEl(event.currentTarget);
-	};
-
-	const handleClose = () => {
-		setAnchorEl(null);
-	};
-	useEffect(() => {
-		dispatch(fetchMats());
-	});
-	const open = Boolean(anchorEl);
-	const id = open ? 'simple-popover' : undefined;
-
 	return (
-		mats.map((mat, i) => {
-			<ReactReduxContext.Provider>
-				{({ store }) => {
-					mats = store.mats;
-				}}
-				<div className={classes.root} key={i}>
-					<Grid container spacing={3}>
-						<Grid item xs>
-							<div>{mat}</div>
-						</Grid>
-					</Grid>
-				</div>
-			</ReactReduxContext.Provider>;
-		}) <
-		(
+		<div>
+			<div className={classes.root}>
+				<Grid container spacing={3} justify="center">
+				{materials.map(_ => <
+							Grid item spacing={3}>
+								<MaterialsCard />
+							</Grid>)
+						}
+				</Grid>
+			</div>
 			<Fab
 				size="medium"
 				color="secondary"
@@ -73,7 +66,7 @@ const MaterialsDashboard = () => {
 			>
 				<AddIcon />
 			</Fab>
-		)
+		</div>
 	);
 };
 export default MaterialsDashboard;

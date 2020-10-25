@@ -5,10 +5,6 @@ import AddIcon from '@material-ui/icons/Add';
 import PropTypes from 'prop-types';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import { FixedSizeList } from 'react-window';
-import { useSelector, useDispatch } from 'react-redux';
-import { fetchLots } from '../../actions';
-import Grid from '@material-ui/core/Grid';
 
 const useStyles = makeStyles((theme) => ({
 	margin: {
@@ -44,54 +40,15 @@ function renderRow(props) {
 	);
 }
 
-const LotsDashboard = () => {
-	const dispatch = useDispatch();
+const ProductsDashboard = () => {
 	const classes = useStyles();
-
-	const [anchorEl, setAnchorEl] = React.useState(null);
-
-	const handleClick = (event) => {
-		setAnchorEl(event.currentTarget);
-	};
-
-	const handleClose = () => {
-		setAnchorEl(null);
-	};
 	useEffect(() => {
-		dispatch(fetchLots());
+		// dispatch(fetchLots());
 	});
-	const open = Boolean(anchorEl);
-	const id = open ? 'simple-popover' : undefined;
 
 	return (
 		<div>
-			<Grid container justify="center" spaceing={10}>
-				<Grid key={1} item>
-					<div className={classes.root}>
-						<FixedSizeList
-							height={700}
-							width={600}
-							itemSize={46}
-							itemCount={200}
-						>
-							{renderRow}
-						</FixedSizeList>
-					</div>
-				</Grid>
-				<Grid key={1} item>
-					<div className={classes.root}>
-						<FixedSizeList
-							height={700}
-							width={600}
-							itemSize={46}
-							itemCount={200}
-						>
-							{renderRow}
-						</FixedSizeList>
-					</div>
-				</Grid>
-			</Grid>
-
+			Lots
 			<div>
 				<Fab
 					size="medium"
@@ -106,4 +63,4 @@ const LotsDashboard = () => {
 	);
 };
 
-export default LotsDashboard;
+export default ProductsDashboard;

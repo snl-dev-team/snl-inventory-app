@@ -2,8 +2,6 @@ import React, { useEffect } from 'react';
 import Fab from '@material-ui/core/Fab';
 import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
-import { useSelector, useDispatch } from 'react-redux';
-import { fetchOrders } from '../../actions';
 
 const useStyles = makeStyles((theme) => ({
 	margin: {
@@ -20,15 +18,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const OrdersDashboard = () => {
-	const dispatch = useDispatch();
 	const classes = useStyles();
 
 	useEffect(() => {
-		dispatch(fetchOrders());
 	});
 
 	return (
 		<div>
+			Orders
 			<Fab
 				size="medium"
 				color="secondary"

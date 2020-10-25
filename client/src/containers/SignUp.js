@@ -48,7 +48,6 @@ const SignUp = ({ history }) => {
 	const handleSignUp = useCallback(
 		async (event) => {
 			event.preventDefault();
-			const { email, password } = event.target.elements;
 			try {
 				history.push('/');
 			} catch (error) {

@@ -1,10 +1,8 @@
 import { combineReducers } from 'redux';
-import inventoryReducer from './inventory';
-
-const red = inventoryReducer;
+import materialReducer from './material';
 
 const rootReducer = combineReducers({
-	inventory: red,
+	materials: materialReducer,
 });
 
 export default rootReducer;

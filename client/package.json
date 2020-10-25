@@ -23,7 +23,9 @@
 		"react-window": "^1.8.5",
 		"reactstrap": "^8.5.1",
 		"redux": "^4.0.5",
-		"redux-promise-middleware": "^6.1.2"
+		"redux-logger": "^3.0.6",
+		"redux-promise-middleware": "^6.1.2",
+		"reselect": "^4.0.0"
 	},
 	"scripts": {
 		"start": "react-scripts start",

@@ -7,7 +7,6 @@ import { fetchMaterials } from '../../actions/material';
 import MaterialsCard from '../../components/MaterialsCard';
 import Grid from '@material-ui/core/Grid';
 
-
 const useStyles = makeStyles((theme) => ({
 	margin: {
 		margin: 0,
@@ -22,19 +21,18 @@ const useStyles = makeStyles((theme) => ({
 	},
 	root: {
 		flexGrow: 1,
-	}
+	},
 }));
 
 const groupArray = (data, n) => {
-    var group = [];
-    for (var i = 0, j = 0; i < data.length; i++) {
-        if (i >= n && i % n === 0)
-            j++;
-        group[j] = group[j] || [];
-        group[j].push(data[i])
-    }
-    return group;
-}
+	var group = [];
+	for (var i = 0, j = 0; i < data.length; i++) {
+		if (i >= n && i % n === 0) j++;
+		group[j] = group[j] || [];
+		group[j].push(data[i]);
+	}
+	return group;
+};
 
 const MaterialsDashboard = () => {
 	const dispatch = useDispatch();
@@ -43,7 +41,11 @@ const MaterialsDashboard = () => {
 		dispatch(fetchMaterials());
 	}, [dispatch]);
 
-	const materials = useSelector(state => Object.keys(state.materials), (before, after) => Object.keys(before).length === Object.keys(after).length);
+	const materials = useSelector(
+		(state) => Object.values(state.materials),
+		(before, after) =>
+			Object.keys(before).length === Object.keys(after).length
+	);
 
 	const classes = useStyles();
 
@@ -51,11 +53,11 @@ const MaterialsDashboard = () => {
 		<div>
 			<div className={classes.root}>
 				<Grid container spacing={3} justify="center">
-				{materials.map(_ => <
-							Grid item spacing={3}>
-								<MaterialsCard />
-							</Grid>)
-						}
+					{materials.map((material) => (
+						<Grid key={material.id}>
+							<MaterialsCard {...material} />
+						</Grid>
+					))}
 				</Grid>
 			</div>
 			<Fab

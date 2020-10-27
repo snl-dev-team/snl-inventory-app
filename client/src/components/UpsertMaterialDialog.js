@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -6,17 +6,29 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import Grid from '@material-ui/core/Grid';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { DIALOG_STATES } from '../constants/dialog';
+import { useHistory, useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
-export default function UpsertMaterialDialog({ state, closeDialog }) {
+export default function UpsertMaterialDialog() {
+	const history = useHistory();
+	const { id } = useParams();
+
 	const handleClose = () => {
-		closeDialog();
+		history.push('/dashboard/materials');
 	};
 
+	const isAdd = id === undefined;
+
+	const [materialName, setMaterialName] = useState('');
+	const [lotNumber, setLotNumber] = useState('');
+	const [count, setCount] = useState(0);
+	const [expirationDate, setExpirationDate] = useState('');
+	const [price, setPrice] = useState(0.0);
+
 	const getTitle = () => {
-		if (state === DIALOG_STATES.SHOW_CREATE) {
+		if (isAdd) {
 			return 'Create Material';
-		} else if (state === DIALOG_STATES.SHOW_EDIT) {
+		} else {
 			return 'Edit Material';
 		}
 	};
@@ -24,7 +36,7 @@ export default function UpsertMaterialDialog({ state, closeDialog }) {
 	return (
 		<div>
 			<Dialog
-				open={state !== DIALOG_STATES.HIDDEN}
+				open={true}
 				onClose={handleClose}
 				aria-labelledby="form-dialog-title"
 			>
@@ -41,9 +53,12 @@ export default function UpsertMaterialDialog({ state, closeDialog }) {
 								label="Material Name"
 								type="text"
 								fullWidth
+								value={materialName}
+								onChange={(e) =>
+									setMaterialName(e.target.value)
+								}
 							/>
 						</Grid>
-
 						<Grid item>
 							<TextField
 								autoFocus
@@ -52,6 +67,10 @@ export default function UpsertMaterialDialog({ state, closeDialog }) {
 								label="Lot Number"
 								type="text"
 								fullWidth
+								value={lotNumber}
+								onChange={(e) =>
+									setLotNumber(e.target.value)
+								}
 							/>
 						</Grid>
 						<Grid item>
@@ -62,6 +81,10 @@ export default function UpsertMaterialDialog({ state, closeDialog }) {
 								label="Count"
 								type="number"
 								fullWidth
+								value={count}
+								onChange={(e) =>
+									setCount(e.target.value)
+								}
 							/>
 						</Grid>
 						<Grid item>
@@ -75,6 +98,10 @@ export default function UpsertMaterialDialog({ state, closeDialog }) {
 								InputLabelProps={{
 									shrink: true,
 								}}
+								value={expirationDate}
+								onChange={(e) =>
+									setExpirationDate(e.target.value)
+								}
 							/>
 						</Grid>
 						<Grid item>
@@ -85,6 +112,10 @@ export default function UpsertMaterialDialog({ state, closeDialog }) {
 								label="Price"
 								type="number"
 								fullWidth
+								value={price}
+								onChange={(e) =>
+									setPrice(e.target.value)
+								}
 							/>
 						</Grid>
 					</Grid>
@@ -94,7 +125,7 @@ export default function UpsertMaterialDialog({ state, closeDialog }) {
 						Cancel
 					</Button>
 					<Button onClick={handleClose} color="primary">
-						Save
+						{isAdd ? 'Create' : 'Save'}
 					</Button>
 				</DialogActions>
 			</Dialog>

@@ -8,7 +8,7 @@ export const DELETE_MATERIAL = 'DELETE_MATERIAL';
 export const createMaterial = () => {
 	return {
 		type: CREATE_MATERIAL,
-		payload: null,
+		payload: axios.get('').then((res) => res),
 	};
 };
 

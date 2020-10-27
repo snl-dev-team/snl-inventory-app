@@ -229,7 +229,9 @@ export default function MiniDrawer() {
 					<ListItem
 						button
 						key={'Orders'}
-						onClick={() => { history.push('/dashboard/orders'); }}
+						onClick={() => {
+							history.push('/dashboard/orders');
+						}}
 					>
 						<ListItemIcon>
 							<ShoppingCartIcon />
@@ -239,7 +241,9 @@ export default function MiniDrawer() {
 					<ListItem
 						button
 						key={'Products'}
-						onClick={() => { history.push('/dashboard/products'); }}
+						onClick={() => {
+							history.push('/dashboard/products');
+						}}
 					>
 						<ListItemIcon>
 							<CasinoIcon />
@@ -249,7 +253,9 @@ export default function MiniDrawer() {
 					<ListItem
 						button
 						key={'Materials'}
-						onClick={() => { history.push('/dashboard/materials'); }}
+						onClick={() => {
+							history.push('/dashboard/materials');
+						}}
 					>
 						<ListItemIcon>
 							<LocalPharmacyIcon />
@@ -259,7 +265,9 @@ export default function MiniDrawer() {
 					<ListItem
 						button
 						key={'Master Cases'}
-						onClick={() => { history.push('/dashboard/master-cases'); }}
+						onClick={() => {
+							history.push('/dashboard/master-cases');
+						}}
 					>
 						<ListItemIcon>
 							<GridOnIcon />
@@ -270,10 +278,25 @@ export default function MiniDrawer() {
 			</Drawer>
 			<main className={classes.content}>
 				<div className={classes.toolbar} />
-				<Route exact path="/dashboard/materials" component={MaterialsDashboard} />
-				<Route exact path="/dashboard/orders" component={OrdersDashboard} />
-				<Route exact path="/dashboard/master-cases" component={MasterCasesDashboard} />
-				<Route exact path="/dashboard/products" component={ProductsDashboard} />
+				<Route
+					path="/dashboard/materials"
+					component={MaterialsDashboard}
+				/>
+				<Route
+					exact
+					path="/dashboard/orders"
+					component={OrdersDashboard}
+				/>
+				<Route
+					exact
+					path="/dashboard/master-cases"
+					component={MasterCasesDashboard}
+				/>
+				<Route
+					exact
+					path="/dashboard/products"
+					component={ProductsDashboard}
+				/>
 			</main>
 		</div>
 	);

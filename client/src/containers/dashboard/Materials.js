@@ -7,7 +7,7 @@ import { fetchMaterials } from '../../actions/material';
 import MaterialsCard from '../../components/MaterialsCard';
 import Grid from '@material-ui/core/Grid';
 import UpsertMaterialDialog from '../../components/UpsertMaterialDialog';
-import { DIALOG_STATES } from '../../constants/dialog';
+import { Route, useHistory } from 'react-router';
 
 const useStyles = makeStyles((theme) => ({
 	margin: {
@@ -28,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
 
 const MaterialsDashboard = () => {
 	const dispatch = useDispatch();
+	const history = useHistory();
 
 	useEffect(() => {
 		dispatch(fetchMaterials());
@@ -54,19 +55,23 @@ const MaterialsDashboard = () => {
 					))}
 				</Grid>
 			</div>
-			<UpsertMaterialDialog
-				state={dialogState}
-				closeDialog={() => setDialogState(DIALOG_STATES.HIDDEN)}
-			/>
 			<Fab
 				size="medium"
 				color="secondary"
 				aria-label="add"
 				className={classes.margin}
-				onClick={() => setDialogState(DIALOG_STATES.SHOW_CREATE)}
+				onClick={() => {
+					history.push('/dashboard/materials/add');
+				}}
 			>
 				<AddIcon />
 			</Fab>
+
+			<Route
+				exact
+				path="/dashboard/materials/add"
+				component={() => <UpsertMaterialDialog type="ADD" />}
+			/>
 		</div>
 	);
 };

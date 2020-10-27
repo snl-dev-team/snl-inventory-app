@@ -39,11 +39,8 @@ export default function RecipeReviewCard({
 	units,
 }) {
 	const classes = useStyles();
-	const [expanded, setExpanded] = React.useState(false);
 
-	const handleExpandClick = () => {
-		setExpanded(!expanded);
-	};
+	const handleExpandClick = () => {};
 
 	return (
 		<Card className={classes.root}>
@@ -60,6 +57,8 @@ export default function RecipeReviewCard({
 					<br />
 					count: {count}
 					<br />
+					experation date: {experation_date}
+					<br />
 					Total value: {price * count}
 					<br />
 					Price per unit: {price}
@@ -68,12 +67,8 @@ export default function RecipeReviewCard({
 			</CardContent>
 			<CardActions disableSpacing>
 				<IconButton
-					className={clsx(classes.expand, {
-						[classes.expandOpen]: expanded,
-					})}
+					className={clsx(classes.expand)}
 					onClick={handleExpandClick}
-					aria-expanded={expanded}
-					aria-label="show more"
 				>
 					<EditIcon />
 				</IconButton>

@@ -7,10 +7,12 @@ import DialogContent from '@material-ui/core/DialogContent';
 import Grid from '@material-ui/core/Grid';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { useHistory, useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { createMaterial } from '../actions/material';
 
 export default function UpsertMaterialDialog() {
 	const history = useHistory();
+	const dispatch = useDispatch();
 	const { id } = useParams();
 
 	const handleClose = () => {
@@ -31,6 +33,18 @@ export default function UpsertMaterialDialog() {
 		} else {
 			return 'Edit Material';
 		}
+	};
+
+	const createMaterialAndClose = () => {
+		const material = {
+			material_name: materialName,
+			number: lotNumber,
+			count: count,
+			expiration_date: expirationDate,
+			price: price,
+		};
+		dispatch(createMaterial(material));
+		history.push('/dashboard/materials');
 	};
 
 	return (
@@ -121,10 +135,18 @@ export default function UpsertMaterialDialog() {
 					</Grid>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={handleClose} color="primary">
+					<Button
+						onClick={() =>
+							history.push('/dashboard/materials')
+						}
+						color="primary"
+					>
 						Cancel
 					</Button>
-					<Button onClick={handleClose} color="primary">
+					<Button
+						onClick={isAdd ? createMaterialAndClose : null}
+						color="primary"
+					>
 						{isAdd ? 'Create' : 'Save'}
 					</Button>
 				</DialogActions>

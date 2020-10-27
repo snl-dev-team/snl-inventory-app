@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function RecipeReviewCard({
 	count,
-	experation_date,
+	expiration_date,
 	number,
 	name,
 	price,
@@ -57,7 +57,7 @@ export default function RecipeReviewCard({
 					<br />
 					count: {count}
 					<br />
-					experation date: {experation_date}
+					experation: {expiration_date}
 					<br />
 					Total value: {price * count}
 					<br />

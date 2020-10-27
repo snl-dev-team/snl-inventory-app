@@ -1,0 +1,5 @@
+export const DIALOG_STATES = {
+	SHOW_CREATE: 'SHOW_ADD',
+	SHOW_EDIT: 'SHOW_EDIT',
+	HIDDEN: 'HIDDEN',
+};

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Fab from '@material-ui/core/Fab';
 import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
@@ -6,6 +6,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchMaterials } from '../../actions/material';
 import MaterialsCard from '../../components/MaterialsCard';
 import Grid from '@material-ui/core/Grid';
+import UpsertMaterialDialog from '../../components/UpsertMaterialDialog';
+import { DIALOG_STATES } from '../../constants/dialog';
 
 const useStyles = makeStyles((theme) => ({
 	margin: {
@@ -24,16 +26,6 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-const groupArray = (data, n) => {
-	var group = [];
-	for (var i = 0, j = 0; i < data.length; i++) {
-		if (i >= n && i % n === 0) j++;
-		group[j] = group[j] || [];
-		group[j].push(data[i]);
-	}
-	return group;
-};
-
 const MaterialsDashboard = () => {
 	const dispatch = useDispatch();
 
@@ -46,6 +38,8 @@ const MaterialsDashboard = () => {
 		(before, after) =>
 			Object.keys(before).length === Object.keys(after).length
 	);
+
+	const [dialogState, setDialogState] = useState(null);
 
 	const classes = useStyles();
 
@@ -60,11 +54,16 @@ const MaterialsDashboard = () => {
 					))}
 				</Grid>
 			</div>
+			<UpsertMaterialDialog
+				state={dialogState}
+				closeDialog={() => setDialogState(DIALOG_STATES.HIDDEN)}
+			/>
 			<Fab
 				size="medium"
 				color="secondary"
 				aria-label="add"
 				className={classes.margin}
+				onClick={() => setDialogState(DIALOG_STATES.SHOW_CREATE)}
 			>
 				<AddIcon />
 			</Fab>

@@ -10,7 +10,7 @@ const App = () => {
 		<Provider store={store}>
 			<Router>
 				<Route exact path="/signup" component={SignUp} />
-				<Route path="/dashboard" component={Dashboard} />
+				<Route path="/" component={Dashboard} />
 			</Router>
 		</Provider>
 	);

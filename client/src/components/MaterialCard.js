@@ -8,6 +8,7 @@ import CardActions from '@material-ui/core/CardActions';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import EditIcon from '@material-ui/icons/Edit';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -30,17 +31,21 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export default function RecipeReviewCard({
+export default function MaterialCard({
 	count,
 	expiration_date,
 	number,
 	name,
 	price,
 	units,
+	id,
 }) {
 	const classes = useStyles();
+	const history = useHistory();
 
-	const handleExpandClick = () => {};
+	const handleClickEdit = () => {
+		history.push('/materials/edit/' + id);
+	};
 
 	return (
 		<Card className={classes.root}>
@@ -68,7 +73,7 @@ export default function RecipeReviewCard({
 			<CardActions disableSpacing>
 				<IconButton
 					className={clsx(classes.expand)}
-					onClick={handleExpandClick}
+					onClick={handleClickEdit}
 				>
 					<EditIcon />
 				</IconButton>

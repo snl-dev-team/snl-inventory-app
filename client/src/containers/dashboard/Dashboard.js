@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { makeStyles, useTheme, fade } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -25,8 +25,10 @@ import LocalPharmacyIcon from '@material-ui/icons/LocalPharmacy';
 import ProductsDashboard from './Products';
 import MaterialsDashboard from './Materials';
 import OrdersDashboard from './Orders';
-import MasterCasesDashboard from './MasterCases';
+import CasesDashboard from './Cases';
 import { Route, useHistory } from 'react-router-dom';
+import { fetchMaterials } from '../../actions/material';
+import { useDispatch } from 'react-redux';
 
 const drawerWidth = 240;
 
@@ -142,6 +144,7 @@ export default function MiniDrawer() {
 	const theme = useTheme();
 	const [open, setOpen] = useState(true);
 	const history = useHistory();
+	const dispatch = useDispatch();
 
 	const handleDrawerOpen = () => {
 		setOpen(true);
@@ -150,6 +153,10 @@ export default function MiniDrawer() {
 	const handleDrawerClose = () => {
 		setOpen(false);
 	};
+
+	useEffect(() => {
+		dispatch(fetchMaterials());
+	}, [dispatch]);
 
 	return (
 		<div className={classes.root}>
@@ -230,7 +237,7 @@ export default function MiniDrawer() {
 						button
 						key={'Orders'}
 						onClick={() => {
-							history.push('/dashboard/orders');
+							history.push('/orders');
 						}}
 					>
 						<ListItemIcon>
@@ -242,7 +249,7 @@ export default function MiniDrawer() {
 						button
 						key={'Products'}
 						onClick={() => {
-							history.push('/dashboard/products');
+							history.push('/products');
 						}}
 					>
 						<ListItemIcon>
@@ -254,7 +261,7 @@ export default function MiniDrawer() {
 						button
 						key={'Materials'}
 						onClick={() => {
-							history.push('/dashboard/materials');
+							history.push('/materials');
 						}}
 					>
 						<ListItemIcon>
@@ -266,35 +273,35 @@ export default function MiniDrawer() {
 						button
 						key={'Master Cases'}
 						onClick={() => {
-							history.push('/dashboard/master-cases');
+							history.push('/cases');
 						}}
 					>
 						<ListItemIcon>
 							<GridOnIcon />
 						</ListItemIcon>
-						<ListItemText primary={'Master Cases'} />
+						<ListItemText primary={'Cases'} />
 					</ListItem>
 				</List>
 			</Drawer>
 			<main className={classes.content}>
 				<div className={classes.toolbar} />
 				<Route
-					path="/dashboard/materials"
+					path="/materials"
 					component={MaterialsDashboard}
 				/>
 				<Route
 					exact
-					path="/dashboard/orders"
+					path="/orders"
 					component={OrdersDashboard}
 				/>
 				<Route
 					exact
-					path="/dashboard/master-cases"
-					component={MasterCasesDashboard}
+					path="/cases"
+					component={CasesDashboard}
 				/>
 				<Route
 					exact
-					path="/dashboard/products"
+					path="/products"
 					component={ProductsDashboard}
 				/>
 			</main>

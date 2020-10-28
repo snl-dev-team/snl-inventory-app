@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Fab from '@material-ui/core/Fab';
 import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchMaterials } from '../../actions/material';
-import MaterialsCard from '../../components/MaterialsCard';
+import { useSelector } from 'react-redux';
+import MaterialCard from '../../components/MaterialCard';
 import Grid from '@material-ui/core/Grid';
 import UpsertMaterialDialog from '../../components/UpsertMaterialDialog';
 import { Route, useHistory } from 'react-router';
@@ -27,20 +26,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const MaterialsDashboard = () => {
-	const dispatch = useDispatch();
 	const history = useHistory();
-
-	useEffect(() => {
-		dispatch(fetchMaterials());
-	}, [dispatch]);
 
 	const materials = useSelector(
 		(state) => Object.values(state.materials),
 		(before, after) =>
 			Object.keys(before).length === Object.keys(after).length
 	);
-
-	const [dialogState, setDialogState] = useState(null);
 
 	const classes = useStyles();
 
@@ -50,7 +42,7 @@ const MaterialsDashboard = () => {
 				<Grid container spacing={3} justify="center">
 					{materials.map((material) => (
 						<Grid key={material.id}>
-							<MaterialsCard {...material} />
+							<MaterialCard {...material} />
 						</Grid>
 					))}
 				</Grid>
@@ -61,16 +53,20 @@ const MaterialsDashboard = () => {
 				aria-label="add"
 				className={classes.margin}
 				onClick={() => {
-					history.push('/dashboard/materials/add');
+					history.push('/materials/add');
 				}}
 			>
 				<AddIcon />
 			</Fab>
 
 			<Route
-				exact
-				path="/dashboard/materials/add"
-				component={() => <UpsertMaterialDialog type="ADD" />}
+				path="/materials/add"
+				component={() => <UpsertMaterialDialog />}
+			/>
+
+			<Route
+				path="/materials/edit/:id"
+				component={() => <UpsertMaterialDialog />}
 			/>
 		</div>
 	);

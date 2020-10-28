@@ -11,7 +11,6 @@ export const createMaterial = (material) => {
 		payload: axios
 			.post(
 				'https://d8rm46rk5l.execute-api.us-east-1.amazonaws.com/default/cloud9-snl-inventory-app-createMaterialLot-DEBOCMA20YU4',
-
 				material,
 				{
 					headers: {
@@ -33,3 +32,20 @@ export const fetchMaterials = () => {
 			.then((res) => res.data.data),
 	};
 };
+
+export const updateMaterial = (material) => {
+	return {
+		type: UPDATE_MATERIAL,
+		payload: axios
+			.post(
+				'https://ks76pgxxa5.execute-api.us-east-1.amazonaws.com/default/cloud9-snl-inventory-app-updateMaterialLot-ZPNM1SI9HM44',
+				material,
+				{
+					headers: {
+						'content-type': 'application/json',
+					},
+				}
+			)
+			.then((res) => res.data.data),
+	};
+} 

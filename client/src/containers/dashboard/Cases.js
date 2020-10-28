@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-const MasterCasesDashboard = () => {
+const CasesDashboard = () => {
 	const classes = useStyles();
 
 
@@ -40,4 +40,4 @@ const MasterCasesDashboard = () => {
 	);
 };
 
-export default MasterCasesDashboard;
+export default CasesDashboard;

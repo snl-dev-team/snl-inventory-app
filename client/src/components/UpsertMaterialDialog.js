@@ -8,7 +8,7 @@ import Grid from '@material-ui/core/Grid';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { useHistory, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { createMaterial } from '../actions/material';
+import { createMaterial, updateMaterial } from '../actions/material';
 
 export default function UpsertMaterialDialog() {
 	const history = useHistory();
@@ -16,16 +16,18 @@ export default function UpsertMaterialDialog() {
 	const { id } = useParams();
 
 	const handleClose = () => {
-		history.push('/dashboard/materials');
+		history.push('/materials');
 	};
 
 	const isAdd = id === undefined;
 
-	const [materialName, setMaterialName] = useState('');
-	const [lotNumber, setLotNumber] = useState('');
-	const [count, setCount] = useState(0);
-	const [expirationDate, setExpirationDate] = useState('');
-	const [price, setPrice] = useState(0.0);
+	const material = useSelector(state => state.materials[id]);
+
+	const [materialName, setMaterialName] = useState(material !== undefined ? material.name : '');
+	const [lotNumber, setLotNumber] = useState(material !== undefined ? material.number : '');
+	const [count, setCount] = useState(material !== undefined ? material.count : 0);
+	const [expirationDate, setExpirationDate] = useState(material !== undefined ? material.expiration_date : '');
+	const [price, setPrice] = useState(material !== undefined ? material.price : 0.0);
 
 	const getTitle = () => {
 		if (isAdd) {
@@ -36,15 +38,25 @@ export default function UpsertMaterialDialog() {
 	};
 
 	const createMaterialAndClose = () => {
-		const material = {
+		dispatch(createMaterial({
 			material_name: materialName,
 			number: lotNumber,
 			count: count,
 			expiration_date: expirationDate,
 			price: price,
-		};
-		dispatch(createMaterial(material));
-		history.push('/dashboard/materials');
+		}));
+		history.push('/materials');
+	};
+
+	const updateMaterialAndClose = () => {
+		dispatch(updateMaterial({
+			material_name: materialName,
+			number: lotNumber,
+			count: count,
+			expiration_date: expirationDate,
+			price: price,
+		}));
+		history.push('/materials');
 	};
 
 	return (
@@ -137,7 +149,7 @@ export default function UpsertMaterialDialog() {
 				<DialogActions>
 					<Button
 						onClick={() =>
-							history.push('/dashboard/materials')
+							history.push('/materials')
 						}
 						color="primary"
 					>

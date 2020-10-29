@@ -9,10 +9,14 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import EditIcon from '@material-ui/icons/Edit';
 import { useHistory } from 'react-router-dom';
+import DeleteIcon from '@material-ui/icons/Delete';
+import { deleteMaterial } from '../actions/material';
+import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
-		maxWidth: 345,
+		maxWidth: 500,
+		width: 400,
 		margin: 5,
 	},
 	media: {
@@ -42,9 +46,13 @@ export default function MaterialCard({
 }) {
 	const classes = useStyles();
 	const history = useHistory();
+	const dispatch = useDispatch();
 
 	const handleClickEdit = () => {
 		history.push('/materials/edit/' + id);
+	};
+	const handleClickDelete = () => {
+		dispatch(deleteMaterial(id));
 	};
 
 	return (
@@ -71,6 +79,9 @@ export default function MaterialCard({
 				</Typography>
 			</CardContent>
 			<CardActions disableSpacing>
+				<IconButton onClick={handleClickDelete}>
+					<DeleteIcon />
+				</IconButton>
 				<IconButton
 					className={clsx(classes.expand)}
 					onClick={handleClickEdit}

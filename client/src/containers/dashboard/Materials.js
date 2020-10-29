@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Fab from '@material-ui/core/Fab';
 import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
-import { useSelector } from 'react-redux';
-import MaterialCard from '../../components/MaterialCard';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchMaterials } from '../../actions/material';
 import Grid from '@material-ui/core/Grid';
-import UpsertMaterialDialog from '../../components/UpsertMaterialDialog';
 import { Route, useHistory } from 'react-router';
+import MaterialsCard from '../../components/MaterialCard';
+import UpsertMaterialDialog from '../../components/UpsertMaterialDialog';
 
 const useStyles = makeStyles((theme) => ({
 	margin: {
@@ -26,12 +27,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const MaterialsDashboard = () => {
+	const dispatch = useDispatch();
 	const history = useHistory();
+
+	useEffect(() => {
+		dispatch(fetchMaterials());
+	}, [dispatch]);
 
 	const materials = useSelector(
 		(state) => Object.values(state.materials),
-		(before, after) =>
-			Object.keys(before).length === Object.keys(after).length
+		(before, after) => JSON.stringify(before) === JSON.stringify(after)
 	);
 
 	const classes = useStyles();
@@ -42,7 +47,7 @@ const MaterialsDashboard = () => {
 				<Grid container spacing={3} justify="center">
 					{materials.map((material) => (
 						<Grid key={material.id}>
-							<MaterialCard {...material} />
+							<MaterialsCard {...material} />
 						</Grid>
 					))}
 				</Grid>
@@ -60,11 +65,13 @@ const MaterialsDashboard = () => {
 			</Fab>
 
 			<Route
+				exact
 				path="/materials/add"
 				component={() => <UpsertMaterialDialog />}
 			/>
 
 			<Route
+				exact
 				path="/materials/edit/:id"
 				component={() => <UpsertMaterialDialog />}
 			/>

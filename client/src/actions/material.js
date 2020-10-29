@@ -18,7 +18,8 @@ export const createMaterial = (material) => {
 					},
 				}
 			)
-			.then((res) => res.data.id),
+			.then((res) => res.data),
+		meta: { material },
 	};
 };
 
@@ -36,10 +37,26 @@ export const fetchMaterials = () => {
 export const updateMaterial = (material) => {
 	return {
 		type: UPDATE_MATERIAL,
+		payload: axios.post(
+			'https://ks76pgxxa5.execute-api.us-east-1.amazonaws.com/default/cloud9-snl-inventory-app-updateMaterialLot-ZPNM1SI9HM44',
+			material,
+			{
+				headers: {
+					'content-type': 'application/json',
+				},
+			}
+		),
+		meta: { material },
+	};
+};
+
+export const deleteMaterial = (id) => {
+	return {
+		type: DELETE_MATERIAL,
 		payload: axios
 			.post(
-				'https://ks76pgxxa5.execute-api.us-east-1.amazonaws.com/default/cloud9-snl-inventory-app-updateMaterialLot-ZPNM1SI9HM44',
-				material,
+				'https://z74y2xyso0.execute-api.us-east-1.amazonaws.com/default/cloud9-snl-inventory-app-deleteMaterial-G14W036K7GL6',
+				{ id },
 				{
 					headers: {
 						'content-type': 'application/json',
@@ -47,5 +64,6 @@ export const updateMaterial = (material) => {
 				}
 			)
 			.then((res) => res.data.data),
+		meta: { id },
 	};
-} 
+};

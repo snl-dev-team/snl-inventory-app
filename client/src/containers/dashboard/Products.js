@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Fab from '@material-ui/core/Fab';
 import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
@@ -42,13 +42,9 @@ function renderRow(props) {
 
 const ProductsDashboard = () => {
 	const classes = useStyles();
-	useEffect(() => {
-		// dispatch(fetchLots());
-	});
 
 	return (
 		<div>
-			Lots
 			<div>
 				<Fab
 					size="medium"

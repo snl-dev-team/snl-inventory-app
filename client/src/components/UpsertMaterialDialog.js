@@ -9,6 +9,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { useHistory, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { createMaterial, updateMaterial } from '../actions/material';
+import { UNIT_TYPES } from '../constants/units';
 
 export default function UpsertMaterialDialog() {
 	const history = useHistory();
@@ -21,13 +22,26 @@ export default function UpsertMaterialDialog() {
 
 	const isAdd = id === undefined;
 
-	const material = useSelector(state => state.materials[id]);
+	const material = useSelector((state) => state.materials[id]);
 
-	const [materialName, setMaterialName] = useState(material !== undefined ? material.name : '');
-	const [lotNumber, setLotNumber] = useState(material !== undefined ? material.number : '');
-	const [count, setCount] = useState(material !== undefined ? material.count : 0);
-	const [expirationDate, setExpirationDate] = useState(material !== undefined ? material.expiration_date : '');
-	const [price, setPrice] = useState(material !== undefined ? material.price : 0.0);
+	const [name, setName] = useState(
+		material !== undefined ? material.name : ''
+	);
+	const [number, setNumber] = useState(
+		material !== undefined ? material.number : ''
+	);
+	const [count, setCount] = useState(
+		material !== undefined ? material.count : 0
+	);
+	const [expirationDate, setExpirationDate] = useState(
+		material !== undefined ? material.expiration_date : ''
+	);
+	const [price, setPrice] = useState(
+		material !== undefined ? material.price : 0.0
+	);
+	const [units, setUnits] = useState(
+		material !== undefined ? material.units : 'unit'
+	);
 
 	const getTitle = () => {
 		if (isAdd) {
@@ -38,30 +52,38 @@ export default function UpsertMaterialDialog() {
 	};
 
 	const createMaterialAndClose = () => {
-		dispatch(createMaterial({
-			material_name: materialName,
-			number: lotNumber,
-			count: count,
-			expiration_date: expirationDate,
-			price: price,
-		}));
+		dispatch(
+			createMaterial({
+				name,
+				number,
+				count,
+				expiration_date: expirationDate,
+				price,
+				units,
+			})
+		);
 		history.push('/materials');
 	};
 
 	const updateMaterialAndClose = () => {
-		dispatch(updateMaterial({
-			material_name: materialName,
-			number: lotNumber,
-			count: count,
-			expiration_date: expirationDate,
-			price: price,
-		}));
+		dispatch(
+			updateMaterial({
+				name,
+				number,
+				count,
+				expiration_date: expirationDate,
+				price,
+				units,
+				id,
+			})
+		);
 		history.push('/materials');
 	};
 
 	return (
 		<div>
 			<Dialog
+				width="lg"
 				open={true}
 				onClose={handleClose}
 				aria-labelledby="form-dialog-title"
@@ -79,9 +101,9 @@ export default function UpsertMaterialDialog() {
 								label="Material Name"
 								type="text"
 								fullWidth
-								value={materialName}
+								value={name}
 								onChange={(e) =>
-									setMaterialName(e.target.value)
+									setName(e.target.value)
 								}
 							/>
 						</Grid>
@@ -93,9 +115,9 @@ export default function UpsertMaterialDialog() {
 								label="Lot Number"
 								type="text"
 								fullWidth
-								value={lotNumber}
+								value={number}
 								onChange={(e) =>
-									setLotNumber(e.target.value)
+									setNumber(e.target.value)
 								}
 							/>
 						</Grid>
@@ -144,19 +166,46 @@ export default function UpsertMaterialDialog() {
 								}
 							/>
 						</Grid>
+						<Grid item>
+							<TextField
+								id="standard-select-currency-native"
+								select
+								label="Unit"
+								value={units}
+								onChange={(e) =>
+									setUnits(e.target.value)
+								}
+								SelectProps={{
+									native: true,
+								}}
+							>
+								{Object.values(UNIT_TYPES).map(
+									(option) => (
+										<option
+											key={option}
+											value={option}
+										>
+											{option}
+										</option>
+									)
+								)}
+							</TextField>
+						</Grid>
 					</Grid>
 				</DialogContent>
 				<DialogActions>
 					<Button
-						onClick={() =>
-							history.push('/materials')
-						}
+						onClick={() => history.push('/materials')}
 						color="primary"
 					>
 						Cancel
 					</Button>
 					<Button
-						onClick={isAdd ? createMaterialAndClose : null}
+						onClick={
+							isAdd
+								? createMaterialAndClose
+								: updateMaterialAndClose
+						}
 						color="primary"
 					>
 						{isAdd ? 'Create' : 'Save'}

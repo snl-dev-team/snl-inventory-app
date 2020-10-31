@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "mkdir build && zip ./build/fetchMaterials.zip fetchMaterials/index.js"
+    "build": "mkdir -p build && zip -r -j ./build/fetchMaterials.zip fetchMaterials/index.js"
   },
   "keywords": [],
   "author": "",

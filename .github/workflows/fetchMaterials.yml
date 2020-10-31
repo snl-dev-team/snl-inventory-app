@@ -22,18 +22,18 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           cd server
-          pip install -r requirements.txt -t ./${{ matrix.function_name }}
+          pip install -r requirements.txt -t ./${{ matrix.function-name }}
       - name: zip
         run: |
           cd server
           mkdir build
-          zip -r -j ./build/${{ matrix.function_name }}.zip ${{ matrix.function_name }}/lambda_function.py
+          zip -r -j ./build/${{ matrix.function-name }}.zip ${{ matrix.function-name }}/lambda_function.py
       - name: deploy
         uses: appleboy/lambda-action@master
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: us-east-1
-          function_name: ${{ matrix.function_name }}
-          zip_file: server/build/${{ matrix.function_name }}.zip
+          function_name: ${{ matrix.function-name }}
+          zip_file: server/build/${{ matrix.function-name }}.zip
           runtime: python3.8

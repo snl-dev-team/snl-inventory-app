@@ -1,47 +1,51 @@
 import {
-	FETCH_MATERIALS,
-	CREATE_MATERIAL,
-	UPDATE_MATERIAL,
-	DELETE_MATERIAL,
+  FETCH_MATERIALS,
+  CREATE_MATERIAL,
+  UPDATE_MATERIAL,
+  DELETE_MATERIAL,
 } from '../actions/material';
 
 const materialReducer = (state = {}, action) => {
-	const { type, payload, meta } = action;
+  const { type, payload, meta } = action;
 
-	switch (type) {
-		case `${FETCH_MATERIALS}_FULFILLED`:
-			return {
-				...state,
-				...payload.reduce((acc, curr) => {
-					acc[curr.id] = curr;
-					return acc;
-				}, {}),
-			};
+  switch (type) {
+    case `${FETCH_MATERIALS}_FULFILLED`:
+      return {
+        ...state,
+        ...payload.reduce((acc, curr) => {
+          acc[curr.id] = curr;
+          return acc;
+        }, {}),
+      };
 
-		case `${CREATE_MATERIAL}_FULFILLED`:
-			const { material: materialToCreate } = meta;
+    case `${CREATE_MATERIAL}_FULFILLED`: {
+      const { material } = meta;
 
-			return {
-				...state,
-				[payload.id]: { id: payload.id, ...materialToCreate },
-			};
+      return {
+        ...state,
+        [payload.id]: { id: payload.id, ...material },
+      };
+    }
 
-		case `${UPDATE_MATERIAL}_FULFILLED`:
-			const { material: materialToUpdate } = meta;
+    case `${UPDATE_MATERIAL}_FULFILLED`: {
+      const { material } = meta;
 
-			return {
-				...state,
-				[materialToUpdate.id]: materialToUpdate,
-			};
+      return {
+        ...state,
+        [material.id]: material,
+      };
+    }
 
-		case `${DELETE_MATERIAL}_FULFILLED`:
-			const { id: idToDelete } = meta;
-			let deleteState = Object.assign(state);
-			delete deleteState[idToDelete];
-			return deleteState;
-		default:
-			return state;
-	}
+    case `${DELETE_MATERIAL}_FULFILLED`: {
+      const { id } = meta;
+      const deleteState = Object.assign(state);
+      delete deleteState[id];
+      return deleteState;
+    }
+
+    default:
+      return state;
+  }
 };
 
 export default materialReducer;

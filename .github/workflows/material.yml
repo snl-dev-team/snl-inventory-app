@@ -30,6 +30,7 @@ jobs:
         run: |
           cd server
           mv ./material.py ./build/material.py
+          mv ./db_client.py ./build/db_client.py
           cd build
           zip -r ./../build.zip *
 

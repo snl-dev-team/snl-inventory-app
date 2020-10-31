@@ -27,7 +27,8 @@ jobs:
         run: |
           cd server
           mkdir build
-          zip -r -D ./build/${{ matrix.function-name }}.zip ${{ matrix.function-name }}/*
+          cd ${{ matrix.function-name }}
+          zip -r ./../build/${{ matrix.function-name }}.zip .
       - name: deploy
         uses: appleboy/lambda-action@master
         with:

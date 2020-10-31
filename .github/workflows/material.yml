@@ -8,16 +8,16 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8]
         function-name:
           [fetchMaterials, updateMaterial, deleteMaterial, createMaterial]
 
     steps:
       - uses: actions/checkout@master
-      - name: Set up Python ${{ matrix.python-version }}
+
+      - name: Set up Python 3.8
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: 3.8
 
       - name: Install dependencies
         run: |
@@ -25,12 +25,14 @@ jobs:
           cd server
           mkdir build
           pip install -r requirements.txt -t ./build
+
       - name: zip
         run: |
           cd server
           mv ./material.py ./build/material.py
           cd build
           zip -r ./../build.zip *
+
       - name: deploy
         uses: appleboy/lambda-action@master
         with:

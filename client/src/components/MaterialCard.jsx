@@ -77,7 +77,7 @@ export default function MaterialCard({
           {' '}
           {count}
           <br />
-          experation:
+          expiration:
           {' '}
           {expirationDate}
           <br />

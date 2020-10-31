@@ -1,0 +1,1 @@
+mysql --user=admin --password -h snl-severless-db.cluster-ci6qe6nr0dd7.us-east-1.rds.amazonaws.com

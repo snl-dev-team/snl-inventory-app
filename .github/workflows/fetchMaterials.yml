@@ -1,8 +1,8 @@
-name: Deploy fetchMaterials to Lambda
+name: Deploy Lambda Functions
 on: [push]
 jobs:
   deploy_source:
-    name: build and deploy lambda
+    name: Fetch Materials
     strategy:
       matrix:
         node-version: [12.x]
@@ -13,22 +13,18 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: npm install and build
+      - name: Install and build
         run: |
           cd server
           npm ci
-          npm run build --if-present
+          npm run build
         env:
           CI: true
-      - name: zip
-        uses: montudor/action-zip@v0.1.0
-        with:
-          args: zip -qq -r ./bundle.zip ./server/fetchMaterials
-      - name: default deploy
+      - name: Deploy
         uses: appleboy/lambda-action@master
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: us-east-1
           function_name: fetchMaterials
-          zip_file: bundle.zip
+          zip_file: ./build/fetchMaterials.zip

@@ -1,4 +1,4 @@
-name: deploy to lambda
+name: Deploy fetchMaterials to Lambda
 on: [push]
 jobs:
   deploy_source:
@@ -15,6 +15,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: npm install and build
         run: |
+          cd server
           npm ci
           npm run build --if-present
         env:

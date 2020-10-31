@@ -30,7 +30,7 @@ jobs:
           cd server
           mv ./material.py ./build/material.py
           cd build
-          zip -r -j ./../build.zip *
+          zip -r ./../build.zip *
       - name: deploy
         uses: appleboy/lambda-action@master
         with:

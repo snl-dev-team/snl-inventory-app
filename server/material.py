@@ -30,7 +30,7 @@ COLUMNS = [
 ]
 
 
-def create(event, context):
+def createMaterial(event, context):
 
     headers = {
         'Access-Control-Allow-Origin': '*',
@@ -84,7 +84,7 @@ def create(event, context):
         }
 
 
-def fetch(event, context):
+def fetchMaterials(event, context):
 
     headers = {
         'Access-Control-Allow-Origin': '*',
@@ -125,7 +125,7 @@ def fetch(event, context):
         }
 
 
-def update(event, context):
+def updateMaterial(event, context):
 
     headers = {
         'Access-Control-Allow-Origin': '*',
@@ -168,7 +168,7 @@ def update(event, context):
         }
 
 
-def delete(event, context):
+def deleteMaterial(event, context):
 
     headers = {
         'Access-Control-Allow-Origin': '*',

@@ -42,3 +42,4 @@ jobs:
           function_name: ${{ matrix.function-name }}
           zip_file: server/build.zip
           runtime: python3.8
+          handler: material.${{ matrix.function-name }}

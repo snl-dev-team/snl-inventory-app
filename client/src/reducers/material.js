@@ -13,7 +13,17 @@ const materialReducer = (state = {}, action) => {
       return {
         ...state,
         ...payload.reduce((acc, curr) => {
-          acc[curr.id] = curr;
+          acc[curr.id] = {
+            id: curr.id,
+            name: curr.name,
+            number: curr.number,
+            count: curr.count,
+            expirationDate: curr.expiration_date,
+            price: curr.price,
+            units: curr.units,
+            dateCreated: curr.date_created,
+            dateModified: curr.date_modified,
+          };
           return acc;
         }, {}),
       };

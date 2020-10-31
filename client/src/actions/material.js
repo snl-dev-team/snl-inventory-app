@@ -10,7 +10,14 @@ export const createMaterial = (material) => ({
   payload: axios
     .post(
       'https://4vm66rtqc6.execute-api.us-east-1.amazonaws.com/default/createMaterial',
-      material,
+      {
+        name: material.name,
+        number: material.number,
+        count: material.count,
+        expiration_date: material.expirationDate,
+        price: material.price,
+        units: material.units,
+      },
       {
         headers: {
           'content-type': 'application/json',
@@ -34,7 +41,15 @@ export const updateMaterial = (material) => ({
   type: UPDATE_MATERIAL,
   payload: axios.post(
     'https://a87tec5p2k.execute-api.us-east-1.amazonaws.com/default/updateMaterial',
-    material,
+    {
+      id: material.id,
+      name: material.name,
+      number: material.number,
+      count: material.count,
+      expiration_date: material.expirationDate,
+      price: material.price,
+      units: material.units,
+    },
     {
       headers: {
         'content-type': 'application/json',

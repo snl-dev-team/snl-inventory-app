@@ -109,7 +109,7 @@ export default function MaterialCard({
 MaterialCard.propTypes = {
   count: PropTypes.number.isRequired,
   expirationDate: PropTypes.string.isRequired,
-  number: PropTypes.number.isRequired,
+  number: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   price: PropTypes.number.isRequired,
   units: PropTypes.string.isRequired,

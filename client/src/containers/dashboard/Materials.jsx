@@ -44,7 +44,7 @@ const MaterialsDashboard = () => {
   return (
     <div>
       <div className={classes.root}>
-        <Grid container spacing={3} justify="left">
+        <Grid container spacing={3}>
           {materials.map((material) => (
             <Grid key={material.id}>
               <MaterialsCard

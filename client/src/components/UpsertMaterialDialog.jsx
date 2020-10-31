@@ -34,7 +34,7 @@ export default function UpsertMaterialDialog() {
     material !== undefined ? material.count : 0,
   );
   const [expirationDate, setExpirationDate] = useState(
-    material !== undefined ? material.expiration_date : '',
+    material !== undefined ? material.expirationDate : '',
   );
   const [price, setPrice] = useState(
     material !== undefined ? material.price : 0.0,
@@ -52,31 +52,26 @@ export default function UpsertMaterialDialog() {
     return 'Edit Material';
   };
 
+  const payload = {
+    id: parseInt(id, 10),
+    name,
+    number,
+    count,
+    expirationDate,
+    price,
+    units,
+  };
+
   const createMaterialAndClose = () => {
     dispatch(
-      createMaterial({
-        name,
-        number,
-        count,
-        expiration_date: expirationDate,
-        price,
-        units,
-      }),
+      createMaterial(payload),
     );
     history.push('/materials');
   };
 
   const updateMaterialAndClose = () => {
     dispatch(
-      updateMaterial({
-        name,
-        number,
-        count,
-        expiration_date: expirationDate,
-        price,
-        units,
-        id,
-      }),
+      updateMaterial(payload),
     );
     history.push('/materials');
   };
@@ -127,7 +122,7 @@ export default function UpsertMaterialDialog() {
                 type="number"
                 fullWidth
                 value={count}
-                onChange={(e) => setCount(e.target.value)}
+                onChange={(e) => setCount(parseInt(e.target.value, 10))}
               />
             </Grid>
             <Grid item>
@@ -154,7 +149,7 @@ export default function UpsertMaterialDialog() {
                 type="number"
                 fullWidth
                 value={price}
-                onChange={(e) => setPrice(e.target.value)}
+                onChange={(e) => setPrice(parseInt(e.target.value, 10))}
               />
             </Grid>
             <Grid item>

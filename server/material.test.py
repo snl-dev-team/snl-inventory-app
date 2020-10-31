@@ -11,7 +11,7 @@ with open('./database_credentials.json') as f:
 class TestMaterial(unittest.TestCase):
 
     def test_fetch(self):
-        material.fetch(None, None)
+        material.fetchMaterials(None, None)
 
     def setUp(self):
         os.environ['DATABASE_SECRETS_ARN'] = db_credentials['databaseSecretsArn']

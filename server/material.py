@@ -119,7 +119,7 @@ def fetchMaterials(event, context):
 
     except Exception as e:
         return {
-            'statusCode': 500,
+            'statusCode': 400,
             'body': json.dumps({'message': str(e)}),
             'headers': headers
         }
@@ -162,7 +162,7 @@ def updateMaterial(event, context):
 
     except Exception as e:
         return {
-            'statusCode': 500,
+            'statusCode': 400,
             "body": json.dumps({'message': str(e)}),
             'headers': headers
         }

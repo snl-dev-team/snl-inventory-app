@@ -8,17 +8,19 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@master
-      - uses: chrislennon/action-aws-cli@v1.1
-      - name: Deploy code to Lambda
+      - name: zip
         run: |
           cd server
           mkdir build
           zip -r -j ./build/fetchMaterials.zip fetchMaterials/lambda_function.py
-          aws lambda update-function-code --function-name fetchMaterials --zip-file fileb://build/fetchMaterials.zip
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: "us-east-2"
+      - name: deploy
+        uses: appleboy/lambda-action@master
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: ${{ secrets.AWS_REGION }}
+          function_name: fetchMaterials
+          zip_file: server/build/fetchMaterials.zip
+          runtime: python3.8

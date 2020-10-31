@@ -44,3 +44,4 @@ jobs:
           zip_file: server/build.zip
           runtime: python3.8
           handler: material.${{ matrix.function-name }}
+          role: arn:aws:iam::595723023717:role/snl-inventory-app-lambda

@@ -27,4 +27,4 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: us-east-1
           function_name: fetchMaterials
-          zip_file: ./build/fetchMaterials.zip
+          zip_file: ./server/build/fetchMaterials.zip

@@ -1,4 +1,4 @@
-name: Deploy fetchMaterials
+name: Deploy Materials Lambda
 on:
   push:
     branches:
@@ -9,7 +9,8 @@ jobs:
     strategy:
       matrix:
         python-version: [3.8]
-        function-name: [fetchMaterials]
+        function-name:
+          [fetchMaterials, updateMaterial, deleteMaterial, createMaterial]
 
     steps:
       - uses: actions/checkout@master
@@ -22,13 +23,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           cd server
-          pip install -r requirements.txt -t ./${{ matrix.function-name }}
+          mkdir build
+          pip install -r requirements.txt -t ./build
       - name: zip
         run: |
           cd server
-          mkdir build
-          cd ${{ matrix.function-name }}
-          zip -r ./../build/${{ matrix.function-name }}.zip .
+          mv ./material.py ./build/material.py
+          zip -r -j ./build.zip ./build/*
       - name: deploy
         uses: appleboy/lambda-action@master
         with:
@@ -36,5 +37,5 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: us-east-1
           function_name: ${{ matrix.function-name }}
-          zip_file: server/build/${{ matrix.function-name }}.zip
+          zip_file: server/build.zip
           runtime: python3.8

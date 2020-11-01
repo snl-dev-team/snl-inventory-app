@@ -152,3 +152,42 @@ def updateOrder(event, context):
             "body": str(e),
             'headers': headers
         }
+
+
+def deleteOrder(event, context):
+
+    headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Request-Method': 'POST',
+        'Access-Control-Allow-Headers': 'content-type'
+    }
+
+    if event['httpMethod'] == 'OPTIONS':
+        return {
+            'statusCode': 200,
+            'headers': headers
+        }
+
+    body = json.loads(event['body'])
+
+    try:
+
+        sql = """
+        DELETE FROM
+            `order`
+        WHERE id = {id}
+        """.format(**body)
+
+        execute_statement(sql)
+
+        return {
+            'statusCode': 200,
+            'headers': headers
+        }
+
+    except Exception as e:
+        return {
+            'statusCode': 400,
+            'body': str(e),
+            'headers': headers
+        }

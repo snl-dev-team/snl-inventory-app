@@ -1,5 +1,23 @@
 {
-  "resources": [],
+  "resources": [
+    {
+      "name": "default-role",
+      "resource_type": "iam_role",
+      "role_arn": "arn:aws:iam::595723023717:role/snl-inventory-app-dev",
+      "role_name": "snl-inventory-app-dev"
+    },
+    {
+      "name": "api_handler",
+      "resource_type": "lambda_function",
+      "lambda_arn": "arn:aws:lambda:us-east-1:595723023717:function:snl-inventory-app-dev"
+    },
+    {
+      "name": "rest_api",
+      "resource_type": "rest_api",
+      "rest_api_id": "5u610vs4xa",
+      "rest_api_url": "https://5u610vs4xa.execute-api.us-east-1.amazonaws.com/dev/"
+    }
+  ],
   "schema_version": "2.0",
   "backend": "api"
 }

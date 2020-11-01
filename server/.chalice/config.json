@@ -3,7 +3,16 @@
   "app_name": "snl-inventory-app",
   "stages": {
     "dev": {
-      "api_gateway_stage": "api"
+      "api_gateway_stage": "dev",
+      "iam_role_arn": "arn:aws:iam::595723023717:role/snl-inventory-app-lambda",
+      "security_group_ids": ["sg-2ae8f57c"],
+      "subnet_ids": ["subnet-e55c41b9", "subnet-65dacb02", "subnet-2c599222", "subnet-1ee24253", "subnet-34736c1a", "subnet-8d486cb3"]
+    },
+    "prod": {
+      "api_gateway_stage": "prod",
+      "iam_role_arn": "arn:aws:iam::595723023717:role/snl-inventory-app-lambda",
+      "security_group_ids": ["sg-2ae8f57c"],
+      "subnet_ids": ["subnet-e55c41b9", "subnet-65dacb02", "subnet-2c599222", "subnet-1ee24253", "subnet-34736c1a", "subnet-8d486cb3"]
     }
   },
   "environment_variables": {

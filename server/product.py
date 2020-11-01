@@ -104,7 +104,7 @@ def fetchProducts(event, context):
         SELECT
             {columns}
         FROM
-            `material`;
+            `product`;
         """.format(columns=columns_string)
         res = execute_statement(sql)
         records = res['records']
@@ -127,5 +127,47 @@ def fetchProducts(event, context):
         return {
             'statusCode': 400,
             'body': json.dumps({'message': str(e)}),
+            'headers': headers
+        }
+
+
+def updateProduct(event, context):
+
+    headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Request-Method': 'GET',
+        'Access-Control-Allow-Headers': 'content-type'
+    }
+
+    if event['httpMethod'] == 'OPTIONS':
+        return {
+            'statusCode': 200,
+            'headers': headers
+        }
+
+    try:
+        body = json.loads(event['body'])
+
+        sql = """
+        UPDATE product SET
+            name = '{name}',
+            number = '{number}',
+            count = {count},
+            expiration_date = '{expiration_date}',
+            complete = {complete},
+        WHERE id = {id}
+        """.format(**body)
+
+        execute_statement(sql)
+
+        return {
+            'statusCode': 200,
+            'headers': headers
+        }
+
+    except Exception as e:
+        return {
+            'statusCode': 400,
+            "body": json.dumps({'message': str(e)}),
             'headers': headers
         }

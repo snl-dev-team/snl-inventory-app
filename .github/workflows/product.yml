@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        function-name: [createProduct, fetchProducts]
+        function-name: [createProduct, fetchProducts, updateProduct]
 
     steps:
       - uses: actions/checkout@master

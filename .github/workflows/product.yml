@@ -11,7 +11,14 @@ jobs:
     strategy:
       matrix:
         function-name:
-          [createProduct, fetchProducts, updateProduct, deleteProduct]
+          [
+            createProduct,
+            fetchProducts,
+            updateProduct,
+            deleteProduct,
+            productUseMaterial,
+            productRemoveMaterial,
+          ]
 
     steps:
       - uses: actions/checkout@master

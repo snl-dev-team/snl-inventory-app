@@ -148,3 +148,48 @@ def fetchCases(event, context):
             'body': str(e),
             'headers': headers
         }
+
+
+def updateCase(event, context):
+
+    headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Request-Method': 'POST',
+        'Access-Control-Allow-Headers': 'content-type'
+    }
+
+    if event['httpMethod'] == 'OPTIONS':
+        return {
+            'statusCode': 200,
+            'headers': headers
+        }
+
+    try:
+        body = json.loads(event['body'])
+
+        sql = """
+        UPDATE `case` SET
+            name = '{name}',
+            product_name = '{product_name}',
+            product_count = {product_count},
+            count = {count},
+            number = '{number}',
+            expiration_date = '{expiration_date}',
+            price = {price},
+            shipped = '{shipped}'
+        WHERE id = {id}
+        """.format(**body)
+
+        execute_statement(sql)
+
+        return {
+            'statusCode': 200,
+            'headers': headers
+        }
+
+    except Exception as e:
+        return {
+            'statusCode': 400,
+            "body": str(e),
+            'headers': headers
+        }

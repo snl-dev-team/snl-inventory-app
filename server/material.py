@@ -129,7 +129,7 @@ def updateMaterial(event, context):
 
     headers = {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Request-Method': 'GET',
+        'Access-Control-Request-Method': 'POST',
         'Access-Control-Allow-Headers': 'content-type'
     }
 
@@ -143,7 +143,7 @@ def updateMaterial(event, context):
         body = json.loads(event['body'])
 
         sql = """
-        UPDATE material SET
+        UPDATE `material` SET
             name = '{name}',
             number = '{number}',
             count = {count},

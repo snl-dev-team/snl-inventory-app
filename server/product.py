@@ -137,7 +137,7 @@ def updateProduct(event, context):
 
     headers = {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Request-Method': 'GET',
+        'Access-Control-Request-Method': 'POST',
         'Access-Control-Allow-Headers': 'content-type'
     }
 
@@ -151,7 +151,7 @@ def updateProduct(event, context):
 
     try:
         sql = """
-        UPDATE product SET
+        UPDATE `product` SET
             name = '{name}',
             number = '{number}',
             count = {count},

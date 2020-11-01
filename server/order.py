@@ -191,3 +191,57 @@ def deleteOrder(event, context):
             'body': str(e),
             'headers': headers
         }
+
+
+def orderUseCase(event, context):
+    headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Request-Method': 'POST',
+        'Access-Control-Allow-Headers': 'content-type'
+    }
+
+    if event['httpMethod'] == 'OPTIONS':
+        return {
+            'statusCode': 200,
+            'headers': headers
+        }
+
+    body = json.loads(event['body'])
+
+    try:
+
+        if body['count'] == 0:
+            sql = """
+            DELETE FROM
+                `order_uses_case`
+            WHERE
+                `order_id` = {order_id},
+                `case_id` = {case_id}
+            """.format(**body)
+        else:
+            sql = """
+            REPLACE INTO `order_uses_case` (
+                `order_id`,
+                `case_id`,
+                `count`
+            )
+            VALUES (
+                {order_id},
+                {case_id},
+                {count}
+            )
+            """.format(**body)
+
+        execute_statement(sql)
+
+        return {
+            'statusCode': 200,
+            'headers': headers
+        }
+
+    except Exception as e:
+        return {
+            'statusCode': 400,
+            'body': str(e),
+            'headers': headers
+        }

@@ -1,4 +1,4 @@
-name: Deploy Materials Lambda
+name: Deploy Material Lambda
 on:
   push:
     branches:

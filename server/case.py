@@ -231,3 +231,111 @@ def deleteCase(event, context):
             'body': str(e),
             'headers': headers
         }
+
+
+def caseUseMaterial(event, context):
+    headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Request-Method': 'POST',
+        'Access-Control-Allow-Headers': 'content-type'
+    }
+
+    if event['httpMethod'] == 'OPTIONS':
+        return {
+            'statusCode': 200,
+            'headers': headers
+        }
+
+    body = json.loads(event['body'])
+
+    try:
+
+        if body['count'] == 0:
+            sql = """
+            DELETE FROM
+                `case_uses_material`
+            WHERE
+                `case_id` = {case_id},
+                `material_id` = {material_id}
+            """.format(**body)
+        else:
+            sql = """
+            REPLACE INTO `case_uses_material` (
+                `case_id`,
+                `material_id`,
+                `count`
+            )
+            VALUES (
+                {case_id},
+                {material_id},
+                {count}
+            )
+            """.format(**body)
+
+        execute_statement(sql)
+
+        return {
+            'statusCode': 200,
+            'headers': headers
+        }
+
+    except Exception as e:
+        return {
+            'statusCode': 400,
+            'body': str(e),
+            'headers': headers
+        }
+
+
+def caseUseProduct(event, context):
+    headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Request-Method': 'POST',
+        'Access-Control-Allow-Headers': 'content-type'
+    }
+
+    if event['httpMethod'] == 'OPTIONS':
+        return {
+            'statusCode': 200,
+            'headers': headers
+        }
+
+    body = json.loads(event['body'])
+
+    try:
+
+        if body['count'] == 0:
+            sql = """
+            DELETE FROM
+                `case_uses_product`
+            WHERE
+                `case_id` = {case_id},
+                `product_id` = {product_id}
+            """.format(**body)
+        else:
+            sql = """
+            REPLACE INTO `case_uses_product` (
+                `case_id`,
+                `product_id`,
+                `count`
+            )
+            VALUES (
+                {case_id},
+                {product_id},
+                {count}
+            )
+            """.format(**body)
+
+        execute_statement(sql)
+
+        return {
+            'statusCode': 200,
+            'headers': headers
+        }
+
+    except Exception as e:
+        return {
+            'statusCode': 400,
+            'body': str(e),
+            'headers': headers
+        }

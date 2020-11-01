@@ -10,7 +10,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        function-name: [createCase, fetchCases, updateCase, deleteCase]
+        function-name:
+          [
+            createCase,
+            fetchCases,
+            updateCase,
+            deleteCase,
+            caseUseProduct,
+            caseUseMaterial,
+          ]
 
     steps:
       - uses: actions/checkout@master

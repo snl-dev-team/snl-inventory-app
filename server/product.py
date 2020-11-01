@@ -34,7 +34,7 @@ COLUMNS = [
     ('expiration_date', str,   'stringValue'),
     ('date_created',    str,   'stringValue'),
     ('date_modified',   str,   'stringValue'),
-    ('complete',        bool,   'boolValue'),
+    ('complete',        bool,  'boolValue'),
 ]
 
 

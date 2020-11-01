@@ -231,58 +231,27 @@ def productUseMaterial(event, context):
 
     try:
 
-        sql = """
-        REPLACE INTO `product_uses_material` (
-            `product_id`,
-            `material_id`,
-            `count`
-        )
-        VALUES (
-            {product_id},
-            {material_id},
-            {count}
-        )
-        """.format(**body)
-
-        execute_statement(sql)
-
-        return {
-            'statusCode': 200,
-            'headers': headers
-        }
-
-    except Exception as e:
-        return {
-            'statusCode': 400,
-            'body': str(e),
-            'headers': headers
-        }
-
-
-def productRemoveMaterial(event, context):
-    headers = {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Request-Method': 'POST',
-        'Access-Control-Allow-Headers': 'content-type'
-    }
-
-    if event['httpMethod'] == 'OPTIONS':
-        return {
-            'statusCode': 200,
-            'headers': headers
-        }
-
-    body = json.loads(event['body'])
-
-    try:
-
-        sql = """
-        DELETE FROM 
-            `product_uses_material` 
-        WHERE 
-            `product_id` = {product_id}, 
-            `material_id` = {material_id}
-        """.format(**body)
+        if body['count'] == 0:
+            sql = """
+            DELETE FROM
+                `product_uses_material`
+            WHERE
+                `product_id` = {product_id},
+                `material_id` = {material_id}
+            """.format(**body)
+        else:
+            sql = """
+            REPLACE INTO `product_uses_material` (
+                `product_id`,
+                `material_id`,
+                `count`
+            )
+            VALUES (
+                {product_id},
+                {material_id},
+                {count}
+            )
+            """.format(**body)
 
         execute_statement(sql)
 

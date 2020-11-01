@@ -2,7 +2,8 @@ import os
 import boto3
 import sys
 import mysql.connector
-from chalice import Chalice
+from chalice import Chalice, Response
+import json
 
 app = Chalice(app_name='snl-inventory-app')
 
@@ -56,91 +57,125 @@ MATERIAL_COLUMNS = [
 @app.route('/material', methods=['POST'])
 def create_material():
 
-    body = app.current_request.json_body
+    try:
 
-    sql = """
-        INSERT INTO
-            `material` (
-                `name`,
-                `number`,
-                `count`,
-                `expiration_date`,
-                `price`,
-                `units`
-            )
-            VALUES (
-                '{name}',
-                '{number}',
-                {count},
-                '{expiration_date}',
-                {price},
-                '{units}'
-            )
-        """.format(**body)
+        body = app.current_request.json_body
 
-    res = execute_statement(sql)
+        sql = """
+            INSERT INTO
+                `material` (
+                    `name`,
+                    `number`,
+                    `count`,
+                    `expiration_date`,
+                    `price`,
+                    `units`
+                )
+                VALUES (
+                    '{name}',
+                    '{number}',
+                    {count},
+                    '{expiration_date}',
+                    {price},
+                    '{units}'
+                )
+            """.format(**body)
 
-    created_id = res['generatedFields'][0]['longValue']
+        res = execute_statement(sql)
 
-    return {
-        'id': created_id
-    }
+        created_id = res['generatedFields'][0]['longValue']
+
+        return Response(
+            body=json.dumps({'id': created_id}),
+            status_code=200,
+        )
+
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 
 @app.route('/material', methods=['GET'])
 def fetch_materials():
-    columns_string = ', '.join(i[0] for i in MATERIAL_COLUMNS)
-    sql = """
-        SELECT
-            {columns}
-        FROM
-            `material`;
-        """.format(columns=columns_string)
-    res = execute_statement(sql)
-    records = res['records']
-    data = []
-    for record in records:
-        data_row = {}
-        for entry, column in zip(record, MATERIAL_COLUMNS):
-            name, _, entry_type = column
-            value = entry.get(entry_type, None)
-            data_row[name] = value
-        data.append(data_row)
 
-    return data
+    try:
+        columns_string = ', '.join(i[0] for i in MATERIAL_COLUMNS)
+        sql = """
+            SELECT
+                {columns}
+            FROM
+                `material`;
+            """.format(columns=columns_string)
+        res = execute_statement(sql)
+        records = res['records']
+        data = []
+        for record in records:
+            data_row = {}
+            for entry, column in zip(record, MATERIAL_COLUMNS):
+                name, _, entry_type = column
+                value = entry.get(entry_type, None)
+                data_row[name] = value
+            data.append(data_row)
+
+        return Response(
+            body=json.dumps(data),
+            status_code=400,
+        )
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 
 @app.route('/material/{id}', methods=['PUT'])
 def update_material(id):
 
-    body = app.current_request.json_body
-    sql = """
-        UPDATE `material` SET
-            name = '{name}',
-            number = '{number}',
-            count = {count},
-            expiration_date = '{expiration_date}',
-            price = {price},
-            units = '{units}'
-        WHERE id = {id}
-        """.format(**body, id=id)
+    try:
+        body = app.current_request.json_body
+        sql = """
+            UPDATE `material` SET
+                name = '{name}',
+                number = '{number}',
+                count = {count},
+                expiration_date = '{expiration_date}',
+                price = {price},
+                units = '{units}'
+            WHERE id = {id}
+            """.format(**body, id=id)
 
-    execute_statement(sql)
+        execute_statement(sql)
 
-    return
+        return Response(
+            body=json.dumps({}),
+            status_code=200
+        )
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 
 @app.route('/material/{id}', methods=['DELETE'])
 def delete_material(id):
-    sql = """
-        DELETE FROM
-            `material`
-        WHERE id = {id}
-        """.format(id=id)
+    try:
+        sql = """
+            DELETE FROM
+                `material`
+            WHERE id = {id}
+            """.format(id=id)
 
-    execute_statement(sql)
+        execute_statement(sql)
 
-    return
+        return
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 
 PRODUCT_COLUMNS = [
@@ -181,118 +216,161 @@ PRODUCT_COLUMNS = [
 @app.route('/product', methods=['POST'])
 def create_product():
 
-    body = app.current_request.json_body
+    try:
 
-    sql = """
-        INSERT INTO
-            `product` (
-                `name`,
-                `number`,
-                `count`,
-                `expiration_date`,
-                `complete`
-            )
-            VALUES (
-                '{name}',
-                '{number}',
-                {count},
-                '{expiration_date}',
-                {complete}
-            )
-        """.format(**body)
+        body = app.current_request.json_body
 
-    res = execute_statement(sql)
+        sql = """
+            INSERT INTO
+                `product` (
+                    `name`,
+                    `number`,
+                    `count`,
+                    `expiration_date`,
+                    `complete`
+                )
+                VALUES (
+                    '{name}',
+                    '{number}',
+                    {count},
+                    '{expiration_date}',
+                    {complete}
+                )
+            """.format(**body)
 
-    created_id = res['generatedFields'][0]['longValue']
+        res = execute_statement(sql)
 
-    return {
-        'id': created_id
-    }
+        created_id = res['generatedFields'][0]['longValue']
+
+        return {
+            'id': created_id
+        }
+
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 
 @app.route('/product', methods=['GET'])
 def fetch_products():
-    columns_string = ', '.join(i[0] for i in PRODUCT_COLUMNS)
-    sql = """
-        SELECT
-            {columns}
-        FROM
-            `product`;
-        """.format(columns=columns_string)
-    res = execute_statement(sql)
 
-    records = res['records']
-    data = []
-    for record in records:
-        data_row = {}
-        for entry, column in zip(record, PRODUCT_COLUMNS):
-            name, _, entry_type = column
-            value = entry.get(entry_type, None)
-            data_row[name] = value
-        data.append(data_row)
+    try:
 
-    return data
+        columns_string = ', '.join(i[0] for i in PRODUCT_COLUMNS)
+        sql = """
+            SELECT
+                {columns}
+            FROM
+                `product`;
+            """.format(columns=columns_string)
+        res = execute_statement(sql)
+
+        records = res['records']
+        data = []
+        for record in records:
+            data_row = {}
+            for entry, column in zip(record, PRODUCT_COLUMNS):
+                name, _, entry_type = column
+                value = entry.get(entry_type, None)
+                data_row[name] = value
+            data.append(data_row)
+
+        return data
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 
 @app.route('/product/{id}', methods=['PUT'])
 def update_product(id):
-    body = app.current_request.json_body
-    sql = """
-        UPDATE `product` SET
-            name = '{name}',
-            number = '{number}',
-            count = {count},
-            expiration_date = '{expiration_date}',
-            complete = {complete}
-        WHERE id = {id}
-        """.format(**body, id=id)
+    try:
+        body = app.current_request.json_body
+        sql = """
+            UPDATE `product` SET
+                name = '{name}',
+                number = '{number}',
+                count = {count},
+                expiration_date = '{expiration_date}',
+                complete = {complete}
+            WHERE id = {id}
+            """.format(**body, id=id)
 
-    execute_statement(sql)
+        execute_statement(sql)
+
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 
 @app.route('/product/{id}', methods=['DELETE'])
 def delete_product(id):
-    sql = """
-        DELETE FROM
-            `product`
-        WHERE id = {id}
-        """.format(id=id)
+    try:
+        sql = """
+            DELETE FROM
+                `product`
+            WHERE id = {id}
+            """.format(id=id)
 
-    execute_statement(sql)
+        execute_statement(sql)
+
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 
 @app.route('/product/{id}/material', methods=['PUT'])
 def product_use_material(id):
-    body = app.current_request.json_body
+    try:
+        body = app.current_request.json_body
 
-    sql = """
-        REPLACE INTO `product_uses_material` (
-            `product_id`,
-            `material_id`,
-            `count`
-        )
-        VALUES (
-            {id},
-            {material_id},
-            {count}
-        )
-        """.format(**body, id=id)
+        sql = """
+            REPLACE INTO `product_uses_material` (
+                `product_id`,
+                `material_id`,
+                `count`
+            )
+            VALUES (
+                {id},
+                {material_id},
+                {count}
+            )
+            """.format(**body, id=id)
 
-    execute_statement(sql)
+        execute_statement(sql)
+
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 
 @app.route('/product/{id}/material', methods=['DELETE'])
 def product_unuse_material(id):
-    body = app.current_request.json_body
-    sql = """
-        DELETE FROM
-            `product_uses_material`
-        WHERE
-            `product_id` = {id},
-            `material_id` = {material_id}
-        """.format(**body, id=id)
+    try:
+        body = app.current_request.json_body
+        sql = """
+            DELETE FROM
+                `product_uses_material`
+            WHERE
+                `product_id` = {id},
+                `material_id` = {material_id}
+            """.format(**body, id=id)
 
-    execute_statement(sql)
+        execute_statement(sql)
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 
 CASE_COLUMNS = [
@@ -344,159 +422,209 @@ CASE_COLUMNS = [
 
 @ app.route('/case', methods=['POST'])
 def create_case():
+    try:
+        body = app.current_request.json_body
 
-    body = app.current_request.json_body
+        sql = """
+            INSERT INTO
+                `case` (
+                    `name`,
+                    `product_name`,
+                    `product_count`,
+                    `count`,
+                    `number`,
+                    `expiration_date`,
+                    `shipped`
+                )
+                VALUES (
+                    '{name}',
+                    '{product_name}',
+                    {product_count},
+                    {count},
+                    '{number}',
+                    '{expiration_date}',
+                    {shipped}
+                )
+            """.format(**body)
 
-    sql = """
-        INSERT INTO
-            `case` (
-                `name`,
-                `product_name`,
-                `product_count`,
-                `count`,
-                `number`,
-                `expiration_date`,
-                `shipped`
-            )
-            VALUES (
-                '{name}',
-                '{product_name}',
-                {product_count},
-                {count},
-                '{number}',
-                '{expiration_date}',
-                {shipped}
-            )
-        """.format(**body)
+        res = execute_statement(sql)
 
-    res = execute_statement(sql)
+        created_id = res['generatedFields'][0]['longValue']
 
-    created_id = res['generatedFields'][0]['longValue']
-
-    return {
-        'id': created_id
-    }
+        return {
+            'id': created_id
+        }
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 
 @app.route('/case', methods=['GET'])
 def fetch_cases():
-    columns_string = ', '.join(i[0] for i in CASE_COLUMNS)
-    sql = """
-        SELECT
-            {columns}
-        FROM
-            `case`;
-        """.format(columns=columns_string)
-    res = execute_statement(sql)
-    records = res['records']
+    try:
+        columns_string = ', '.join(i[0] for i in CASE_COLUMNS)
+        sql = """
+            SELECT
+                {columns}
+            FROM
+                `case`;
+            """.format(columns=columns_string)
+        res = execute_statement(sql)
+        records = res['records']
 
-    data = []
-    for record in records:
-        data_row = {}
-        for entry, column in zip(record, CASE_COLUMNS):
-            name, _, entry_type = column
-            value = entry.get(entry_type, None)
-            data_row[name] = value
-        data.append(data_row)
+        data = []
+        for record in records:
+            data_row = {}
+            for entry, column in zip(record, CASE_COLUMNS):
+                name, _, entry_type = column
+                value = entry.get(entry_type, None)
+                data_row[name] = value
+            data.append(data_row)
 
-    return data
+        return data
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 
 @app.route('/case/{id}', methods=['PUT'])
 def update_case(id):
-    body = app.current_request.json_body
-    sql = """
-        UPDATE `case` SET
-            name = '{name}',
-            product_name = '{product_name}',
-            product_count = {product_count},
-            count = {count},
-            number = '{number}',
-            expiration_date = '{expiration_date}',
-            shipped = '{shipped}'
-        WHERE id = {id}
-        """.format(**body, id=id)
+    try:
+        body = app.current_request.json_body
+        sql = """
+            UPDATE `case` SET
+                name = '{name}',
+                product_name = '{product_name}',
+                product_count = {product_count},
+                count = {count},
+                number = '{number}',
+                expiration_date = '{expiration_date}',
+                shipped = '{shipped}'
+            WHERE id = {id}
+            """.format(**body, id=id)
 
-    execute_statement(sql)
+        execute_statement(sql)
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 
 @app.route('/case/{id}', methods=['DELETE'])
 def delete_case(id):
-    sql = """
-        DELETE FROM
-            `case`
-        WHERE id = {id}
-        """.format(id=id)
+    try:
+        sql = """
+            DELETE FROM
+                `case`
+            WHERE id = {id}
+            """.format(id=id)
 
-    execute_statement(sql)
+        execute_statement(sql)
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 
 @app.route('/case/{id}/material', methods=['PUT'])
 def case_use_material(id):
-    body = app.current_request.json_body
 
-    sql = """
-        REPLACE INTO `case_uses_material` (
-            `case_id`,
-            `material_id`,
-            `count`
-        )
-        VALUES (
-            {id},
-            {material_id},
-            {count}
-        )
-        """.format(**body, id=id)
+    try:
+        body = app.current_request.json_body
 
-    execute_statement(sql)
+        sql = """
+            REPLACE INTO `case_uses_material` (
+                `case_id`,
+                `material_id`,
+                `count`
+            )
+            VALUES (
+                {id},
+                {material_id},
+                {count}
+            )
+            """.format(**body, id=id)
+
+        execute_statement(sql)
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 
 @app.route('/case/{id}/material', methods=['DELETE'])
 def case_unuse_material(id):
-    body = app.current_request.json_body
-    sql = """
-        DELETE FROM
-            `case_uses_material`
-        WHERE
-            `case_id` = {id},
-            `material_id` = {material_id}
-        """.format(**body, id=id)
+    try:
+        body = app.current_request.json_body
+        sql = """
+            DELETE FROM
+                `case_uses_material`
+            WHERE
+                `case_id` = {id},
+                `material_id` = {material_id}
+            """.format(**body, id=id)
 
-    execute_statement(sql)
+        execute_statement(sql)
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 
 @app.route('/case/{id}/product', methods=['PUT'])
 def case_use_product(id):
-    body = app.current_request.json_body
+    try:
+        body = app.current_request.json_body
 
-    sql = """
-        REPLACE INTO `case_uses_product` (
-            `case_id`,
-            `product_id`,
-            `count`
-        )
-        VALUES (
-            {id},
-            {product_id},
-            {count}
-        )
-        """.format(**body, id=id)
+        sql = """
+            REPLACE INTO `case_uses_product` (
+                `case_id`,
+                `product_id`,
+                `count`
+            )
+            VALUES (
+                {id},
+                {product_id},
+                {count}
+            )
+            """.format(**body, id=id)
 
-    execute_statement(sql)
+        execute_statement(sql)
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 
 @app.route('/case/{id}/product', methods=['DELETE'])
 def case_unuse_product(id):
-    body = app.current_request.json_body
-    sql = """
-        DELETE FROM
-            `case_uses_product`
-        WHERE
-            `case_id` = {id},
-            `product_id` = {product_id}
-        """.format(**body, id=id)
+    try:
 
-    execute_statement(sql)
+        body = app.current_request.json_body
+        sql = """
+            DELETE FROM
+                `case_uses_product`
+            WHERE
+                `case_id` = {id},
+                `product_id` = {product_id}
+            """.format(**body, id=id)
+
+        execute_statement(sql)
+
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 
 ORDER_COLUMNS = [
@@ -528,104 +656,142 @@ ORDER_COLUMNS = [
 
 @app.route('/order', methods=['POST'])
 def create_order():
+    try:
+        body = app.current_request.json_body
 
-    body = app.current_request.json_body
+        sql = """
+            INSERT INTO
+                `order` (
+                    `number`
+                )
+                VALUES (
+                    '{number}'
+                )
+            """.format(**body)
 
-    sql = """
-        INSERT INTO
-            `order` (
-                `number`
-            )
-            VALUES (
-                '{number}'
-            )
-        """.format(**body)
+        res = execute_statement(sql)
 
-    res = execute_statement(sql)
+        created_id = res['generatedFields'][0]['longValue']
 
-    created_id = res['generatedFields'][0]['longValue']
+        return {
+            'id': created_id
+        }
 
-    return {
-        'id': created_id
-    }
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 
 @app.route('/order', methods=['GET'])
 def fetch_orders():
-    columns_string = ', '.join(i[0] for i in ORDER_COLUMNS)
-    sql = """
-        SELECT
-            {columns}
-        FROM
-            `order`;
-        """.format(columns=columns_string)
-    res = execute_statement(sql)
-    records = res['records']
+    try:
+        columns_string = ', '.join(i[0] for i in ORDER_COLUMNS)
+        sql = """
+            SELECT
+                {columns}
+            FROM
+                `order`;
+            """.format(columns=columns_string)
+        res = execute_statement(sql)
+        records = res['records']
 
-    data = []
-    for record in records:
-        data_row = {}
-        for entry, column in zip(record, ORDER_COLUMNS):
-            name, _, entry_type = column
-            value = entry.get(entry_type, None)
-            data_row[name] = value
-        data.append(data_row)
+        data = []
+        for record in records:
+            data_row = {}
+            for entry, column in zip(record, ORDER_COLUMNS):
+                name, _, entry_type = column
+                value = entry.get(entry_type, None)
+                data_row[name] = value
+            data.append(data_row)
 
-    return data
+        return data
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 
 @app.route('/order/{id}', methods=['PUT'])
 def update_order(id):
-    body = app.current_request.json_body
-    sql = """
-        UPDATE `order` SET
-            number = '{number}'
-        WHERE id = {id}
-        """.format(**body, id=id)
+    try:
 
-    execute_statement(sql)
+        body = app.current_request.json_body
+        sql = """
+            UPDATE `order` SET
+                number = '{number}'
+            WHERE id = {id}
+            """.format(**body, id=id)
+
+        execute_statement(sql)
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 
 @app.route('/order/{id}', methods=['DELETE'])
 def delete_order(id):
-    sql = """
-        DELETE FROM
-            `order`
-        WHERE id = {id}
-        """.format(id=id)
+    try:
+        sql = """
+            DELETE FROM
+                `order`
+            WHERE id = {id}
+            """.format(id=id)
 
-    execute_statement(sql)
+        execute_statement(sql)
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 
 @app.route('/order/{id}/case', methods=['PUT'])
 def order_use_case(id):
-    body = app.current_request.json_body
+    try:
+        body = app.current_request.json_body
 
-    sql = """
-        REPLACE INTO `order_uses_case` (
-            `order_id`,
-            `case_id`,
-            `count`
-        )
-        VALUES (
-            {id},
-            {case_id},
-            {count}
-        )
-        """.format(**body, id=id)
+        sql = """
+            REPLACE INTO `order_uses_case` (
+                `order_id`,
+                `case_id`,
+                `count`
+            )
+            VALUES (
+                {id},
+                {case_id},
+                {count}
+            )
+            """.format(**body, id=id)
 
-    execute_statement(sql)
+        execute_statement(sql)
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 
 @app.route('/order/{id}/case', methods=['DELETE'])
 def order_unuse_case(id):
-    body = app.current_request.json_body
-    sql = """
-        DELETE FROM
-            `order_uses_case`
-        WHERE
-            `order_id` = {id},
-            `case_id` = {material_id}
-        """.format(**body, id=id)
+    try:
+        body = app.current_request.json_body
+        sql = """
+            DELETE FROM
+                `order_uses_case`
+            WHERE
+                `order_id` = {id},
+                `case_id` = {material_id}
+            """.format(**body, id=id)
 
-    execute_statement(sql)
+        execute_statement(sql)
+
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )

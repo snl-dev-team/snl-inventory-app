@@ -126,7 +126,7 @@ def fetchProducts(event, context):
     except Exception as e:
         return {
             'statusCode': 400,
-            'body': json.dumps({'message': str(e)}),
+            'body': str(e),
             'headers': headers
         }
 
@@ -154,7 +154,7 @@ def updateProduct(event, context):
             number = '{number}',
             count = {count},
             expiration_date = '{expiration_date}',
-            complete = {complete},
+            complete = {complete}
         WHERE id = {id}
         """.format(**body)
 
@@ -168,6 +168,45 @@ def updateProduct(event, context):
     except Exception as e:
         return {
             'statusCode': 400,
-            "body": json.dumps({'message': str(e)}),
+            "body": str(e),
+            'headers': headers
+        }
+
+
+def deleteProduct(event, context):
+
+    headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Request-Method': 'POST',
+        'Access-Control-Allow-Headers': 'content-type'
+    }
+
+    if event['httpMethod'] == 'OPTIONS':
+        return {
+            'statusCode': 200,
+            'headers': headers
+        }
+
+    try:
+
+        body = json.loads(event['body'])
+
+        sql = """
+        DELETE FROM
+            `product`
+        WHERE id = {id}
+        """.format(**body)
+
+        execute_statement(sql)
+
+        return {
+            'statusCode': 200,
+            'headers': headers
+        }
+
+    except Exception as e:
+        return {
+            'statusCode': 400,
+            'body': str(e),
             'headers': headers
         }

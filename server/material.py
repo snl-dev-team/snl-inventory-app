@@ -120,7 +120,7 @@ def fetchMaterials(event, context):
     except Exception as e:
         return {
             'statusCode': 400,
-            'body': json.dumps({'message': str(e)}),
+            'body': str(e),
             'headers': headers
         }
 
@@ -163,7 +163,7 @@ def updateMaterial(event, context):
     except Exception as e:
         return {
             'statusCode': 400,
-            "body": json.dumps({'message': str(e)}),
+            "body": str(e),
             'headers': headers
         }
 
@@ -202,6 +202,6 @@ def deleteMaterial(event, context):
     except Exception as e:
         return {
             'statusCode': 400,
-            'body': 'Material lot failed to be created.\n\n' + str(e),
+            'body': str(e),
             'headers': headers
         }

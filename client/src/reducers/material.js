@@ -33,7 +33,7 @@ const materialReducer = (state = {}, action) => {
 
       return {
         ...state,
-        [payload.id]: { id: payload.id, ...material },
+        [payload.id]: { ...material, id: payload.id },
       };
     }
 

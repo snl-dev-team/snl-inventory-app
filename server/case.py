@@ -175,7 +175,6 @@ def updateCase(event, context):
             count = {count},
             number = '{number}',
             expiration_date = '{expiration_date}',
-            price = {price},
             shipped = '{shipped}'
         WHERE id = {id}
         """.format(**body)

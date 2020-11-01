@@ -1,6 +1,8 @@
 name: Deploy Material Lambda
 on:
   push:
+    paths:
+      - "server/material.py"
     branches:
       - master
 jobs:

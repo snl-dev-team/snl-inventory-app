@@ -1,6 +1,8 @@
 name: Deploy Product Lambda
 on:
   push:
+    paths:
+      - "server/product.py"
     branches:
       - master
 jobs:

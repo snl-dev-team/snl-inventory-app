@@ -72,7 +72,7 @@ def createCase(event, context):
 
         sql = """
         INSERT INTO
-            `material` (
+            `case` (
                 `name`,
                 `product_name`,
                 `product_count`,
@@ -97,6 +97,48 @@ def createCase(event, context):
         return {
             'statusCode': 200,
             'body': json.dumps({'id': res['generatedFields'][0]['longValue']}),
+            'headers': headers
+        }
+
+    except Exception as e:
+        return {
+            'statusCode': 400,
+            'body': str(e),
+            'headers': headers
+        }
+
+
+def fetchCases(event, context):
+
+    headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Request-Method': 'GET',
+        'Access-Control-Allow-Headers': 'content-type'
+    }
+
+    columns_string = ', '.join(i[0] for i in COLUMNS)
+    try:
+        sql = """
+        SELECT
+            {columns}
+        FROM
+            `case`;
+        """.format(columns=columns_string)
+        res = execute_statement(sql)
+        records = res['records']
+
+        data = []
+        for record in records:
+            data_row = {}
+            for entry, column in zip(record, COLUMNS):
+                name, _, entry_type = column
+                value = entry.get(entry_type, None)
+                data_row[name] = value
+            data.append(data_row)
+
+        return {
+            'statusCode': 200,
+            'body': json.dumps({'data': data}),
             'headers': headers
         }
 

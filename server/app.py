@@ -241,8 +241,8 @@ def delete_product(id):
     execute_statement(sql)
 
 
-@app.route('/product/{id}/material}', methods=['PUT'])
-def use_material(id):
+@app.route('/product/{id}/material', methods=['PUT'])
+def product_use_material(id):
     body = app.current_request.json_body
 
     sql = """
@@ -261,8 +261,8 @@ def use_material(id):
     execute_statement(sql)
 
 
-@app.route('/product/{id}/material}', methods=['DELETE'])
-def unuse_material(id):
+@app.route('/product/{id}/material', methods=['DELETE'])
+def product_unuse_material(id):
     body = app.current_request.json_body
     sql = """
         DELETE FROM
@@ -431,7 +431,7 @@ def case_use_material(id):
     execute_statement(sql)
 
 
-@app.route('/case/{id}/material}', methods=['DELETE'])
+@app.route('/case/{id}/material', methods=['DELETE'])
 def case_unuse_material(id):
     body = app.current_request.json_body
     sql = """
@@ -445,8 +445,8 @@ def case_unuse_material(id):
     execute_statement(sql)
 
 
-@app.route('/case/{id}/product}', methods=['PUT'])
-def use_product(id):
+@app.route('/case/{id}/product', methods=['PUT'])
+def case_use_product(id):
     body = app.current_request.json_body
 
     sql = """
@@ -465,8 +465,8 @@ def use_product(id):
     execute_statement(sql)
 
 
-@app.route('/case/{id}/product}', methods=['DELETE'])
-def unuse_product(id):
+@app.route('/case/{id}/product', methods=['DELETE'])
+def case_unuse_product(id):
     body = app.current_request.json_body
     sql = """
         DELETE FROM
@@ -577,8 +577,8 @@ def delete_order(id):
     execute_statement(sql)
 
 
-@app.route('/order/{id}/case}', methods=['PUT'])
-def use_case(id):
+@app.route('/order/{id}/case', methods=['PUT'])
+def order_use_case(id):
     body = app.current_request.json_body
 
     sql = """
@@ -597,8 +597,8 @@ def use_case(id):
     execute_statement(sql)
 
 
-@app.route('/order/{id}/case}', methods=['DELETE'])
-def unuse_case(id):
+@app.route('/order/{id}/case', methods=['DELETE'])
+def order_unuse_case(id):
     body = app.current_request.json_body
     sql = """
         DELETE FROM

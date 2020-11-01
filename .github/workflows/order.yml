@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        function-name: [createOrder]
+        function-name: [createOrder, fetchOrders]
 
     steps:
       - uses: actions/checkout@master

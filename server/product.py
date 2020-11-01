@@ -46,16 +46,15 @@ def createProduct(event, context):
         'Access-Control-Allow-Headers': 'content-type'
     }
 
+    if event['httpMethod'] == 'OPTIONS':
+        return {
+            'statusCode': 200,
+            'headers': headers
+        }
+
+    body = json.loads(event['body'])
+
     try:
-
-        if event['httpMethod'] == 'OPTIONS':
-            return {
-                'statusCode': 200,
-                'headers': headers
-            }
-
-        body = json.loads(event['body'])
-
         sql = """
         INSERT INTO
             `product` (
@@ -98,8 +97,10 @@ def fetchProducts(event, context):
         'Access-Control-Allow-Headers': 'content-type'
     }
 
+    columns_string = ', '.join(i[0] for i in COLUMNS)
+
     try:
-        columns_string = ', '.join(i[0] for i in COLUMNS)
+
         sql = """
         SELECT
             {columns}
@@ -107,6 +108,7 @@ def fetchProducts(event, context):
             `product`;
         """.format(columns=columns_string)
         res = execute_statement(sql)
+
         records = res['records']
         data = []
         for record in records:
@@ -145,9 +147,9 @@ def updateProduct(event, context):
             'headers': headers
         }
 
-    try:
-        body = json.loads(event['body'])
+    body = json.loads(event['body'])
 
+    try:
         sql = """
         UPDATE product SET
             name = '{name}',
@@ -187,9 +189,9 @@ def deleteProduct(event, context):
             'headers': headers
         }
 
-    try:
+    body = json.loads(event['body'])
 
-        body = json.loads(event['body'])
+    try:
 
         sql = """
         DELETE FROM

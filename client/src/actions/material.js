@@ -9,7 +9,7 @@ export const createMaterial = (material) => ({
   type: CREATE_MATERIAL,
   payload: axios
     .post(
-      'https://4vm66rtqc6.execute-api.us-east-1.amazonaws.com/default/createMaterial',
+      'https://rqzpcqdt40.execute-api.us-east-1.amazonaws.com/dev/material',
       {
         name: material.name,
         number: material.number,
@@ -32,17 +32,16 @@ export const fetchMaterials = () => ({
   type: FETCH_MATERIALS,
   payload: axios
     .get(
-      'https://wywuo6pzs2.execute-api.us-east-1.amazonaws.com/default/fetchMaterials',
+      'https://rqzpcqdt40.execute-api.us-east-1.amazonaws.com/dev/material',
     )
     .then((res) => res.data.data),
 });
 
 export const updateMaterial = (material) => ({
   type: UPDATE_MATERIAL,
-  payload: axios.post(
-    'https://a87tec5p2k.execute-api.us-east-1.amazonaws.com/default/updateMaterial',
+  payload: axios.put(
+    `https://rqzpcqdt40.execute-api.us-east-1.amazonaws.com/dev/material/${material.id}`,
     {
-      id: material.id,
       name: material.name,
       number: material.number,
       count: material.count,
@@ -62,15 +61,8 @@ export const updateMaterial = (material) => ({
 export const deleteMaterial = (id) => ({
   type: DELETE_MATERIAL,
   payload: axios
-    .post(
-      'https://jprouefzg9.execute-api.us-east-1.amazonaws.com/default/deleteMaterial',
-      { id },
-      {
-        headers: {
-          'content-type': 'application/json',
-        },
-      },
-    )
-    .then((res) => res.data.data),
+    .delete(
+      `https://rqzpcqdt40.execute-api.us-east-1.amazonaws.com/dev/material/${id}`,
+    ),
   meta: { id },
 });

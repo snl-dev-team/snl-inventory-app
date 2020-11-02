@@ -7,6 +7,7 @@ import json
 
 app = Chalice(app_name='snl-inventory-app')
 
+app.api.cors = True
 
 rds_client = boto3.client('rds-data')
 database_secrets_arn = os.environ.get('DATABASE_SECRETS_ARN')

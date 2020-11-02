@@ -79,7 +79,6 @@ export default function UpsertMaterialDialog() {
   return (
     <div>
       <Dialog
-        width="lg"
         open
         onClose={handleClose}
         aria-labelledby="form-dialog-title"
@@ -87,7 +86,7 @@ export default function UpsertMaterialDialog() {
         <DialogTitle id="form-dialog-title">
           {getTitle()}
         </DialogTitle>
-        <DialogContent>
+        <DialogContent dividers>
           <Grid container spacing={3} justify="center">
             <Grid item>
               <TextField
@@ -103,7 +102,6 @@ export default function UpsertMaterialDialog() {
             </Grid>
             <Grid item>
               <TextField
-                autoFocus
                 margin="dense"
                 id="name"
                 label="Lot Number"
@@ -115,7 +113,6 @@ export default function UpsertMaterialDialog() {
             </Grid>
             <Grid item>
               <TextField
-                autoFocus
                 margin="dense"
                 id="name"
                 label="Count"
@@ -127,7 +124,6 @@ export default function UpsertMaterialDialog() {
             </Grid>
             <Grid item>
               <TextField
-                autoFocus
                 margin="dense"
                 id="name"
                 label="Expiration Date"
@@ -142,7 +138,6 @@ export default function UpsertMaterialDialog() {
             </Grid>
             <Grid item>
               <TextField
-                autoFocus
                 margin="dense"
                 id="name"
                 label="Price"

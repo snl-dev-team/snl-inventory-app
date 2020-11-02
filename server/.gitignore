@@ -1,4 +1,5 @@
 .chalice/deployments/
 venv/
-__pychache__
 .DS_Store
+
+__pycache__

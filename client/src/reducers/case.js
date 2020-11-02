@@ -1,26 +1,27 @@
 import {
-  FETCH_MATERIALS,
-  CREATE_MATERIAL,
-  UPDATE_MATERIAL,
-  DELETE_MATERIAL,
-} from '../actions/material';
+  FETCH_CASES,
+  CREATE_CASE,
+  UPDATE_CASE,
+  DELETE_CASE,
+} from '../actions/case';
 
-const materialReducer = (state = {}, action) => {
+const caseReducer = (state = {}, action) => {
   const { type, payload, meta } = action;
 
   switch (type) {
-    case `${FETCH_MATERIALS}_FULFILLED`:
+    case `${FETCH_CASES}_FULFILLED`:
       return {
         ...state,
         ...payload.reduce((acc, curr) => {
           acc[curr.id] = {
             id: curr.id,
             name: curr.name,
+            productName: curr.product_name,
+            productCount: curr.product_count,
             number: curr.number,
             count: curr.count,
             expirationDate: curr.expiration_date,
-            price: curr.price,
-            units: curr.units,
+            shipped: curr.shipped,
             dateCreated: curr.date_created,
             dateModified: curr.date_modified,
           };
@@ -28,13 +29,13 @@ const materialReducer = (state = {}, action) => {
         }, {}),
       };
 
-    case `${CREATE_MATERIAL}_FULFILLED`: {
-      const { material } = meta;
+    case `${CREATE_CASE}_FULFILLED`: {
+      const { case_ } = meta;
 
       return {
         ...state,
         [payload.id]: {
-          ...material,
+          ...case_,
           id: payload.id,
           dateCreated: payload.date_created,
           dateModified: payload.date_modified,
@@ -42,20 +43,20 @@ const materialReducer = (state = {}, action) => {
       };
     }
 
-    case `${UPDATE_MATERIAL}_FULFILLED`: {
-      const { material } = meta;
+    case `${UPDATE_CASE}_FULFILLED`: {
+      const { case_ } = meta;
 
       return {
         ...state,
-        [material.id]: {
-          ...state[material.id],
-          ...material,
+        [case_.id]: {
+          ...state[case_.id],
+          ...case_,
           dateModified: payload.date_modified,
         },
       };
     }
 
-    case `${DELETE_MATERIAL}_FULFILLED`: {
+    case `${DELETE_CASE}_FULFILLED`: {
       const { id } = meta;
       const deleteState = Object.assign(state);
       delete deleteState[id];
@@ -67,4 +68,4 @@ const materialReducer = (state = {}, action) => {
   }
 };
 
-export default materialReducer;
+export default caseReducer;

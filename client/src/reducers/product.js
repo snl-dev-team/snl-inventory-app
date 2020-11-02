@@ -1,15 +1,15 @@
 import {
-  FETCH_MATERIALS,
-  CREATE_MATERIAL,
-  UPDATE_MATERIAL,
-  DELETE_MATERIAL,
-} from '../actions/material';
+  FETCH_PRODUCTS,
+  CREATE_PRODUCT,
+  UPDATE_PRODUCT,
+  DELETE_PRODUCT,
+} from '../actions/product';
 
-const materialReducer = (state = {}, action) => {
+const productReducer = (state = {}, action) => {
   const { type, payload, meta } = action;
 
   switch (type) {
-    case `${FETCH_MATERIALS}_FULFILLED`:
+    case `${FETCH_PRODUCTS}_FULFILLED`:
       return {
         ...state,
         ...payload.reduce((acc, curr) => {
@@ -19,8 +19,7 @@ const materialReducer = (state = {}, action) => {
             number: curr.number,
             count: curr.count,
             expirationDate: curr.expiration_date,
-            price: curr.price,
-            units: curr.units,
+            completed: curr.completed,
             dateCreated: curr.date_created,
             dateModified: curr.date_modified,
           };
@@ -28,13 +27,13 @@ const materialReducer = (state = {}, action) => {
         }, {}),
       };
 
-    case `${CREATE_MATERIAL}_FULFILLED`: {
-      const { material } = meta;
+    case `${CREATE_PRODUCT}_FULFILLED`: {
+      const { product } = meta;
 
       return {
         ...state,
         [payload.id]: {
-          ...material,
+          ...product,
           id: payload.id,
           dateCreated: payload.date_created,
           dateModified: payload.date_modified,
@@ -42,20 +41,20 @@ const materialReducer = (state = {}, action) => {
       };
     }
 
-    case `${UPDATE_MATERIAL}_FULFILLED`: {
-      const { material } = meta;
+    case `${UPDATE_PRODUCT}_FULFILLED`: {
+      const { product } = meta;
 
       return {
         ...state,
-        [material.id]: {
-          ...state[material.id],
-          ...material,
+        [product.id]: {
+          ...state[product.id],
+          ...product,
           dateModified: payload.date_modified,
         },
       };
     }
 
-    case `${DELETE_MATERIAL}_FULFILLED`: {
+    case `${DELETE_PRODUCT}_FULFILLED`: {
       const { id } = meta;
       const deleteState = Object.assign(state);
       delete deleteState[id];
@@ -67,4 +66,4 @@ const materialReducer = (state = {}, action) => {
   }
 };
 
-export default materialReducer;
+export default productReducer;

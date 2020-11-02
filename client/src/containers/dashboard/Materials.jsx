@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Grid from '@material-ui/core/Grid';
 import { Route, useHistory } from 'react-router';
 import { fetchMaterials } from '../../actions/material';
-import MaterialsCard from '../../components/MaterialCard';
+import MaterialCard from '../../components/MaterialCard';
 import UpsertMaterialDialog from '../../components/UpsertMaterialDialog';
 
 const useStyles = makeStyles((theme) => ({
@@ -43,23 +43,22 @@ const MaterialsDashboard = () => {
 
   return (
     <div>
-      <div className={classes.root}>
-        <Grid container spacing={3}>
-          {materials.map((material) => (
-            <Grid key={material.id}>
-              <MaterialsCard
-                count={material.count}
-                expirationDate={material.expirationDate}
-                number={material.number}
-                name={material.name}
-                price={material.price}
-                units={material.units}
-                id={material.id}
-              />
-            </Grid>
-          ))}
-        </Grid>
-      </div>
+      <Grid container spacing={3}>
+        {materials.map((material) => (
+          <Grid key={material.id}>
+            <MaterialCard
+              count={material.count}
+              expirationDate={material.expirationDate}
+              number={material.number}
+              name={material.name}
+              price={material.price}
+              units={material.units}
+              id={material.id}
+            />
+          </Grid>
+        ))}
+      </Grid>
+
       <Fab
         size="medium"
         color="secondary"
@@ -75,13 +74,13 @@ const MaterialsDashboard = () => {
       <Route
         exact
         path="/materials/add"
-        component={() => <UpsertMaterialDialog />}
+        component={UpsertMaterialDialog}
       />
 
       <Route
         exact
         path="/materials/edit/:id"
-        component={() => <UpsertMaterialDialog />}
+        component={UpsertMaterialDialog}
       />
     </div>
   );

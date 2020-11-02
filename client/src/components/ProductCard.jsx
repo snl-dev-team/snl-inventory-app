@@ -12,9 +12,10 @@ import { useHistory } from 'react-router-dom';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { deleteMaterial } from '../actions/material';
+import PaletteIcon from '@material-ui/icons/Palette';
+import { deleteProduct } from '../actions/product';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     maxWidth: 500,
     width: 400,
@@ -27,33 +28,28 @@ const useStyles = makeStyles((theme) => ({
   expand: {
     transform: 'rotate(0deg)',
     marginLeft: 'auto',
-    transition: theme.transitions.create('transform', {
-      duration: theme.transitions.duration.shortest,
-    }),
-  },
-  expandOpen: {
-    transform: 'rotate(360deg)',
   },
 }));
 
-export default function MaterialCard({
+export default function ProductCard({
+  id,
+  name,
+  number,
   count,
   expirationDate,
-  number,
-  name,
-  price,
-  units,
-  id,
+  dateCreated,
+  dateModified,
+  completed,
 }) {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
 
   const handleClickEdit = () => {
-    history.push(`/materials/edit/${id}`);
+    history.push(`/products/edit/${id}`);
   };
   const handleClickDelete = () => {
-    dispatch(deleteMaterial(id));
+    dispatch(deleteProduct(id));
   };
 
   return (
@@ -69,30 +65,32 @@ export default function MaterialCard({
           {' '}
           {number}
           <br />
-          Unit type:
-          {' '}
-          {units}
-          <br />
-          count:
+          Count:
           {' '}
           {count}
           <br />
-          expiration:
+          Expiration Date:
           {' '}
           {expirationDate}
           <br />
-          Total value:
+          Date Created:
           {' '}
-          {price * count}
+          {dateCreated}
           <br />
-          Price per unit:
+          Date Modified:
           {' '}
-          {price}
+          {dateModified}
           <br />
+          Completed:
+          {' '}
+          {completed ? 'Yes' : 'No'}
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        <IconButton className={clsx(classes.expand)} onClick={handleClickDelete}>
+        <IconButton className={clsx(classes.expand)}>
+          <PaletteIcon />
+        </IconButton>
+        <IconButton onClick={handleClickDelete}>
           <DeleteIcon />
         </IconButton>
         <IconButton
@@ -105,12 +103,13 @@ export default function MaterialCard({
   );
 }
 
-MaterialCard.propTypes = {
+ProductCard.propTypes = {
+  id: PropTypes.number.isRequired,
+  name: PropTypes.string.isRequired,
+  number: PropTypes.string.isRequired,
   count: PropTypes.number.isRequired,
   expirationDate: PropTypes.string.isRequired,
-  number: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  price: PropTypes.number.isRequired,
-  units: PropTypes.string.isRequired,
-  id: PropTypes.number.isRequired,
+  dateCreated: PropTypes.string.isRequired,
+  dateModified: PropTypes.string.isRequired,
+  completed: PropTypes.bool.isRequired,
 };

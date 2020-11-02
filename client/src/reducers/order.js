@@ -1,26 +1,21 @@
 import {
-  FETCH_MATERIALS,
-  CREATE_MATERIAL,
-  UPDATE_MATERIAL,
-  DELETE_MATERIAL,
-} from '../actions/material';
+  FETCH_ORDERS,
+  CREATE_ORDER,
+  UPDATE_ORDER,
+  DELETE_ORDER,
+} from '../actions/order';
 
-const materialReducer = (state = {}, action) => {
+const orderReducer = (state = {}, action) => {
   const { type, payload, meta } = action;
 
   switch (type) {
-    case `${FETCH_MATERIALS}_FULFILLED`:
+    case `${FETCH_ORDERS}_FULFILLED`:
       return {
         ...state,
         ...payload.reduce((acc, curr) => {
           acc[curr.id] = {
             id: curr.id,
-            name: curr.name,
             number: curr.number,
-            count: curr.count,
-            expirationDate: curr.expiration_date,
-            price: curr.price,
-            units: curr.units,
             dateCreated: curr.date_created,
             dateModified: curr.date_modified,
           };
@@ -28,13 +23,13 @@ const materialReducer = (state = {}, action) => {
         }, {}),
       };
 
-    case `${CREATE_MATERIAL}_FULFILLED`: {
-      const { material } = meta;
+    case `${CREATE_ORDER}_FULFILLED`: {
+      const { order } = meta;
 
       return {
         ...state,
         [payload.id]: {
-          ...material,
+          ...order,
           id: payload.id,
           dateCreated: payload.date_created,
           dateModified: payload.date_modified,
@@ -42,20 +37,20 @@ const materialReducer = (state = {}, action) => {
       };
     }
 
-    case `${UPDATE_MATERIAL}_FULFILLED`: {
-      const { material } = meta;
+    case `${UPDATE_ORDER}_FULFILLED`: {
+      const { order } = meta;
 
       return {
         ...state,
-        [material.id]: {
-          ...state[material.id],
-          ...material,
+        [order.id]: {
+          ...state[order.id],
+          ...order,
           dateModified: payload.date_modified,
         },
       };
     }
 
-    case `${DELETE_MATERIAL}_FULFILLED`: {
+    case `${DELETE_ORDER}_FULFILLED`: {
       const { id } = meta;
       const deleteState = Object.assign(state);
       delete deleteState[id];
@@ -67,4 +62,4 @@ const materialReducer = (state = {}, action) => {
   }
 };
 
-export default materialReducer;
+export default orderReducer;

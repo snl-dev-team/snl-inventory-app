@@ -12,7 +12,9 @@ import { useHistory } from 'react-router-dom';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { deleteMaterial } from '../actions/material';
+import PaletteIcon from '@material-ui/icons/Palette';
+import LocalPharmacyIcon from '@material-ui/icons/LocalPharmacy';
+import { deleteCase } from '../actions/case';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -36,24 +38,28 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function MaterialCard({
-  count,
-  expirationDate,
-  number,
-  name,
-  price,
-  units,
+export default function CaseCard({
   id,
+  name,
+  productName,
+  productCount,
+  count,
+  number,
+  expirationDate,
+  dateCreated,
+  dateModified,
+  shipped,
 }) {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
 
   const handleClickEdit = () => {
-    history.push(`/materials/edit/${id}`);
+    history.push(`/cases/edit/${id}`);
   };
+
   const handleClickDelete = () => {
-    dispatch(deleteMaterial(id));
+    dispatch(deleteCase(id));
   };
 
   return (
@@ -65,34 +71,54 @@ export default function MaterialCard({
           color="textSecondary"
           component="p"
         >
-          Lot Number:
-          {' '}
-          {number}
-          <br />
-          Unit type:
-          {' '}
-          {units}
-          <br />
-          count:
-          {' '}
-          {count}
-          <br />
-          expiration:
-          {' '}
-          {expirationDate}
-          <br />
-          Total value:
-          {' '}
-          {price * count}
-          <br />
-          Price per unit:
-          {' '}
-          {price}
-          <br />
+          <span>
+            Name:
+            {' '}
+            {name}
+            <br />
+            Product Name:
+            {' '}
+            {productName}
+            <br />
+            Product Count:
+            {' '}
+            {productCount}
+            <br />
+            Count:
+            {' '}
+            {count}
+            <br />
+            Lot Number:
+            {' '}
+            {number}
+            <br />
+            Expiration Date:
+            {' '}
+            {expirationDate}
+            <br />
+            Date Created:
+            {' '}
+            {dateCreated}
+            <br />
+            Date Modified:
+            {' '}
+            {dateModified}
+            <br />
+            Shipped:
+            {' '}
+            {shipped ? 'Yes' : 'No'}
+            <br />
+          </span>
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        <IconButton className={clsx(classes.expand)} onClick={handleClickDelete}>
+        <IconButton className={clsx(classes.expand)}>
+          <LocalPharmacyIcon />
+        </IconButton>
+        <IconButton>
+          <PaletteIcon />
+        </IconButton>
+        <IconButton onClick={handleClickDelete}>
           <DeleteIcon />
         </IconButton>
         <IconButton
@@ -105,12 +131,15 @@ export default function MaterialCard({
   );
 }
 
-MaterialCard.propTypes = {
-  count: PropTypes.number.isRequired,
-  expirationDate: PropTypes.string.isRequired,
-  number: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  price: PropTypes.number.isRequired,
-  units: PropTypes.string.isRequired,
+CaseCard.propTypes = {
   id: PropTypes.number.isRequired,
+  name: PropTypes.string.isRequired,
+  productName: PropTypes.string.isRequired,
+  productCount: PropTypes.number.isRequired,
+  count: PropTypes.number.isRequired,
+  number: PropTypes.string.isRequired,
+  expirationDate: PropTypes.string.isRequired,
+  dateCreated: PropTypes.string.isRequired,
+  dateModified: PropTypes.string.isRequired,
+  shipped: PropTypes.bool.isRequired,
 };

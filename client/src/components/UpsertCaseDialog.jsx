@@ -8,73 +8,78 @@ import Grid from '@material-ui/core/Grid';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { useHistory, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import { createMaterial, updateMaterial } from '../actions/material';
-import UNIT_TYPES from '../constants/units';
+import Switch from '@material-ui/core/Switch';
+import { FormControlLabel } from '@material-ui/core';
+import { createCase, updateCase } from '../actions/case';
 
-export default function UpsertMaterialDialog() {
+export default function UpsertCaseDialog() {
   const history = useHistory();
   const dispatch = useDispatch();
   const { id } = useParams();
 
   const handleClose = () => {
-    history.push('/materials');
+    history.push('/cases');
   };
 
   const isAdd = id === undefined;
 
-  const material = useSelector((state) => state.materials[id]);
+  // eslint-disable-next-line no-underscore-dangle
+  const case_ = useSelector((state) => state.cases[id]);
 
   const [name, setName] = useState(
-    material !== undefined ? material.name : '',
+    case_ !== undefined ? case_.name : '',
   );
-  const [number, setNumber] = useState(
-    material !== undefined ? material.number : '',
+  const [productName, setProductName] = useState(
+    case_ !== undefined ? case_.productName : '',
+  );
+  const [productCount, setProductCount] = useState(
+    case_ !== undefined ? case_.productCount : 0,
   );
   const [count, setCount] = useState(
-    material !== undefined ? material.count : 0,
+    case_ !== undefined ? case_.count : 0,
+  );
+  const [number, setNumber] = useState(
+    case_ !== undefined ? case_.number : '',
   );
   const [expirationDate, setExpirationDate] = useState(
-    material !== undefined ? material.expirationDate : '',
+    case_ !== undefined ? case_.expirationDate : '',
   );
-  const [price, setPrice] = useState(
-    material !== undefined ? material.price : 0.0,
-  );
-  const [units, setUnits] = useState(
-    material !== undefined ? material.units : 'unit',
+  const [shipped, setShipped] = useState(
+    case_ !== undefined ? case_.shipped : false,
   );
 
-  const canSave = name !== '' && number !== '' && expirationDate !== '';
+  const canSave = true;
 
   const getTitle = () => {
     if (isAdd) {
-      return 'Create Material';
+      return 'Create Case';
     }
-    return 'Edit Material';
+    return 'Edit Case';
   };
 
   const payload = {
     id: parseInt(id, 10),
     name,
-    number,
+    productName,
+    productCount,
     count,
+    number,
     expirationDate,
-    price,
-    units,
+    shipped,
   };
 
-  const createMaterialAndClose = () => {
+  const createCaseAndClose = () => {
     dispatch(
-      createMaterial(payload),
+      createCase(payload),
     );
-    history.push('/materials');
+    history.push('/cases');
   };
 
-  const updateMaterialAndClose = () => {
+  const updateCaseAndClose = () => {
     dispatch(
-      updateMaterial(payload),
+      updateCase(payload),
     );
-    history.push('/materials');
+    history.push('/cases');
   };
 
   return (
@@ -93,8 +98,7 @@ export default function UpsertMaterialDialog() {
               <TextField
                 autoFocus
                 margin="dense"
-                id="name"
-                label="Material Name"
+                label="Case Name"
                 type="text"
                 fullWidth
                 value={name}
@@ -103,8 +107,29 @@ export default function UpsertMaterialDialog() {
             </Grid>
             <Grid item>
               <TextField
+                autoFocus
                 margin="dense"
-                id="name"
+                label="Product Name"
+                type="text"
+                fullWidth
+                value={productName}
+                onChange={(e) => setProductName(e.target.value)}
+              />
+            </Grid>
+            <Grid item>
+              <TextField
+                autoFocus
+                margin="dense"
+                label="Product Count"
+                type="text"
+                fullWidth
+                value={productCount}
+                onChange={(e) => setProductCount(parseInt(e.target.value, 10))}
+              />
+            </Grid>
+            <Grid item>
+              <TextField
+                margin="dense"
                 label="Lot Number"
                 type="text"
                 fullWidth
@@ -115,7 +140,6 @@ export default function UpsertMaterialDialog() {
             <Grid item>
               <TextField
                 margin="dense"
-                id="name"
                 label="Count"
                 type="number"
                 fullWidth
@@ -126,7 +150,6 @@ export default function UpsertMaterialDialog() {
             <Grid item>
               <TextField
                 margin="dense"
-                id="name"
                 label="Expiration Date"
                 type="date"
                 fullWidth
@@ -138,54 +161,32 @@ export default function UpsertMaterialDialog() {
               />
             </Grid>
             <Grid item>
-              <TextField
-                margin="dense"
-                id="name"
-                label="Price"
-                type="number"
-                fullWidth
-                value={price}
-                onChange={(e) => setPrice(parseInt(e.target.value, 10))}
-                InputProps={{
-                  startAdornment: <InputAdornment position="start">¢</InputAdornment>,
-                }}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                id="standard-select-currency-native"
-                select
-                label="Unit"
-                value={units}
-                onChange={(e) => setUnits(e.target.value)}
-                SelectProps={{
-                  native: true,
-                }}
-              >
-                {Object.values(UNIT_TYPES).map(
-                  (option) => (
-                    <option
-                      key={option}
-                      value={option}
-                    >
-                      {option}
-                    </option>
-                  ),
+              <FormControlLabel
+                style={{ paddingTop: 25 }}
+                control={(
+                  <Switch
+                    checked={shipped}
+                    size="small"
+                    onChange={(e) => setShipped(e.target.checked)}
+                  />
                 )}
-              </TextField>
+                labelPlacement="start"
+                label="Shipped"
+              />
+
             </Grid>
           </Grid>
         </DialogContent>
         <DialogActions>
           <Button
-            onClick={() => history.push('/materials')}
+            onClick={() => history.push('/cases')}
             color="primary"
           >
             Cancel
           </Button>
           <Button
             disabled={!canSave}
-            onClick={isAdd ? createMaterialAndClose : updateMaterialAndClose}
+            onClick={isAdd ? createCaseAndClose : updateCaseAndClose}
             color="primary"
           >
             {isAdd ? 'Create' : 'Save'}

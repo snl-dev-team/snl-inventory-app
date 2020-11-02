@@ -8,49 +8,46 @@ import Grid from '@material-ui/core/Grid';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { useHistory, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import { createMaterial, updateMaterial } from '../actions/material';
-import UNIT_TYPES from '../constants/units';
+import Switch from '@material-ui/core/Switch';
+import { FormControlLabel } from '@material-ui/core';
+import { createProduct, updateProduct } from '../actions/product';
 
-export default function UpsertMaterialDialog() {
+export default function UpsertProductDialog() {
   const history = useHistory();
   const dispatch = useDispatch();
   const { id } = useParams();
 
   const handleClose = () => {
-    history.push('/materials');
+    history.push('/products');
   };
 
   const isAdd = id === undefined;
 
-  const material = useSelector((state) => state.materials[id]);
+  const product = useSelector((state) => state.products[id]);
 
   const [name, setName] = useState(
-    material !== undefined ? material.name : '',
+    product !== undefined ? product.name : '',
   );
   const [number, setNumber] = useState(
-    material !== undefined ? material.number : '',
+    product !== undefined ? product.number : '',
   );
   const [count, setCount] = useState(
-    material !== undefined ? material.count : 0,
+    product !== undefined ? product.count : 0,
   );
   const [expirationDate, setExpirationDate] = useState(
-    material !== undefined ? material.expirationDate : '',
+    product !== undefined ? product.expirationDate : '',
   );
-  const [price, setPrice] = useState(
-    material !== undefined ? material.price : 0.0,
-  );
-  const [units, setUnits] = useState(
-    material !== undefined ? material.units : 'unit',
+  const [completed, setCompleted] = useState(
+    product !== undefined ? product.completed : false,
   );
 
   const canSave = name !== '' && number !== '' && expirationDate !== '';
 
   const getTitle = () => {
     if (isAdd) {
-      return 'Create Material';
+      return 'Create Product';
     }
-    return 'Edit Material';
+    return 'Edit Product';
   };
 
   const payload = {
@@ -59,22 +56,21 @@ export default function UpsertMaterialDialog() {
     number,
     count,
     expirationDate,
-    price,
-    units,
+    completed,
   };
 
-  const createMaterialAndClose = () => {
+  const createProductAndClose = () => {
     dispatch(
-      createMaterial(payload),
+      createProduct(payload),
     );
-    history.push('/materials');
+    history.push('/products');
   };
 
-  const updateMaterialAndClose = () => {
+  const updateProductAndClose = () => {
     dispatch(
-      updateMaterial(payload),
+      updateProduct(payload),
     );
-    history.push('/materials');
+    history.push('/products');
   };
 
   return (
@@ -93,8 +89,7 @@ export default function UpsertMaterialDialog() {
               <TextField
                 autoFocus
                 margin="dense"
-                id="name"
-                label="Material Name"
+                label="Product Name"
                 type="text"
                 fullWidth
                 value={name}
@@ -104,7 +99,6 @@ export default function UpsertMaterialDialog() {
             <Grid item>
               <TextField
                 margin="dense"
-                id="name"
                 label="Lot Number"
                 type="text"
                 fullWidth
@@ -115,7 +109,6 @@ export default function UpsertMaterialDialog() {
             <Grid item>
               <TextField
                 margin="dense"
-                id="name"
                 label="Count"
                 type="number"
                 fullWidth
@@ -126,7 +119,6 @@ export default function UpsertMaterialDialog() {
             <Grid item>
               <TextField
                 margin="dense"
-                id="name"
                 label="Expiration Date"
                 type="date"
                 fullWidth
@@ -138,54 +130,32 @@ export default function UpsertMaterialDialog() {
               />
             </Grid>
             <Grid item>
-              <TextField
-                margin="dense"
-                id="name"
-                label="Price"
-                type="number"
-                fullWidth
-                value={price}
-                onChange={(e) => setPrice(parseInt(e.target.value, 10))}
-                InputProps={{
-                  startAdornment: <InputAdornment position="start">¢</InputAdornment>,
-                }}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                id="standard-select-currency-native"
-                select
-                label="Unit"
-                value={units}
-                onChange={(e) => setUnits(e.target.value)}
-                SelectProps={{
-                  native: true,
-                }}
-              >
-                {Object.values(UNIT_TYPES).map(
-                  (option) => (
-                    <option
-                      key={option}
-                      value={option}
-                    >
-                      {option}
-                    </option>
-                  ),
+              <FormControlLabel
+                style={{ paddingTop: 25 }}
+                control={(
+                  <Switch
+                    checked={completed}
+                    size="small"
+                    onChange={(e) => setCompleted(e.target.checked)}
+                  />
                 )}
-              </TextField>
+                labelPlacement="start"
+                label="Completed"
+              />
+
             </Grid>
           </Grid>
         </DialogContent>
         <DialogActions>
           <Button
-            onClick={() => history.push('/materials')}
+            onClick={() => history.push('/products')}
             color="primary"
           >
             Cancel
           </Button>
           <Button
             disabled={!canSave}
-            onClick={isAdd ? createMaterialAndClose : updateMaterialAndClose}
+            onClick={isAdd ? createProductAndClose : updateProductAndClose}
             color="primary"
           >
             {isAdd ? 'Create' : 'Save'}

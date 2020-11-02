@@ -12,7 +12,8 @@ import { useHistory } from 'react-router-dom';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { deleteMaterial } from '../actions/material';
+import GridOnIcon from '@material-ui/icons/GridOn';
+import { deleteCase } from '../actions/case';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -36,63 +37,50 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function MaterialCard({
-  count,
-  expirationDate,
-  number,
-  name,
-  price,
-  units,
+export default function OrderCard({
   id,
+  number,
+  dateCreated,
+  dateModified,
 }) {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
 
   const handleClickEdit = () => {
-    history.push(`/materials/edit/${id}`);
+    history.push(`/orders/edit/${id}`);
   };
+
   const handleClickDelete = () => {
-    dispatch(deleteMaterial(id));
+    dispatch(deleteCase(id));
   };
 
   return (
     <Card className={classes.root}>
-      <CardHeader title={name} />
+      <CardHeader title={number} />
       <CardContent>
         <Typography
           variant="body2"
           color="textSecondary"
           component="p"
         >
-          Lot Number:
-          {' '}
-          {number}
-          <br />
-          Unit type:
-          {' '}
-          {units}
-          <br />
-          count:
-          {' '}
-          {count}
-          <br />
-          expiration:
-          {' '}
-          {expirationDate}
-          <br />
-          Total value:
-          {' '}
-          {price * count}
-          <br />
-          Price per unit:
-          {' '}
-          {price}
-          <br />
+          <span>
+            Date Created:
+            {' '}
+            {dateCreated}
+            <br />
+            Date Modified:
+            {' '}
+            {dateModified}
+            <br />
+          </span>
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        <IconButton className={clsx(classes.expand)} onClick={handleClickDelete}>
+        <IconButton className={clsx(classes.expand)}>
+          <GridOnIcon />
+        </IconButton>
+        <IconButton onClick={handleClickDelete}>
           <DeleteIcon />
         </IconButton>
         <IconButton
@@ -105,12 +93,9 @@ export default function MaterialCard({
   );
 }
 
-MaterialCard.propTypes = {
-  count: PropTypes.number.isRequired,
-  expirationDate: PropTypes.string.isRequired,
-  number: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  price: PropTypes.number.isRequired,
-  units: PropTypes.string.isRequired,
+OrderCard.propTypes = {
   id: PropTypes.number.isRequired,
+  number: PropTypes.string.isRequired,
+  dateCreated: PropTypes.string.isRequired,
+  dateModified: PropTypes.string.isRequired,
 };

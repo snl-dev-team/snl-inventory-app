@@ -288,17 +288,14 @@ export default function MiniDrawer() {
           component={MaterialsDashboard}
         />
         <Route
-          exact
           path="/orders"
           component={OrdersDashboard}
         />
         <Route
-          exact
           path="/cases"
           component={CasesDashboard}
         />
         <Route
-          exact
           path="/products"
           component={ProductsDashboard}
         />

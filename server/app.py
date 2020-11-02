@@ -4,6 +4,7 @@ import sys
 import mysql.connector
 from chalice import Chalice, Response
 import json
+from datetime import datetime
 
 app = Chalice(app_name='snl-inventory-app')
 
@@ -82,9 +83,16 @@ def create_material():
         res = execute_statement(sql)
 
         created_id = res['generatedFields'][0]['longValue']
+        date_created = date_modified = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
 
         return Response(
-            body=json.dumps({'id': created_id}),
+            body=json.dumps(
+                {
+                    'id': created_id,
+                    'date_created': date_created,
+                    'date_modified': date_modified,
+                }
+            ),
             status_code=200,
         )
 
@@ -139,14 +147,17 @@ def update_material(id):
                 count = {count},
                 expiration_date = '{expiration_date}',
                 price = {price},
-                units = '{units}'
+                units = '{units}',
+                date_modified = CURRENT_TIMESTAMP
             WHERE id = {id}
             """.format(**body, id=id)
 
         execute_statement(sql)
 
+        date_modified = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+
         return Response(
-            body=json.dumps({}),
+            body=json.dumps({'date_modified': date_modified}),
             status_code=200
         )
     except Exception as e:
@@ -183,11 +194,11 @@ PRODUCT_COLUMNS = [
     ('id',              int,   'longValue'),
     ('name',            str,   'stringValue'),
     ('number',          str,   'stringValue'),
-    ('count',           float, 'doubleValue'),
+    ('count',           float, 'longValue'),
     ('expiration_date', str,   'stringValue'),
     ('date_created',    str,   'stringValue'),
     ('date_modified',   str,   'stringValue'),
-    ('complete',        bool,  'boolValue'),
+    ('completed',       bool,  'booleanValue'),
 ]
 
 """
@@ -226,23 +237,30 @@ def create_product():
                     `number`,
                     `count`,
                     `expiration_date`,
-                    `complete`
+                    `completed`
                 )
                 VALUES (
                     '{name}',
                     '{number}',
                     {count},
                     '{expiration_date}',
-                    {complete}
+                    {completed}
                 )
             """.format(**body)
 
         res = execute_statement(sql)
 
         created_id = res['generatedFields'][0]['longValue']
+        date_created = date_modified = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
 
         return Response(
-            body=json.dumps({'id': created_id}),
+            body=json.dumps(
+                {
+                    'id': created_id,
+                    'date_created': date_created,
+                    'date_modified': date_modified
+                }
+            ),
             status_code=200,
         )
 
@@ -297,14 +315,17 @@ def update_product(id):
                 number = '{number}',
                 count = {count},
                 expiration_date = '{expiration_date}',
-                complete = {complete}
+                completed = {completed},
+                date_modified = CURRENT_TIMESTAMP
             WHERE id = {id}
             """.format(**body, id=id)
 
         execute_statement(sql)
 
+        date_modified = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+
         return Response(
-            body=json.dumps({}),
+            body=json.dumps({'date_modified': date_modified}),
             status_code=200,
         )
 
@@ -406,7 +427,7 @@ CASE_COLUMNS = [
     ('expiration_date', str,   'stringValue'),
     ('date_created',    str,   'stringValue'),
     ('date_modified',   str,   'stringValue'),
-    ('shipped',         bool,  'boolValue'),
+    ('shipped',         bool,  'booleanValue'),
 ]
 
 """
@@ -472,9 +493,16 @@ def create_case():
         res = execute_statement(sql)
 
         created_id = res['generatedFields'][0]['longValue']
+        date_created = date_modified = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
 
         return Response(
-            body=json.dumps({'id': created_id}),
+            body=json.dumps(
+                {
+                    'id': created_id,
+                    'date_created': date_created,
+                    'date_modified': date_modified,
+                }
+            ),
             status_code=200,
         )
 
@@ -531,14 +559,17 @@ def update_case(id):
                 count = {count},
                 number = '{number}',
                 expiration_date = '{expiration_date}',
-                shipped = '{shipped}'
+                shipped = '{shipped}',
+                date_modified = CURRENT_TIMESTAMP
             WHERE id = {id}
             """.format(**body, id=id)
 
         execute_statement(sql)
 
+        date_modified = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+
         return Response(
-            body=json.dumps({}),
+            body=json.dumps({'date_modified': date_modified}),
             status_code=200,
         )
 
@@ -732,9 +763,16 @@ def create_order():
         res = execute_statement(sql)
 
         created_id = res['generatedFields'][0]['longValue']
+        date_created = date_modified = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
 
         return Response(
-            body=json.dumps({'id': created_id}),
+            body=json.dumps(
+                {
+                    'id': created_id,
+                    'date_created': date_created,
+                    'date_modified': date_modified
+                },
+            ),
             status_code=200,
         )
 
@@ -785,14 +823,17 @@ def update_order(id):
         body = app.current_request.json_body
         sql = """
             UPDATE `order` SET
-                number = '{number}'
+                number = '{number}',
+                date_modified = CURRENT_TIMESTAMP
             WHERE id = {id}
             """.format(**body, id=id)
 
         execute_statement(sql)
 
+        date_modified = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+
         return Response(
-            body=json.dumps({}),
+            body=json.dumps({'date_modified': date_modified}),
             status_code=200,
         )
 

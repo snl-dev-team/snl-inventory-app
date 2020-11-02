@@ -1,7 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Fab from '@material-ui/core/Fab';
 import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
+import { useDispatch, useSelector } from 'react-redux';
+import Grid from '@material-ui/core/Grid';
+import { Route, useHistory } from 'react-router';
+import { fetchProducts } from '../../actions/product';
+import ProductCard from '../../components/ProductCard';
+import UpsertProductDialog from '../../components/UpsertProductDialog';
 
 const useStyles = makeStyles((theme) => ({
   margin: {
@@ -26,19 +32,60 @@ const useStyles = makeStyles((theme) => ({
 
 const ProductsDashboard = () => {
   const classes = useStyles();
+  const history = useHistory();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchProducts());
+  });
+
+  const products = useSelector(
+    (state) => Object.values(state.products),
+    (before, after) => JSON.stringify(before) === JSON.stringify(after),
+  );
 
   return (
     <div>
+      <Grid container spacing={3}>
+        {products.map((product) => (
+          <Grid key={product.id}>
+            <ProductCard
+              id={product.id}
+              name={product.name}
+              number={product.number}
+              count={product.count}
+              expirationDate={product.expirationDate}
+              dateCreated={product.dateCreated}
+              dateModified={product.dateModified}
+              completed={product.completed}
+            />
+          </Grid>
+        ))}
+      </Grid>
+
       <div>
         <Fab
           size="medium"
           color="secondary"
           aria-label="add"
           className={classes.margin}
+          onClick={() => history.push('/products/add')}
         >
           <AddIcon />
         </Fab>
       </div>
+
+      <Route
+        exact
+        path="/products/add"
+        component={() => <UpsertProductDialog />}
+      />
+
+      <Route
+        exact
+        path="/products/edit/:id"
+        component={() => <UpsertProductDialog />}
+      />
     </div>
   );
 };

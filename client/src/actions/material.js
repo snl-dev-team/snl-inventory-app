@@ -54,7 +54,7 @@ export const updateMaterial = (material) => ({
         'content-type': 'application/json',
       },
     },
-  ),
+  ).then((res) => res.data),
   meta: { material },
 });
 

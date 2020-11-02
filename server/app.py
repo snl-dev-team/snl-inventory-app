@@ -56,11 +56,8 @@ MATERIAL_COLUMNS = [
 
 @app.route('/material', methods=['POST'])
 def create_material():
-
     try:
-
         body = app.current_request.json_body
-
         sql = """
             INSERT INTO
                 `material` (
@@ -99,7 +96,6 @@ def create_material():
 
 @app.route('/material', methods=['GET'])
 def fetch_materials():
-
     try:
         columns_string = ', '.join(i[0] for i in MATERIAL_COLUMNS)
         sql = """
@@ -120,9 +116,10 @@ def fetch_materials():
             data.append(data_row)
 
         return Response(
-            body=json.dumps(data),
-            status_code=400,
+            body=json.dumps({'data': data}),
+            status_code=200,
         )
+
     except Exception as e:
         return Response(
             body=json.dumps({'message': str(e)}),
@@ -132,7 +129,6 @@ def fetch_materials():
 
 @app.route('/material/{id}', methods=['PUT'])
 def update_material(id):
-
     try:
         body = app.current_request.json_body
         sql = """
@@ -170,7 +166,11 @@ def delete_material(id):
 
         execute_statement(sql)
 
-        return
+        return Response(
+            body=json.dumps({}),
+            status_code=200,
+        )
+
     except Exception as e:
         return Response(
             body=json.dumps({'message': str(e)}),
@@ -215,9 +215,7 @@ PRODUCT_COLUMNS = [
 
 @app.route('/product', methods=['POST'])
 def create_product():
-
     try:
-
         body = app.current_request.json_body
 
         sql = """
@@ -242,9 +240,10 @@ def create_product():
 
         created_id = res['generatedFields'][0]['longValue']
 
-        return {
-            'id': created_id
-        }
+        return Response(
+            body=json.dumps({'id': created_id}),
+            status_code=200,
+        )
 
     except Exception as e:
         return Response(
@@ -255,9 +254,7 @@ def create_product():
 
 @app.route('/product', methods=['GET'])
 def fetch_products():
-
     try:
-
         columns_string = ', '.join(i[0] for i in PRODUCT_COLUMNS)
         sql = """
             SELECT
@@ -277,7 +274,11 @@ def fetch_products():
                 data_row[name] = value
             data.append(data_row)
 
-        return data
+        return Response(
+            body=json.dumps({'data': data}),
+            status_code=200,
+        )
+
     except Exception as e:
         return Response(
             body=json.dumps({'message': str(e)}),
@@ -301,6 +302,11 @@ def update_product(id):
 
         execute_statement(sql)
 
+        return Response(
+            body=json.dumps({}),
+            status_code=200,
+        )
+
     except Exception as e:
         return Response(
             body=json.dumps({'message': str(e)}),
@@ -318,6 +324,11 @@ def delete_product(id):
             """.format(id=id)
 
         execute_statement(sql)
+
+        return Response(
+            body=json.dumps({}),
+            status_code=200,
+        )
 
     except Exception as e:
         return Response(
@@ -346,6 +357,11 @@ def product_use_material(id):
 
         execute_statement(sql)
 
+        return Response(
+            body=json.dumps({}),
+            status_code=200,
+        )
+
     except Exception as e:
         return Response(
             body=json.dumps({'message': str(e)}),
@@ -366,6 +382,12 @@ def product_unuse_material(id):
             """.format(**body, id=id)
 
         execute_statement(sql)
+
+        return Response(
+            body=json.dumps({}),
+            status_code=200,
+        )
+
     except Exception as e:
         return Response(
             body=json.dumps({'message': str(e)}),
@@ -424,7 +446,6 @@ CASE_COLUMNS = [
 def create_case():
     try:
         body = app.current_request.json_body
-
         sql = """
             INSERT INTO
                 `case` (
@@ -451,9 +472,11 @@ def create_case():
 
         created_id = res['generatedFields'][0]['longValue']
 
-        return {
-            'id': created_id
-        }
+        return Response(
+            body=json.dumps({'id': created_id}),
+            status_code=200,
+        )
+
     except Exception as e:
         return Response(
             body=json.dumps({'message': str(e)}),
@@ -483,7 +506,11 @@ def fetch_cases():
                 data_row[name] = value
             data.append(data_row)
 
-        return data
+        return Response(
+            body=json.dumps({'data': data}),
+            status_code=200,
+        )
+
     except Exception as e:
         return Response(
             body=json.dumps({'message': str(e)}),
@@ -508,6 +535,12 @@ def update_case(id):
             """.format(**body, id=id)
 
         execute_statement(sql)
+
+        return Response(
+            body=json.dumps({}),
+            status_code=200,
+        )
+
     except Exception as e:
         return Response(
             body=json.dumps({'message': str(e)}),
@@ -525,6 +558,12 @@ def delete_case(id):
             """.format(id=id)
 
         execute_statement(sql)
+
+        return Response(
+            body=json.dumps({}),
+            status_code=200,
+        )
+
     except Exception as e:
         return Response(
             body=json.dumps({'message': str(e)}),
@@ -534,7 +573,6 @@ def delete_case(id):
 
 @app.route('/case/{id}/material', methods=['PUT'])
 def case_use_material(id):
-
     try:
         body = app.current_request.json_body
 
@@ -552,6 +590,12 @@ def case_use_material(id):
             """.format(**body, id=id)
 
         execute_statement(sql)
+
+        return Response(
+            body=json.dumps({}),
+            status_code=200,
+        )
+
     except Exception as e:
         return Response(
             body=json.dumps({'message': str(e)}),
@@ -572,6 +616,12 @@ def case_unuse_material(id):
             """.format(**body, id=id)
 
         execute_statement(sql)
+
+        return Response(
+            body=json.dumps({}),
+            status_code=200,
+        )
+
     except Exception as e:
         return Response(
             body=json.dumps({'message': str(e)}),
@@ -583,7 +633,6 @@ def case_unuse_material(id):
 def case_use_product(id):
     try:
         body = app.current_request.json_body
-
         sql = """
             REPLACE INTO `case_uses_product` (
                 `case_id`,
@@ -598,6 +647,12 @@ def case_use_product(id):
             """.format(**body, id=id)
 
         execute_statement(sql)
+
+        return Response(
+            body=json.dumps({}),
+            status_code=200,
+        )
+
     except Exception as e:
         return Response(
             body=json.dumps({'message': str(e)}),
@@ -608,7 +663,6 @@ def case_use_product(id):
 @app.route('/case/{id}/product', methods=['DELETE'])
 def case_unuse_product(id):
     try:
-
         body = app.current_request.json_body
         sql = """
             DELETE FROM
@@ -619,6 +673,11 @@ def case_unuse_product(id):
             """.format(**body, id=id)
 
         execute_statement(sql)
+
+        return Response(
+            body=json.dumps({}),
+            status_code=200,
+        )
 
     except Exception as e:
         return Response(
@@ -673,9 +732,10 @@ def create_order():
 
         created_id = res['generatedFields'][0]['longValue']
 
-        return {
-            'id': created_id
-        }
+        return Response(
+            body=json.dumps({'id': created_id}),
+            status_code=200,
+        )
 
     except Exception as e:
         return Response(
@@ -706,7 +766,11 @@ def fetch_orders():
                 data_row[name] = value
             data.append(data_row)
 
-        return data
+        return Response(
+            body=json.dumps({'data': data}),
+            status_code=200,
+        )
+
     except Exception as e:
         return Response(
             body=json.dumps({'message': str(e)}),
@@ -717,7 +781,6 @@ def fetch_orders():
 @app.route('/order/{id}', methods=['PUT'])
 def update_order(id):
     try:
-
         body = app.current_request.json_body
         sql = """
             UPDATE `order` SET
@@ -726,6 +789,12 @@ def update_order(id):
             """.format(**body, id=id)
 
         execute_statement(sql)
+
+        return Response(
+            body=json.dumps({}),
+            status_code=200,
+        )
+
     except Exception as e:
         return Response(
             body=json.dumps({'message': str(e)}),
@@ -743,6 +812,12 @@ def delete_order(id):
             """.format(id=id)
 
         execute_statement(sql)
+
+        return Response(
+            body=json.dumps({}),
+            status_code=200,
+        )
+
     except Exception as e:
         return Response(
             body=json.dumps({'message': str(e)}),
@@ -769,6 +844,12 @@ def order_use_case(id):
             """.format(**body, id=id)
 
         execute_statement(sql)
+
+        return Response(
+            body=json.dumps({}),
+            status_code=200,
+        )
+
     except Exception as e:
         return Response(
             body=json.dumps({'message': str(e)}),
@@ -789,6 +870,11 @@ def order_unuse_case(id):
             """.format(**body, id=id)
 
         execute_statement(sql)
+
+        return Response(
+            body=json.dumps({}),
+            status_code=200,
+        )
 
     except Exception as e:
         return Response(

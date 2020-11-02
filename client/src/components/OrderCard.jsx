@@ -13,7 +13,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import GridOnIcon from '@material-ui/icons/GridOn';
-import { deleteCase } from '../actions/case';
+import { deleteOrder } from '../actions/order';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -52,7 +52,7 @@ export default function OrderCard({
   };
 
   const handleClickDelete = () => {
-    dispatch(deleteCase(id));
+    dispatch(deleteOrder(id));
   };
 
   return (

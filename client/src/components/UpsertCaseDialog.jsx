@@ -121,7 +121,7 @@ export default function UpsertCaseDialog() {
                 autoFocus
                 margin="dense"
                 label="Product Count"
-                type="text"
+                type="number"
                 fullWidth
                 value={productCount}
                 onChange={(e) => setProductCount(parseInt(e.target.value, 10))}

@@ -9,7 +9,7 @@ const productUseMaterialReducer = (state = {}, action) => {
 				...state,
 				...payload.reduce((acc, curr) => {
 					acc[curr.id] = {
-						id: curr.id,
+						productId: curr.product_id,
 						materialId: curr.material_id,
 						count: curr.count,
 					};

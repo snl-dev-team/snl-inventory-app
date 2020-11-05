@@ -425,8 +425,8 @@ def product_use_material(id):
 
         sql = """
             SET @countDiff = (
-                SELECT `count` FROM `product_uses_material` WHERE `product_id`={id}, `material_id`={material_id}
-            ) - {count};
+                (SELECT `count` FROM `product_uses_material` WHERE `product_id`={id}, `material_id`={material_id}) - {count}
+            );
 
             UPDATE `material` 
             SET `count`=(

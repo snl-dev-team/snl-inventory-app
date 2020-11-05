@@ -365,6 +365,8 @@ def product_use_material(id):
         body = app.current_request.json_body
 
         sql = """
+            UPDATE `material` SET `count`=((SELECT `count` FROM `material` WHERE `id`={material_id}) - {count}) WHERE `id`={material_id};
+
             REPLACE INTO `product_uses_material` (
                 `product_id`,
                 `material_id`,
@@ -374,7 +376,7 @@ def product_use_material(id):
                 {id},
                 {material_id},
                 {count}
-            )
+            );
             """.format(**body, id=id)
 
         execute_statement(sql)

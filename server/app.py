@@ -365,8 +365,12 @@ def product_use_material(id):
         body = app.current_request.json_body
 
         sql = """
+            DECLARE @countDiff AS INT
             SET @countDiff = (
-                (SELECT `count` FROM `product_uses_material` WHERE `product_id`={id}, `material_id`={material_id}) - {count}
+                            (SELECT `count` 
+                             FROM `product_uses_material` 
+                             WHERE `product_id`={id}, `material_id`={material_id})
+                             - {count}
             );
 
             UPDATE `material` 

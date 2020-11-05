@@ -424,14 +424,20 @@ def product_use_material(id):
         body = app.current_request.json_body
 
         sql = """
-            SET @countDiff = (SELECT `count` FROM `product_uses_material` WHERE `product_id`={id}, `material_id`={material_id}) - {count};
+            SET @countDiff = (
+                SELECT `count` FROM `product_uses_material` WHERE `product_id`={id}, `material_id`={material_id}
+            ) - {count};
 
             UPDATE `material` 
-            SET `count`=(SELECT `count` FROM `material` WHERE `id`={material_id}) - @countDiff
+            SET `count`=(
+                (SELECT `count` FROM `material` WHERE `id`={material_id})- @countDiff
+            )
             IF @countDiff >= 0;
 
             UPDATE `material`
-            SET `count`=(SELECT `count` FROM `material` WHERE `id`={material_id}) + ABS(@countDiff)
+            SET `count`=(
+                (SELECT `count` FROM `material` WHERE `id`={material_id}) + ABS(@countDiff)
+            )
             IF @countDiff < 0;
 
             REPLACE INTO `product_uses_material` (
@@ -465,11 +471,18 @@ def product_unuse_material(id):
     try:
         body = app.current_request.json_body
         sql = """
+            UPDATE `material` 
+            SET `count`=(
+                (SELECT `count` FROM `material` WHERE `id`={material_id}) + 
+                (SELECT `count` FROM `product_uses_material` WHERE `product_id={id}, `material_id`={material_id})
+            )
+            WHERE `id`={material_id};
+
             DELETE FROM
                 `product_uses_material`
             WHERE
                 `product_id` = {id},
-                `material_id` = {material_id}
+                `material_id` = {material_id};
             """.format(**body, id=id)
 
         execute_statement(sql)

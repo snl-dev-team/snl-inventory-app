@@ -365,7 +365,15 @@ def product_use_material(id):
         body = app.current_request.json_body
 
         sql = """
-            UPDATE `material` SET `count`=((SELECT `count` FROM `material` WHERE `id`={material_id}) - {count}) WHERE `id`={material_id};
+            SET @countDiff = (SELECT `count` FROM `product_uses_material` WHERE `product_id`={id}, `material_id`={material_id}) - {count};
+
+            UPDATE `material` 
+            SET `count`=(SELECT `count` FROM `material` WHERE `id`={material_id}) - @countDiff
+            IF @countDiff >= 0;
+
+            UPDATE `material`
+            SET `count`=(SELECT `count` FROM `material` WHERE `id`={material_id}) + ABS(@countDiff)
+            IF @countDiff < 0;
 
             REPLACE INTO `product_uses_material` (
                 `product_id`,

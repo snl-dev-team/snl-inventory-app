@@ -136,6 +136,41 @@ def fetch_materials():
         )
 
 
+@app.route('/material/{id}', methods=['GET'])
+def fetch_material(id):
+    try:
+        columns_string = ', '.join(i[0] for i in MATERIAL_COLUMNS)
+        sql = """
+            SELECT
+                {columns}
+            FROM
+                `material`
+            WHERE
+                `id` = {id};
+            """.format(columns=columns_string, id=id)
+        res = execute_statement(sql)
+        records = res['records']
+        data = []
+        for record in records:
+            data_row = {}
+            for entry, column in zip(record, MATERIAL_COLUMNS):
+                name, _, entry_type = column
+                value = entry.get(entry_type, None)
+                data_row[name] = value
+            data.append(data_row)
+
+        return Response(
+            body=json.dumps({'data': data}),
+            status_code=200,
+        )
+
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
+
+
 @app.route('/material/{id}', methods=['PUT'])
 def update_material(id):
     try:
@@ -281,6 +316,42 @@ def fetch_products():
             FROM
                 `product`;
             """.format(columns=columns_string)
+        res = execute_statement(sql)
+
+        records = res['records']
+        data = []
+        for record in records:
+            data_row = {}
+            for entry, column in zip(record, PRODUCT_COLUMNS):
+                name, _, entry_type = column
+                value = entry.get(entry_type, None)
+                data_row[name] = value
+            data.append(data_row)
+
+        return Response(
+            body=json.dumps({'data': data}),
+            status_code=200,
+        )
+
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
+
+
+@app.route('/product/{id}', methods=['GET'])
+def fetch_product(id):
+    try:
+        columns_string = ', '.join(i[0] for i in PRODUCT_COLUMNS)
+        sql = """
+            SELECT
+                {columns}
+            FROM
+                `product`
+            WHERE
+                `id` = {id};
+            """.format(columns=columns_string, id=id)
         res = execute_statement(sql)
 
         records = res['records']
@@ -522,6 +593,42 @@ def fetch_cases():
                 {columns}
             FROM
                 `case`;
+            """.format(columns=columns_string)
+        res = execute_statement(sql)
+        records = res['records']
+
+        data = []
+        for record in records:
+            data_row = {}
+            for entry, column in zip(record, CASE_COLUMNS):
+                name, _, entry_type = column
+                value = entry.get(entry_type, None)
+                data_row[name] = value
+            data.append(data_row)
+
+        return Response(
+            body=json.dumps({'data': data}),
+            status_code=200,
+        )
+
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
+
+
+@app.route('/case/{id}', methods=['GET'])
+def fetch_case(id):
+    try:
+        columns_string = ', '.join(i[0] for i in CASE_COLUMNS)
+        sql = """
+            SELECT
+                {columns}
+            FROM
+                `case`
+            WHERE
+                    `id` = {id};
             """.format(columns=columns_string)
         res = execute_statement(sql)
         records = res['records']
@@ -792,6 +899,42 @@ def fetch_orders():
                 {columns}
             FROM
                 `order`;
+            """.format(columns=columns_string)
+        res = execute_statement(sql)
+        records = res['records']
+
+        data = []
+        for record in records:
+            data_row = {}
+            for entry, column in zip(record, ORDER_COLUMNS):
+                name, _, entry_type = column
+                value = entry.get(entry_type, None)
+                data_row[name] = value
+            data.append(data_row)
+
+        return Response(
+            body=json.dumps({'data': data}),
+            status_code=200,
+        )
+
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
+
+
+@app.route('/order/{id}', methods=['GET'])
+def fetch_order(id):
+    try:
+        columns_string = ', '.join(i[0] for i in ORDER_COLUMNS)
+        sql = """
+            SELECT
+                {columns}
+            FROM
+                `order`
+            WHERE
+                `id` = {id};
             """.format(columns=columns_string)
         res = execute_statement(sql)
         records = res['records']

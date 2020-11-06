@@ -27,6 +27,19 @@ def execute_statement(sql):
     return response
 
 
+def process_select_response(response, columns):
+    records = response['records']
+    data = []
+    for record in records:
+        data_row = {}
+        for entry, column in zip(record, columns):
+            name, _, entry_type = column
+            value = entry.get(entry_type, None)
+            data_row[name] = value
+        data.append(data_row)
+    return data
+
+
 MATERIAL_COLUMNS = [
     ('id',              int,   'longValue'),
     ('name',            str,   'stringValue'),
@@ -114,15 +127,7 @@ def fetch_materials():
                 `material`;
             """.format(columns=columns_string)
         res = execute_statement(sql)
-        records = res['records']
-        data = []
-        for record in records:
-            data_row = {}
-            for entry, column in zip(record, MATERIAL_COLUMNS):
-                name, _, entry_type = column
-                value = entry.get(entry_type, None)
-                data_row[name] = value
-            data.append(data_row)
+        data = process_select_response(res, MATERIAL_COLUMNS)
 
         return Response(
             body=json.dumps({'data': data}),
@@ -149,16 +154,7 @@ def fetch_material(id):
                 `id` = {id};
             """.format(columns=columns_string, id=id)
         res = execute_statement(sql)
-        records = res['records']
-        data = []
-        for record in records:
-            data_row = {}
-            for entry, column in zip(record, MATERIAL_COLUMNS):
-                name, _, entry_type = column
-                value = entry.get(entry_type, None)
-                data_row[name] = value
-            data.append(data_row)
-
+        data = process_select_response(res, MATERIAL_COLUMNS)
         return Response(
             body=json.dumps({'data': data}),
             status_code=200,
@@ -318,15 +314,7 @@ def fetch_products():
             """.format(columns=columns_string)
         res = execute_statement(sql)
 
-        records = res['records']
-        data = []
-        for record in records:
-            data_row = {}
-            for entry, column in zip(record, PRODUCT_COLUMNS):
-                name, _, entry_type = column
-                value = entry.get(entry_type, None)
-                data_row[name] = value
-            data.append(data_row)
+        data = process_select_response(res, PRODUCT_COLUMNS)
 
         return Response(
             body=json.dumps({'data': data}),
@@ -354,15 +342,7 @@ def fetch_product(id):
             """.format(columns=columns_string, id=id)
         res = execute_statement(sql)
 
-        records = res['records']
-        data = []
-        for record in records:
-            data_row = {}
-            for entry, column in zip(record, PRODUCT_COLUMNS):
-                name, _, entry_type = column
-                value = entry.get(entry_type, None)
-                data_row[name] = value
-            data.append(data_row)
+        data = process_select_response(res, PRODUCT_COLUMNS)
 
         return Response(
             body=json.dumps({'data': data}),
@@ -595,16 +575,7 @@ def fetch_cases():
                 `case`;
             """.format(columns=columns_string)
         res = execute_statement(sql)
-        records = res['records']
-
-        data = []
-        for record in records:
-            data_row = {}
-            for entry, column in zip(record, CASE_COLUMNS):
-                name, _, entry_type = column
-                value = entry.get(entry_type, None)
-                data_row[name] = value
-            data.append(data_row)
+        data = process_select_response(res, CASE_COLUMNS)
 
         return Response(
             body=json.dumps({'data': data}),
@@ -631,16 +602,7 @@ def fetch_case(id):
                     `id` = {id};
             """.format(columns=columns_string)
         res = execute_statement(sql)
-        records = res['records']
-
-        data = []
-        for record in records:
-            data_row = {}
-            for entry, column in zip(record, CASE_COLUMNS):
-                name, _, entry_type = column
-                value = entry.get(entry_type, None)
-                data_row[name] = value
-            data.append(data_row)
+        data = process_select_response(res, CASE_COLUMNS)
 
         return Response(
             body=json.dumps({'data': data}),
@@ -901,16 +863,7 @@ def fetch_orders():
                 `order`;
             """.format(columns=columns_string)
         res = execute_statement(sql)
-        records = res['records']
-
-        data = []
-        for record in records:
-            data_row = {}
-            for entry, column in zip(record, ORDER_COLUMNS):
-                name, _, entry_type = column
-                value = entry.get(entry_type, None)
-                data_row[name] = value
-            data.append(data_row)
+        data = process_select_response(res, ORDER_COLUMNS)
 
         return Response(
             body=json.dumps({'data': data}),
@@ -937,16 +890,7 @@ def fetch_order(id):
                 `id` = {id};
             """.format(columns=columns_string)
         res = execute_statement(sql)
-        records = res['records']
-
-        data = []
-        for record in records:
-            data_row = {}
-            for entry, column in zip(record, ORDER_COLUMNS):
-                name, _, entry_type = column
-                value = entry.get(entry_type, None)
-                data_row[name] = value
-            data.append(data_row)
+        data = process_select_response(res, ORDER_COLUMNS)
 
         return Response(
             body=json.dumps({'data': data}),

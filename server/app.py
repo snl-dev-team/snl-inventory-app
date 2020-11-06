@@ -423,26 +423,43 @@ def product_use_material(id):
     try:
         body = app.current_request.json_body
 
+        # Update Material Table
+        
+        # If old_count >= count
+        # Set mat_count = mat_count + (old_count - count)
+
+        # If old_count < count
+        # Set mat_count = mat_count - (count - old_count)
+
         sql = """
-            DECLARE @countDiff AS INT
-            SET @countDiff = (
-                            (SELECT `count` 
-                             FROM `product_uses_material` 
-                             WHERE `product_id`={id}, `material_id`={material_id})
-                             - {count}
-            );
+            UPDATE `material` 
+            SET `count`=(
+                (SELECT `count` 
+                 FROM `material` 
+                 WHERE `id`={material_id}) + 
+                
+                (SELECT `count` 
+                 FROM `product_uses_material` 
+                 WHERE `product_id`={id}, `material_id`={material_id}) - {count})
+            WHERE `id`={material_id}
+            IF (SELECT `count` 
+                FROM `product_uses_material` 
+                WHERE `product_id`={id}, `material_id`={material_id}) >= {count};
 
             UPDATE `material` 
             SET `count`=(
-                (SELECT `count` FROM `material` WHERE `id`={material_id})- @countDiff
-            )
-            IF @countDiff >= 0;
-
-            UPDATE `material`
-            SET `count`=(
-                (SELECT `count` FROM `material` WHERE `id`={material_id}) + ABS(@countDiff)
-            )
-            IF @countDiff < 0;
+                (SELECT `count` 
+                 FROM `material` 
+                 WHERE `id`={material_id}) - 
+                
+                ({count} - 
+                (SELECT `count` 
+                 FROM `product_uses_material` 
+                 WHERE `product_id`={id}, `material_id`={material_id}))
+            WHERE `id`={material_id}
+            IF (SELECT `count` 
+                FROM `product_uses_material` 
+                WHERE `product_id`={id}, `material_id`={material_id}) < {count};
 
             REPLACE INTO `product_uses_material` (
                 `product_id`,

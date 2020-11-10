@@ -156,7 +156,7 @@ def fetch_material(id):
         res = execute_statement(sql)
         data = process_select_response(res, MATERIAL_COLUMNS)
         return Response(
-            body=json.dumps({'data': data}),
+            body=json.dumps(data[0]),
             status_code=200,
         )
 
@@ -345,7 +345,7 @@ def fetch_product(id):
         data = process_select_response(res, PRODUCT_COLUMNS)
 
         return Response(
-            body=json.dumps({'data': data}),
+            body=json.dumps(data[0]),
             status_code=200,
         )
 
@@ -605,7 +605,7 @@ def fetch_case(id):
         data = process_select_response(res, CASE_COLUMNS)
 
         return Response(
-            body=json.dumps({'data': data}),
+            body=json.dumps(data[0]),
             status_code=200,
         )
 
@@ -866,7 +866,7 @@ def fetch_orders():
         data = process_select_response(res, ORDER_COLUMNS)
 
         return Response(
-            body=json.dumps({'data': data}),
+            body=json.dumps(data[0]),
             status_code=200,
         )
 

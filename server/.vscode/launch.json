@@ -1,0 +1,88 @@
+{
+  "configurations": [
+    {
+      "type": "aws-sam",
+      "request": "direct-invoke",
+      "name": "server:HelloWorldFunction (python3.8)",
+      "invokeTarget": {
+        "target": "template",
+        "templatePath": "server/template.yaml",
+        "logicalId": "HelloWorldFunction"
+      },
+      "lambda": {
+        "payload": {},
+        "environmentVariables": {}
+      }
+    },
+    {
+      "type": "aws-sam",
+      "request": "direct-invoke",
+      "name": "server:StockTradingStateMachine",
+      "invokeTarget": {
+        "target": "template",
+        "templatePath": "server/template.yaml",
+        "logicalId": "StockTradingStateMachine"
+      },
+      "lambda": {
+        "payload": {},
+        "environmentVariables": {}
+      }
+    },
+    {
+      "type": "aws-sam",
+      "request": "direct-invoke",
+      "name": "server:StockCheckerFunction (python3.8)",
+      "invokeTarget": {
+        "target": "template",
+        "templatePath": "server/template.yaml",
+        "logicalId": "StockCheckerFunction"
+      },
+      "lambda": {
+        "payload": {},
+        "environmentVariables": {}
+      }
+    },
+    {
+      "type": "aws-sam",
+      "request": "direct-invoke",
+      "name": "server:StockSellerFunction (python3.8)",
+      "invokeTarget": {
+        "target": "template",
+        "templatePath": "server/template.yaml",
+        "logicalId": "StockSellerFunction"
+      },
+      "lambda": {
+        "payload": {},
+        "environmentVariables": {}
+      }
+    },
+    {
+      "type": "aws-sam",
+      "request": "direct-invoke",
+      "name": "server:StockBuyerFunction (python3.8)",
+      "invokeTarget": {
+        "target": "template",
+        "templatePath": "server/template.yaml",
+        "logicalId": "StockBuyerFunction"
+      },
+      "lambda": {
+        "payload": {},
+        "environmentVariables": {}
+      }
+    },
+    {
+      "type": "aws-sam",
+      "request": "direct-invoke",
+      "name": "server:TransactionTable",
+      "invokeTarget": {
+        "target": "template",
+        "templatePath": "server/template.yaml",
+        "logicalId": "TransactionTable"
+      },
+      "lambda": {
+        "payload": {},
+        "environmentVariables": {}
+      }
+    }
+  ]
+}

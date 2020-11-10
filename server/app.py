@@ -893,7 +893,7 @@ def fetch_order(id):
         data = process_select_response(res, ORDER_COLUMNS)
 
         return Response(
-            body=json.dumps({'data': data}),
+            body=json.dumps(data[0]),
             status_code=200,
         )
 

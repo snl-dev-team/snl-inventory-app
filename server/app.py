@@ -423,44 +423,10 @@ def product_use_material(id):
     try:
         body = app.current_request.json_body
 
-        # Update Material Table
-        
-        # If old_count >= count
-        # Set mat_count = mat_count + (old_count - count)
-
-        # If old_count < count
-        # Set mat_count = mat_count - (count - old_count)
+        material = fetch_material(body.material_id)
+        old_count = material.count
 
         sql = """
-            UPDATE `material` 
-            SET `count`=(
-                (SELECT `count` 
-                 FROM `material` 
-                 WHERE `id`={material_id}) + 
-                
-                (SELECT `count` 
-                 FROM `product_uses_material` 
-                 WHERE `product_id`={id}, `material_id`={material_id}) - {count})
-            WHERE `id`={material_id}
-            IF (SELECT `count` 
-                FROM `product_uses_material` 
-                WHERE `product_id`={id}, `material_id`={material_id}) >= {count};
-
-            UPDATE `material` 
-            SET `count`=(
-                (SELECT `count` 
-                 FROM `material` 
-                 WHERE `id`={material_id}) - 
-                
-                ({count} - 
-                (SELECT `count` 
-                 FROM `product_uses_material` 
-                 WHERE `product_id`={id}, `material_id`={material_id}))
-            WHERE `id`={material_id}
-            IF (SELECT `count` 
-                FROM `product_uses_material` 
-                WHERE `product_id`={id}, `material_id`={material_id}) < {count};
-
             REPLACE INTO `product_uses_material` (
                 `product_id`,
                 `material_id`,
@@ -476,7 +442,7 @@ def product_use_material(id):
         execute_statement(sql)
 
         return Response(
-            body=json.dumps({}),
+            body=json.dumps({ 'test': old_count}),
             status_code=200,
         )
 

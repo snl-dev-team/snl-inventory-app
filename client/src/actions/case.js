@@ -10,7 +10,7 @@ export const createCase = (case_) => ({
   type: CREATE_CASE,
   payload: axios
     .post(
-      'https://rqzpcqdt40.execute-api.us-east-1.amazonaws.com/dev/case',
+      'https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/case',
       {
         name: case_.name,
         product_name: case_.productName,
@@ -34,7 +34,7 @@ export const fetchCases = () => ({
   type: FETCH_CASES,
   payload: axios
     .get(
-      'https://rqzpcqdt40.execute-api.us-east-1.amazonaws.com/dev/case',
+      'https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/case',
     )
     .then((res) => res.data.data),
 });
@@ -42,7 +42,7 @@ export const fetchCase = (id) => ({
   type: FETCH_CASE,
   payload: axios
     .get(
-      `https://rqzpcqdt40.execute-api.us-east-1.amazonaws.com/dev/case/${id}`,
+      `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/case/${id}`,
     )
     .then((res) => res.data),
 });
@@ -50,7 +50,7 @@ export const updateCase = (case_) => ({
   type: UPDATE_CASE,
   payload: axios
     .put(
-      `https://rqzpcqdt40.execute-api.us-east-1.amazonaws.com/dev/case/${case_.id}`,
+      `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/case/${case_.id}`,
       {
         name: case_.name,
         product_name: case_.productName,
@@ -73,7 +73,7 @@ export const updateCase = (case_) => ({
 export const deleteCase = (id) => ({
   type: DELETE_CASE,
   payload: axios.delete(
-    `https://rqzpcqdt40.execute-api.us-east-1.amazonaws.com/dev/case/${id}`,
+    `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/case/${id}`,
   ),
   meta: { id },
 });

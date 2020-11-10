@@ -866,7 +866,7 @@ def fetch_orders():
         data = process_select_response(res, ORDER_COLUMNS)
 
         return Response(
-            body=json.dumps(data[0]),
+            body=json.dumps({'data': data}),
             status_code=200,
         )
 

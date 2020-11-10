@@ -10,7 +10,7 @@ export const createMaterial = (material) => ({
   type: CREATE_MATERIAL,
   payload: axios
     .post(
-      'https://rqzpcqdt40.execute-api.us-east-1.amazonaws.com/dev/material',
+      'https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/material',
       {
         name: material.name,
         number: material.number,
@@ -33,7 +33,7 @@ export const fetchMaterials = () => ({
   type: FETCH_MATERIALS,
   payload: axios
     .get(
-      'https://rqzpcqdt40.execute-api.us-east-1.amazonaws.com/dev/material',
+      'https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/material',
     )
     .then((res) => res.data.data),
 });
@@ -41,7 +41,7 @@ export const fetchMaterial = (id) => ({
   type: FETCH_MATERIAL,
   payload: axios
     .get(
-      `https://rqzpcqdt40.execute-api.us-east-1.amazonaws.com/dev/material/${id}`,
+      `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/material/${id}`,
     )
     .then((res) => res.data),
 });
@@ -49,7 +49,7 @@ export const updateMaterial = (material) => ({
   type: UPDATE_MATERIAL,
   payload: axios
     .put(
-      `https://rqzpcqdt40.execute-api.us-east-1.amazonaws.com/dev/material/${material.id}`,
+      `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/material/${material.id}`,
       {
         name: material.name,
         number: material.number,
@@ -71,7 +71,7 @@ export const updateMaterial = (material) => ({
 export const deleteMaterial = (id) => ({
   type: DELETE_MATERIAL,
   payload: axios.delete(
-    `https://rqzpcqdt40.execute-api.us-east-1.amazonaws.com/dev/material/${id}`,
+    `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/material/${id}`,
   ),
   meta: { id },
 });

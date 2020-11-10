@@ -10,7 +10,7 @@ export const createOrder = (order) => ({
   type: CREATE_ORDER,
   payload: axios
     .post(
-      'https://rqzpcqdt40.execute-api.us-east-1.amazonaws.com/dev/order',
+      'https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/order',
       {
         number: order.number,
       },
@@ -28,7 +28,7 @@ export const fetchOrders = () => ({
   type: FETCH_ORDERS,
   payload: axios
     .get(
-      'https://rqzpcqdt40.execute-api.us-east-1.amazonaws.com/dev/order',
+      'https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/order',
     )
     .then((res) => res.data.data),
 });
@@ -36,7 +36,7 @@ export const fetchOrder = (id) => ({
   type: FETCH_ORDER,
   payload: axios
     .get(
-      `https://rqzpcqdt40.execute-api.us-east-1.amazonaws.com/dev/order/${id}`,
+      `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/order/${id}`,
     )
     .then((res) => res.data),
 });
@@ -45,7 +45,7 @@ export const updateOrder = (order) => ({
   type: UPDATE_ORDER,
   payload: axios
     .put(
-      `https://rqzpcqdt40.execute-api.us-east-1.amazonaws.com/dev/order/${order.id}`,
+      `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/order/${order.id}`,
       {
         number: order.number,
       },
@@ -62,7 +62,7 @@ export const updateOrder = (order) => ({
 export const deleteOrder = (id) => ({
   type: DELETE_ORDER,
   payload: axios.delete(
-    `https://rqzpcqdt40.execute-api.us-east-1.amazonaws.com/dev/order/${id}`,
+    `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/order/${id}`,
   ),
   meta: { id },
 });

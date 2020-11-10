@@ -10,7 +10,7 @@ export const createProduct = (product) => ({
   type: CREATE_PRODUCT,
   payload: axios
     .post(
-      'https://rqzpcqdt40.execute-api.us-east-1.amazonaws.com/dev/product',
+      'https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/product',
       {
         name: product.name,
         number: product.number,
@@ -32,7 +32,7 @@ export const fetchProducts = () => ({
   type: FETCH_PRODUCTS,
   payload: axios
     .get(
-      'https://rqzpcqdt40.execute-api.us-east-1.amazonaws.com/dev/product',
+      'https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/product',
     )
     .then((res) => res.data.data),
 });
@@ -40,7 +40,7 @@ export const fetchProduct = (id) => ({
   type: FETCH_PRODUCTS,
   payload: axios
     .get(
-      `https://rqzpcqdt40.execute-api.us-east-1.amazonaws.com/dev/product${id}`,
+      `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/product${id}`,
     )
     .then((res) => res.data),
 });
@@ -48,7 +48,7 @@ export const updateProduct = (product) => ({
   type: UPDATE_PRODUCT,
   payload: axios
     .put(
-      `https://rqzpcqdt40.execute-api.us-east-1.amazonaws.com/dev/product/${product.id}`,
+      `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/product/${product.id}`,
       {
         name: product.name,
         number: product.number,
@@ -69,7 +69,7 @@ export const updateProduct = (product) => ({
 export const deleteProduct = (id) => ({
   type: DELETE_PRODUCT,
   payload: axios.delete(
-    `https://rqzpcqdt40.execute-api.us-east-1.amazonaws.com/dev/product/${id}`,
+    `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/product/${id}`,
   ),
   meta: { id },
 });

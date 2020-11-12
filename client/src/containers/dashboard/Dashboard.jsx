@@ -21,7 +21,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import GridOnIcon from '@material-ui/icons/GridOn';
 import LocalPharmacyIcon from '@material-ui/icons/LocalPharmacy';
-import { Route, useHistory } from 'react-router-dom';
+import { Route, useHistory, Redirect } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import PaletteIcon from '@material-ui/icons/Palette';
 import ProductsDashboard from './Products';
@@ -299,6 +299,9 @@ export default function MiniDrawer() {
           path="/products"
           component={ProductsDashboard}
         />
+        <Route exact path="/">
+          <Redirect to="/materials" />
+        </Route>
       </main>
     </div>
   );

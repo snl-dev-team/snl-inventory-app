@@ -521,12 +521,24 @@ CASE_COLUMNS = [
     ('name',            str,   'stringValue'),
     ('product_name',    str,   'stringValue'),
     ('product_count',   int,   'longValue'),
-    ('count',           float, 'longValue'),
+    ('count',           int,   'longValue'),
     ('number',          str,   'stringValue'),
     ('expiration_date', str,   'stringValue'),
     ('date_created',    str,   'stringValue'),
     ('date_modified',   str,   'stringValue'),
     ('shipped',         bool,  'booleanValue'),
+]
+
+CASE_USE_MATERIAL_COLUMNS = [
+    ('case_id',         int,    'longValue'),
+    ('material_id',     int,    'longValue'),
+    ('count',           float,  'doubleValue')
+]
+
+CASE_USE_PRODUCT_COLUMNS = [
+    ('case_id',         int,    'longValue'),
+    ('product_id',      int,    'longValue'),
+    ('count',           int,    'longValue')
 ]
 
 """
@@ -719,6 +731,34 @@ def delete_case(id):
             status_code=400,
         )
 
+@app.route('/case/{id}/material', methods=['GET'])
+def fetch_case_uses_material(id):
+    columns_string = ', '.join(i[0] for i in CASE_USE_MATERIAL_COLUMNS)
+    try:
+        sql = """
+            SELECT {columns}
+            FROM `case_uses_material`
+            WHERE `case_id`={id};
+        """.format(id=id, columns=columns_string)
+
+        res = execute_statement(sql)
+
+        data = process_select_response(res, CASE_USE_MATERIAL_COLUMNS)
+        res_obj = {}
+
+        for r in data:
+            res_obj[r['material_id']] = r['count']
+
+        return Response(
+            body=json.dumps(res_obj),
+            status_code=200,
+        )
+
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 @app.route('/case/{id}/material', methods=['PUT'])
 def case_use_material(id):

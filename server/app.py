@@ -1088,20 +1088,26 @@ def order_use_case(id):
     try:
         body = app.current_request.json_body
 
-        sql = """
-            REPLACE INTO `order_uses_case` (
-                `order_id`,
-                `case_id`,
-                `count`
-            )
-            VALUES (
-                {id},
-                {case_id},
-                {count}
-            )
-            """.format(**body, id=id)
+        update_case_sql = """
+            UPDATE `case` SET `count` = CASE
+                WHEN {count} > (SELECT IFNULL((SELECT `count` FROM `order_uses_case` WHERE `order_id`={id} AND `case_id`={case_id}), 0)) AND (SELECT IFNULL((SELECT `count` FROM `order_uses_case` WHERE `order_id`={id} AND`case_id`={case_id}), 0)) > 0 THEN `count` - ({count} - (SELECT `count` FROM `order_uses_case` WHERE `order_id`={id} AND`case_id`={case_id}))
 
-        execute_statement(sql)
+                WHEN {count} > (SELECT IFNULL((SELECT `count` FROM `order_uses_case` WHERE `order_id`={id} AND `case_id`={case_id}), 0)) AND (SELECT IFNULL((SELECT `count` FROM `order_uses_case` WHERE `order_id`={id} AND `case_id`={case_id}), 0)) = 0 THEN `count` - {count}
+
+                WHEN {count} < (SELECT IFNULL((SELECT `count` FROM `order_uses_case` WHERE `order_id`={id} AND `case_id`={case_id}), 0)) AND (SELECT IFNULL((SELECT `count` FROM `order_uses_case` WHERE `order_id`={id} AND `case_id`={case_id}), 0)) > 0 THEN `count` + ((SELECT `count` FROM `order_uses_case` WHERE `order_id`={id} AND `case_id`={case_id}) - {count})
+
+                END
+            WHERE `id`={case_id};
+        """.format(**body, id=id)
+
+        update_order_uses_case_sql = """
+            REPLACE INTO `order_uses_case` 
+                (`order_id`,`case_id`, `count`)
+                VALUES ({id}, {case_id}, {count});
+        """.format(**body, id=id)
+
+        execute_statement(update_case_sql)
+        execute_statement(update_order_uses_case_sql)
 
         return Response(
             body=json.dumps({}),

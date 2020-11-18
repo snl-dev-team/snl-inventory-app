@@ -931,6 +931,12 @@ ORDER_COLUMNS = [
     ('date_modified',   str,   'stringValue'),
 ]
 
+ORDER_USE_CASE_COLUMNS = [
+    ('order_id',        int,    'longValue'),
+    ('case_id',         int,    'longValue'),
+    ('count',           int,    'longValue')
+]
+
 """
 +---------------+--------------+------+-----+-------------------+----------------+
 | Field         | Type         | Null | Key | Default           | Extra          |
@@ -1090,6 +1096,34 @@ def delete_order(id):
             status_code=400,
         )
 
+@app.route('/order/{id}/case', methods=['GET'])
+def fetch_order_uses_case(id):
+    columns_string = ', '.join(i[0] for i in ORDER_USE_CASE_COLUMNS)
+    try:
+        sql = """
+            SELECT {columns}
+            FROM `order_uses_case`
+            WHERE `order_id`={id};
+        """.format(id=id, columns=columns_string)
+
+        res = execute_statement(sql)
+
+        data = process_select_response(res, ORDER_USE_CASE_COLUMNS)
+        res_obj = {}
+
+        for r in data:
+            res_obj[r['case_id']] = r['count']
+
+        return Response(
+            body=json.dumps(res_obj),
+            status_code=200,
+        )
+
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 @app.route('/order/{id}/case', methods=['PUT'], authorizer=authorizer)
 def order_use_case(id):

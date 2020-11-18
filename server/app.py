@@ -823,6 +823,34 @@ def case_unuse_material(id):
             status_code=400,
         )
 
+@app.route('/case/{id}/product', methods=['GET'])
+def fetch_case_uses_product(id):
+    columns_string = ', '.join(i[0] for i in CASE_USE_PRODUCT_COLUMNS)
+    try:
+        sql = """
+            SELECT {columns}
+            FROM `case_uses_product`
+            WHERE `case_id`={id};
+        """.format(id=id, columns=columns_string)
+
+        res = execute_statement(sql)
+
+        data = process_select_response(res, CASE_USE_PRODUCT_COLUMNS)
+        res_obj = {}
+
+        for r in data:
+            res_obj[r['product_id']] = r['count']
+
+        return Response(
+            body=json.dumps(res_obj),
+            status_code=200,
+        )
+
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 @app.route('/case/{id}/product', methods=['PUT'])
 def case_use_product(id):

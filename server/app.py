@@ -424,20 +424,25 @@ def delete_product(id):
         )
 
 @app.route('/product/{id}/material', methods=['GET'])
-def fetch_product_use_material(id):
+def fetch_product_uses_material(id):
+    columns_string = ', '.join(i[0] for i in PRODUCT_USES_MATERIAL_COLUMNS)
     try:
         sql = """
-            SELECT *
+            SELECT {columns}
             FROM `product_uses_material`
             WHERE `product_id`={id};
-        """.format(id=id)
+        """.format(id=id, columns=columns_string)
 
         res = execute_statement(sql)
 
         data = process_select_response(res, PRODUCT_USES_MATERIAL_COLUMNS)
+        res_obj = {}
+
+        for r in data:
+            res_obj[r['material_id']] = r['count']
 
         return Response(
-            body=json.dumps(data[0]),
+            body=json.dumps(res_obj),
             status_code=200,
         )
 

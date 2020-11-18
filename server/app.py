@@ -240,6 +240,12 @@ PRODUCT_COLUMNS = [
     ('completed',       bool,  'booleanValue'),
 ]
 
+PRODUCT_USES_MATERIAL_COLUMNS = [
+    ('product_id',      int,    'longValue'),
+    ('material_id',     int,    'longValue'),
+    ('count',           float,  'longValue')
+]
+
 """
 +-----------------+------------------+------+-----+-------------------+----------------+
 | Field           | Type             | Null | Key | Default           | Extra          |
@@ -417,32 +423,59 @@ def delete_product(id):
             status_code=400,
         )
 
+@app.route('/product/{id}/material', methods=['GET'])
+def fetch_product_use_material(id):
+    try:
+        sql = """
+            SELECT *
+            FROM `product_uses_material`
+            WHERE `product_id`={id};
+        """.format(id=id)
+
+        res = execute_statement(sql)
+
+        data = process_select_response(res, PRODUCT_USES_MATERIAL_COLUMNS)
+
+        return Response(
+            body=json.dumps(data[0]),
+            status_code=200,
+        )
+
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
+
 
 @app.route('/product/{id}/material', methods=['PUT'], authorizer=authorizer)
 def product_use_material(id):
     try:
         body = app.current_request.json_body
 
-        material = fetch_material(body.material_id)
-        old_count = material.count
+        update_material = """
+            UPDATE `material` SET `count` = CASE
+                WHEN {count} > (SELECT IFNULL((SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND `material_id`={material_id}), 0)) AND (SELECT IFNULL((SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND`material_id`={material_id}), 0)) > 0 THEN `count` - ({count} - (SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND`material_id`={material_id}))
 
-        sql = """
-            REPLACE INTO `product_uses_material` (
-                `product_id`,
-                `material_id`,
-                `count`
-            )
-            VALUES (
-                {id},
-                {material_id},
-                {count}
-            );
+                WHEN {count} > (SELECT IFNULL((SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND `material_id`={material_id}), 0)) AND (SELECT IFNULL((SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND `material_id`={material_id}), 0)) = 0 THEN `count` - {count}
+
+                WHEN {count} < (SELECT IFNULL((SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND `material_id`={material_id}), 0)) AND (SELECT IFNULL((SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND `material_id`={material_id}), 0)) > 0 THEN `count` + ((SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND `material_id`={material_id}) - {count})
+
+                END
+            WHERE `id`={material_id};
             """.format(**body, id=id)
 
-        execute_statement(sql)
+        update_product_uses_material = """
+            REPLACE INTO `product_uses_material` 
+                    (`product_id`,`material_id`, `count`)
+                    VALUES ({id}, {material_id}, {count});
+        """.format(**body, id=id)
+
+        execute_statement(update_material)
+        execute_statement(update_product_uses_material)
 
         return Response(
-            body=json.dumps({ 'test': old_count}),
+            body=json.dumps({}),
             status_code=200,
         )
 

@@ -418,13 +418,27 @@ def update_product(id):
 @app.route('/product/{id}', methods=['DELETE'], authorizer=authorizer)
 def delete_product(id):
     try:
-        sql = """
+        update_product_sql = """
             DELETE FROM
                 `product`
             WHERE id = {id}
             """.format(id=id)
 
-        execute_statement(sql)
+        update_product_uses_material_sql = """
+            DELETE FROM
+                `product_uses_material`
+            WHERE `product_id`={id}
+            """.format(id=id)
+
+        update_case_uses_product_sql = """
+            DELETE FROM
+                `case_uses_product`
+            WHERE `product_id`={id}
+            """.format(id=id)
+
+        execute_statement(update_product_uses_material_sql)
+        execute_statement(update_case_uses_product_sql)
+        execute_statement(update_product_sql)
 
         return Response(
             body=json.dumps({}),

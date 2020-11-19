@@ -30,7 +30,7 @@ export const fetchOrders = () => ({
     .get(
       'https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/order',
     )
-    .then((res) => res.data.data),
+    .then((res) => res.data),
 });
 export const fetchOrder = (id) => ({
   type: FETCH_ORDER,

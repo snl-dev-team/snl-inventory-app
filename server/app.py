@@ -495,22 +495,20 @@ def product_use_material(id):
 def product_unuse_material(id):
     try:
         body = app.current_request.json_body
-        sql = """
+        
+        update_material_sql = """
             UPDATE `material` 
-            SET `count`=(
-                (SELECT `count` FROM `material` WHERE `id`={material_id}) + 
-                (SELECT `count` FROM `product_uses_material` WHERE `product_id={id}, `material_id`={material_id})
-            )
+            SET `count` = `count` + (SELECT IFNULL((SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND `material_id`={material_id}), 0))
             WHERE `id`={material_id};
+        """.format(**body, id=id)
 
-            DELETE FROM
-                `product_uses_material`
-            WHERE
-                `product_id` = {id},
-                `material_id` = {material_id};
-            """.format(**body, id=id)
+        update_product_uses_material_sql = """
+            DELETE FROM `product_uses_material`
+            WHERE `product_id`={id} AND `material_id`={material_id};
+        """.format(**body, id=id)
 
-        execute_statement(sql)
+        execute_statement(update_material_sql)
+        execute_statement(update_product_uses_material_sql)
 
         return Response(
             body=json.dumps({}),

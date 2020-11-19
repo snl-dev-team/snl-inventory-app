@@ -201,13 +201,27 @@ def update_material(id):
 @app.route('/material/{id}', methods=['DELETE'])
 def delete_material(id):
     try:
-        sql = """
+        update_material_sql = """
             DELETE FROM
                 `material`
             WHERE id = {id}
             """.format(id=id)
 
-        execute_statement(sql)
+        update_product_uses_material_sql = """
+            DELETE FROM
+                `product_uses_material`
+            WHERE `material_id`={id}
+            """.format(id=id)
+
+        update_case_uses_material_sql = """
+            DELETE FROM
+                `case_uses_material`
+            WHERE `material_id`={id}
+            """.format(id=id)
+
+        execute_statement(update_product_uses_material_sql)
+        execute_statement(update_case_uses_material_sql)
+        execute_statement(update_material_sql)
 
         return Response(
             body=json.dumps({}),

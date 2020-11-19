@@ -746,13 +746,34 @@ def update_case(id):
 @app.route('/case/{id}', methods=['DELETE'], authorizer=authorizer)
 def delete_case(id):
     try:
-        sql = """
+        update_case_sql = """
             DELETE FROM
                 `case`
             WHERE id = {id}
             """.format(id=id)
 
-        execute_statement(sql)
+        update_case_uses_material_sql = """
+            DELETE FROM
+                `case_uses_material`
+            WHERE `case_id`={id}
+            """.format(id=id)
+
+        update_case_uses_product_sql = """
+            DELETE FROM
+                `case_uses_product`
+            WHERE `case_id`={id}
+            """.format(id=id)
+
+        update_order_uses_case_sql = """
+            DELETE FROM
+                `order_uses_case`
+            WHERE `case_id`={id}
+            """.format(id=id)
+
+        execute_statement(update_case_uses_material_sql)
+        execute_statement(update_case_uses_product_sql)
+        execute_statement(update_order_uses_case_sql)
+        execute_statement(update_case_sql)
 
         return Response(
             body=json.dumps({}),

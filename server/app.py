@@ -1133,13 +1133,26 @@ def update_order(id):
 @app.route('/order/{id}', methods=['DELETE'], authorizer=authorizer)
 def delete_order(id):
     try:
-        sql = """
+        update_order_sql = """
             DELETE FROM
                 `order`
-            WHERE id = {id}
+            WHERE id = {id};
             """.format(id=id)
 
-        execute_statement(sql)
+        update_case_sql = """
+                UPDATE `case` 
+                SET `count` = `count` + (SELECT IFNULL((SELECT `count` FROM `order_uses_case` WHERE `order_id`={id} AND `case_id`={case_id}), 0))
+                WHERE `id`={case_id};
+            """.format(id=id)
+
+        update_order_uses_case_sql = """
+                DELETE FROM `order_uses_case`
+                WHERE `order_id`={id} AND `case_id`={case_id};
+            """.format(id=id)
+
+        execute_statement(update_case_sql)
+        execute_statement(update_order_uses_case_sql)
+        execute_statement(update_order_sql)
 
         return Response(
             body=json.dumps({}),

@@ -38,6 +38,14 @@ export const fetchProducts = () => ({
     )
     .then((res) => res.data.data),
 });
+export const fetchProduct = (id) => ({
+  type: FETCH_PRODUCTS,
+  payload: axios
+    .get(
+      `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/product${id}`,
+    )
+    .then((res) => res.data),
+});
 
 export const updateProduct = (product) => ({
   type: UPDATE_PRODUCT,

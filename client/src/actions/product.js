@@ -6,6 +6,8 @@ export const FETCH_PRODUCTS = 'FETCH_PRODUCTS';
 export const FETCH_PRODUCT = 'FETCH_PRODUCT';
 export const UPDATE_PRODUCT = 'UPDATE_PRODUCT';
 export const DELETE_PRODUCT = 'DELETE_PRODUCT';
+export const PRODUCT_USE_MATERIAL = 'PRODUCT_USE_MATERIAL';
+export const PRODUCT_UNUSE_MATERIAL = 'PRODUCT_UNUSE_MATERIAL';
 
 export const createProduct = (product, token) => ({
   type: CREATE_PRODUCT,

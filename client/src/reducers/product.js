@@ -3,6 +3,8 @@ import {
   CREATE_PRODUCT,
   UPDATE_PRODUCT,
   DELETE_PRODUCT,
+  PRODUCT_USE_MATERIAL,
+  PRODUCT_UNUSE_MATERIAL,
 } from '../actions/product';
 
 const productReducer = (state = {}, action) => {
@@ -60,6 +62,31 @@ const productReducer = (state = {}, action) => {
       delete deleteState[id];
       return deleteState;
     }
+
+    case `${PRODUCT_USE_MATERIAL}_FULFILLED`:
+      return {
+        ...state,
+        ...payload.reduce((acc, curr) => {
+          acc[curr.product_id] = {
+            productId: curr.product_id,
+            materialId: curr.material_id,
+            count: curr.count,
+          };
+          return acc;
+        }, {}),
+      };
+    case `${PRODUCT_UNUSE_MATERIAL}_FULFILLED`:
+      return {
+        ...state,
+        ...payload.reduce((acc, curr) => {
+          acc[curr.product_id] = {
+            productId: curr.product_id,
+            materialId: curr.material_id,
+            count: curr.count,
+          };
+          return acc;
+        }, {}),
+      };
 
     default:
       return state;

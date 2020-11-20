@@ -87,9 +87,43 @@ export const deleteProduct = (id, token) => ({
     `${URL}/product/${id}`,
     {
       headers: {
+
+      }
+    }
+  ),
+  meta: { id },
+});
+
+export const useMaterial = (productId, materialId, count, token) => ({
+  type: PRODUCT_USE_MATERIAL,
+  payload: axios.put(
+    `${URL}/product/${productId}/material`,
+    {
+      product_id: productId,
+      material_id: materialId,
+      count,
+    },
+    {
+      headers: {
+        'content-type': 'application/json',
+      },
+    },
+  ).then((res) => res.data),
+});
+
+export const unuseMaterial = (productId, materialId, count, token) => ({
+  type: PRODUCT_UNUSE_MATERIAL,
+  payload: axios.delete(
+    `${URL}/product/${productId}/material`,
+    {
+      product_id: productId,
+      material_id: materialId,
+      count,
+    },
+    {
+      headers: {
         Authorization: token,
       },
     },
-  ),
-  meta: { id },
+  ).then((res) => res.data),
 });

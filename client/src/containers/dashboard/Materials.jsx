@@ -29,10 +29,11 @@ const useStyles = makeStyles((theme) => ({
 const MaterialsDashboard = () => {
   const dispatch = useDispatch();
   const history = useHistory();
+  const token = useSelector((state) => state.user.token);
 
   useEffect(() => {
-    dispatch(fetchMaterials());
-  }, [dispatch]);
+    dispatch(fetchMaterials(token));
+  }, [dispatch, token]);
 
   const materials = useSelector(
     (state) => Object.values(state.materials),

@@ -16,6 +16,7 @@ export default function UpsertMaterialDialog() {
   const history = useHistory();
   const dispatch = useDispatch();
   const { id } = useParams();
+  const token = useSelector((state) => state.user.token);
 
   const handleClose = () => {
     history.push('/materials');
@@ -65,14 +66,14 @@ export default function UpsertMaterialDialog() {
 
   const createMaterialAndClose = () => {
     dispatch(
-      createMaterial(payload),
+      createMaterial(payload, token),
     );
     history.push('/materials');
   };
 
   const updateMaterialAndClose = () => {
     dispatch(
-      updateMaterial(payload),
+      updateMaterial(payload, token),
     );
     history.push('/materials');
   };

@@ -16,6 +16,7 @@ export default function UpsertProductDialog() {
   const history = useHistory();
   const dispatch = useDispatch();
   const { id } = useParams();
+  const token = useSelector((state) => state.user.token);
 
   const handleClose = () => {
     history.push('/products');
@@ -61,14 +62,14 @@ export default function UpsertProductDialog() {
 
   const createProductAndClose = () => {
     dispatch(
-      createProduct(payload),
+      createProduct(payload, token),
     );
     history.push('/products');
   };
 
   const updateProductAndClose = () => {
     dispatch(
-      updateProduct(payload),
+      updateProduct(payload, token),
     );
     history.push('/products');
   };

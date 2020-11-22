@@ -6,7 +6,7 @@ export const FETCH_ORDER = 'FETCH_ORDER';
 export const UPDATE_ORDER = 'UPDATE_ORDER';
 export const DELETE_ORDER = 'DELETE_ORDER';
 
-export const createOrder = (order) => ({
+export const createOrder = (order, token) => ({
   type: CREATE_ORDER,
   payload: axios
     .post(
@@ -17,6 +17,7 @@ export const createOrder = (order) => ({
       {
         headers: {
           'content-type': 'application/json',
+          Authorization: token,
         },
       },
     )
@@ -24,24 +25,34 @@ export const createOrder = (order) => ({
   meta: { order },
 });
 
-export const fetchOrders = () => ({
+export const fetchOrders = (token) => ({
   type: FETCH_ORDERS,
   payload: axios
     .get(
       'https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/order',
+      {
+        headers: {
+          Authorization: token,
+        },
+      },
     )
     .then((res) => res.data.data),
 });
-export const fetchOrder = (id) => ({
+export const fetchOrder = (id, token) => ({
   type: FETCH_ORDER,
   payload: axios
     .get(
       `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/order/${id}`,
+      {
+        headers: {
+          Authorization: token,
+        },
+      },
     )
     .then((res) => res.data),
 });
 
-export const updateOrder = (order) => ({
+export const updateOrder = (order, token) => ({
   type: UPDATE_ORDER,
   payload: axios
     .put(
@@ -52,6 +63,7 @@ export const updateOrder = (order) => ({
       {
         headers: {
           'content-type': 'application/json',
+          Authorization: token,
         },
       },
     )
@@ -59,10 +71,15 @@ export const updateOrder = (order) => ({
   meta: { order },
 });
 
-export const deleteOrder = (id) => ({
+export const deleteOrder = (id, token) => ({
   type: DELETE_ORDER,
   payload: axios.delete(
     `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/order/${id}`,
+    {
+      headers: {
+        Authorization: token,
+      },
+    },
   ),
   meta: { id },
 });

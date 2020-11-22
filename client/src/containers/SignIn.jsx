@@ -10,7 +10,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { useDispatch, useSelector } from 'react-redux';
 import { Redirect, useHistory } from 'react-router-dom';
-import { signUp } from '../actions/user';
+import { signIn } from '../actions/user';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -44,27 +44,22 @@ const Copyright = () => (
   </Typography>
 );
 
-const SignUp = () => {
+const SignIn = () => {
   const dispatch = useDispatch();
   const history = useHistory();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSignUp = () => {
-    dispatch(signUp(email, password));
+  const handleSignIn = () => {
+    dispatch(signIn(email, password));
   };
-
   const classes = useStyles();
 
-  const { isAuthorized, email: globalEmail } = useSelector((state) => state.user);
+  const isAuthorized = useSelector((state) => state.user.isAuthorized);
 
   if (isAuthorized) {
     return <Redirect to="/" />;
-  }
-
-  if (globalEmail !== null) {
-    return <Redirect to="/sign-up/confirm" />;
   }
 
   return (
@@ -72,7 +67,7 @@ const SignUp = () => {
       <CssBaseline />
       <div className={classes.paper}>
         <Typography component="h1" variant="h5">
-          Sign Up
+          Sign In
         </Typography>
         <form className={classes.form}>
           <Grid container spacing={2}>
@@ -107,17 +102,17 @@ const SignUp = () => {
             variant="contained"
             color="primary"
             className={classes.submit}
-            onClick={handleSignUp}
+            onClick={handleSignIn}
           >
-            Sign Up
+            Sign In
           </Button>
           <Button
             fullWidth
             variant="contained"
             className={classes.submit}
-            onClick={() => history.push('sign-in')}
+            onClick={() => history.push('sign-up')}
           >
-            Go to Sign In
+            Go to Sign Up
           </Button>
         </form>
       </div>
@@ -128,4 +123,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default SignIn;

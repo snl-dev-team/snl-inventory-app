@@ -6,7 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, Route } from 'react-router-dom';
 import OrderCard from '../../components/OrderCard';
-import { fetchOrders } from '../../actions/order';
+import { fetchOrders, fetchOrder } from '../../actions/order';
 import UpsertOrderDialog from '../../components/UpsertOrderDialog';
 
 const useStyles = makeStyles((theme) => ({
@@ -27,10 +27,12 @@ const OrdersDashboard = () => {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
+  const token = useSelector((state) => state.user.token);
 
   useEffect(() => {
-    dispatch(fetchOrders());
-  }, [dispatch]);
+    dispatch(fetchOrders(token));
+    dispatch(fetchOrder(5, token));
+  }, [dispatch, token]);
 
   const orders = useSelector(
     (state) => Object.values(state.orders),

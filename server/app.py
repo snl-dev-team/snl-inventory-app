@@ -2,7 +2,7 @@ import os
 import boto3
 import sys
 import mysql.connector
-from chalice import Chalice, Response
+from chalice import Chalice, Response, CognitoUserPoolAuthorizer
 import json
 from datetime import datetime
 
@@ -14,6 +14,13 @@ rds_client = boto3.client('rds-data')
 database_secrets_arn = os.environ.get('DATABASE_SECRETS_ARN')
 database_name = os.environ.get('DATABASE_NAME')
 db_cluster_arn = os.environ.get('DATABASE_CLUSTER_ARN')
+
+authorizer = CognitoUserPoolAuthorizer(
+    'snl-inventory-app',
+    provider_arns=[
+        'arn:aws:cognito-idp:us-east-1:595723023717:userpool/us-east-1_fiXPTAJzP'
+    ]
+)
 
 
 def execute_statement(sql):
@@ -69,7 +76,7 @@ MATERIAL_COLUMNS = [
 """
 
 
-@app.route('/material', methods=['POST'])
+@app.route('/material', methods=['POST'], authorizer=authorizer)
 def create_material():
     try:
         body = app.current_request.json_body
@@ -116,7 +123,7 @@ def create_material():
         )
 
 
-@app.route('/material', methods=['GET'])
+@app.route('/material', methods=['GET'], authorizer=authorizer)
 def fetch_materials():
     try:
         columns_string = ', '.join(i[0] for i in MATERIAL_COLUMNS)
@@ -141,7 +148,7 @@ def fetch_materials():
         )
 
 
-@app.route('/material/{id}', methods=['GET'])
+@app.route('/material/{id}', methods=['GET'], authorizer=authorizer)
 def fetch_material(id):
     try:
         columns_string = ', '.join(i[0] for i in MATERIAL_COLUMNS)
@@ -167,7 +174,7 @@ def fetch_material(id):
         )
 
 
-@app.route('/material/{id}', methods=['PUT'])
+@app.route('/material/{id}', methods=['PUT'], authorizer=authorizer)
 def update_material(id):
     try:
         body = app.current_request.json_body
@@ -198,7 +205,7 @@ def update_material(id):
         )
 
 
-@app.route('/material/{id}', methods=['DELETE'])
+@app.route('/material/{id}', methods=['DELETE'], authorizer=authorizer)
 def delete_material(id):
     try:
         sql = """
@@ -256,7 +263,7 @@ PRODUCT_COLUMNS = [
 """
 
 
-@app.route('/product', methods=['POST'])
+@app.route('/product', methods=['POST'], authorizer=authorizer)
 def create_product():
     try:
         body = app.current_request.json_body
@@ -302,7 +309,7 @@ def create_product():
         )
 
 
-@app.route('/product', methods=['GET'])
+@app.route('/product', methods=['GET'], authorizer=authorizer)
 def fetch_products():
     try:
         columns_string = ', '.join(i[0] for i in PRODUCT_COLUMNS)
@@ -328,7 +335,7 @@ def fetch_products():
         )
 
 
-@app.route('/product/{id}', methods=['GET'])
+@app.route('/product/{id}', methods=['GET'], authorizer=authorizer)
 def fetch_product(id):
     try:
         columns_string = ', '.join(i[0] for i in PRODUCT_COLUMNS)
@@ -356,7 +363,7 @@ def fetch_product(id):
         )
 
 
-@app.route('/product/{id}', methods=['PUT'])
+@app.route('/product/{id}', methods=['PUT'], authorizer=authorizer)
 def update_product(id):
     try:
         body = app.current_request.json_body
@@ -387,7 +394,7 @@ def update_product(id):
         )
 
 
-@app.route('/product/{id}', methods=['DELETE'])
+@app.route('/product/{id}', methods=['DELETE'], authorizer=authorizer)
 def delete_product(id):
     try:
         sql = """
@@ -410,7 +417,7 @@ def delete_product(id):
         )
 
 
-@app.route('/product/{id}/material', methods=['PUT'])
+@app.route('/product/{id}/material', methods=['PUT'], authorizer=authorizer)
 def product_use_material(id):
     try:
         body = app.current_request.json_body
@@ -442,7 +449,7 @@ def product_use_material(id):
         )
 
 
-@app.route('/product/{id}/material', methods=['DELETE'])
+@app.route('/product/{id}/material', methods=['DELETE'], authorizer=authorizer)
 def product_unuse_material(id):
     try:
         body = app.current_request.json_body
@@ -515,7 +522,7 @@ CASE_COLUMNS = [
 """
 
 
-@ app.route('/case', methods=['POST'])
+@ app.route('/case', methods=['POST'], authorizer=authorizer)
 def create_case():
     try:
         body = app.current_request.json_body
@@ -564,7 +571,7 @@ def create_case():
         )
 
 
-@app.route('/case', methods=['GET'])
+@app.route('/case', methods=['GET'], authorizer=authorizer)
 def fetch_cases():
     try:
         columns_string = ', '.join(i[0] for i in CASE_COLUMNS)
@@ -589,7 +596,7 @@ def fetch_cases():
         )
 
 
-@app.route('/case/{id}', methods=['GET'])
+@app.route('/case/{id}', methods=['GET'], authorizer=authorizer)
 def fetch_case(id):
     try:
         columns_string = ', '.join(i[0] for i in CASE_COLUMNS)
@@ -616,7 +623,7 @@ def fetch_case(id):
         )
 
 
-@app.route('/case/{id}', methods=['PUT'])
+@app.route('/case/{id}', methods=['PUT'], authorizer=authorizer)
 def update_case(id):
     try:
         body = app.current_request.json_body
@@ -649,7 +656,7 @@ def update_case(id):
         )
 
 
-@app.route('/case/{id}', methods=['DELETE'])
+@app.route('/case/{id}', methods=['DELETE'], authorizer=authorizer)
 def delete_case(id):
     try:
         sql = """
@@ -672,7 +679,7 @@ def delete_case(id):
         )
 
 
-@app.route('/case/{id}/material', methods=['PUT'])
+@app.route('/case/{id}/material', methods=['PUT'], authorizer=authorizer)
 def case_use_material(id):
     try:
         body = app.current_request.json_body
@@ -704,7 +711,7 @@ def case_use_material(id):
         )
 
 
-@app.route('/case/{id}/material', methods=['DELETE'])
+@app.route('/case/{id}/material', methods=['DELETE'], authorizer=authorizer)
 def case_unuse_material(id):
     try:
         body = app.current_request.json_body
@@ -730,7 +737,7 @@ def case_unuse_material(id):
         )
 
 
-@app.route('/case/{id}/product', methods=['PUT'])
+@app.route('/case/{id}/product', methods=['PUT'], authorizer=authorizer)
 def case_use_product(id):
     try:
         body = app.current_request.json_body
@@ -761,7 +768,7 @@ def case_use_product(id):
         )
 
 
-@app.route('/case/{id}/product', methods=['DELETE'])
+@app.route('/case/{id}/product', methods=['DELETE'], authorizer=authorizer)
 def case_unuse_product(id):
     try:
         body = app.current_request.json_body
@@ -814,7 +821,7 @@ ORDER_COLUMNS = [
 """
 
 
-@app.route('/order', methods=['POST'])
+@app.route('/order', methods=['POST'], authorizer=authorizer)
 def create_order():
     try:
         body = app.current_request.json_body
@@ -852,7 +859,7 @@ def create_order():
         )
 
 
-@app.route('/order', methods=['GET'])
+@app.route('/order', methods=['GET'], authorizer=authorizer)
 def fetch_orders():
     try:
         columns_string = ', '.join(i[0] for i in ORDER_COLUMNS)
@@ -877,7 +884,7 @@ def fetch_orders():
         )
 
 
-@app.route('/order/{id}', methods=['GET'])
+@app.route('/order/{id}', methods=['GET'], authorizer=authorizer)
 def fetch_order(id):
     try:
         columns_string = ', '.join(i[0] for i in ORDER_COLUMNS)
@@ -888,7 +895,7 @@ def fetch_order(id):
                 `order`
             WHERE
                 `id` = {id};
-            """.format(columns=columns_string)
+            """.format(columns=columns_string, id=id)
         res = execute_statement(sql)
         data = process_select_response(res, ORDER_COLUMNS)
 
@@ -904,7 +911,7 @@ def fetch_order(id):
         )
 
 
-@app.route('/order/{id}', methods=['PUT'])
+@app.route('/order/{id}', methods=['PUT'], authorizer=authorizer)
 def update_order(id):
     try:
         body = app.current_request.json_body
@@ -931,7 +938,7 @@ def update_order(id):
         )
 
 
-@app.route('/order/{id}', methods=['DELETE'])
+@app.route('/order/{id}', methods=['DELETE'], authorizer=authorizer)
 def delete_order(id):
     try:
         sql = """
@@ -954,7 +961,7 @@ def delete_order(id):
         )
 
 
-@app.route('/order/{id}/case', methods=['PUT'])
+@app.route('/order/{id}/case', methods=['PUT'], authorizer=authorizer)
 def order_use_case(id):
     try:
         body = app.current_request.json_body
@@ -986,7 +993,7 @@ def order_use_case(id):
         )
 
 
-@app.route('/order/{id}/case', methods=['DELETE'])
+@app.route('/order/{id}/case', methods=['DELETE'], authorizer=authorizer)
 def order_unuse_case(id):
     try:
         body = app.current_request.json_body

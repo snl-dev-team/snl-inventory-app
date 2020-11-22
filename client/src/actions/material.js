@@ -6,7 +6,7 @@ export const FETCH_MATERIAL = 'FETCH_MATERIAL';
 export const UPDATE_MATERIAL = 'UPDATE_MATERIAL';
 export const DELETE_MATERIAL = 'DELETE_MATERIAL';
 
-export const createMaterial = (material) => ({
+export const createMaterial = (material, token) => ({
   type: CREATE_MATERIAL,
   payload: axios
     .post(
@@ -22,6 +22,7 @@ export const createMaterial = (material) => ({
       {
         headers: {
           'content-type': 'application/json',
+          Authorization: token,
         },
       },
     )
@@ -29,23 +30,33 @@ export const createMaterial = (material) => ({
   meta: { material },
 });
 
-export const fetchMaterials = () => ({
+export const fetchMaterials = (token) => ({
   type: FETCH_MATERIALS,
   payload: axios
     .get(
       'https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/material',
+      {
+        headers: {
+          Authorization: token,
+        },
+      },
     )
     .then((res) => res.data.data),
 });
-export const fetchMaterial = (id) => ({
+export const fetchMaterial = (id, token) => ({
   type: FETCH_MATERIAL,
   payload: axios
     .get(
       `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/material/${id}`,
+      {
+        headers: {
+          Authorization: token,
+        },
+      },
     )
     .then((res) => res.data),
 });
-export const updateMaterial = (material) => ({
+export const updateMaterial = (material, token) => ({
   type: UPDATE_MATERIAL,
   payload: axios
     .put(
@@ -61,6 +72,7 @@ export const updateMaterial = (material) => ({
       {
         headers: {
           'content-type': 'application/json',
+          Authorization: token,
         },
       },
     )
@@ -68,10 +80,15 @@ export const updateMaterial = (material) => ({
   meta: { material },
 });
 
-export const deleteMaterial = (id) => ({
+export const deleteMaterial = (id, token) => ({
   type: DELETE_MATERIAL,
   payload: axios.delete(
     `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/material/${id}`,
+    {
+      headers: {
+        Authorization: token,
+      },
+    },
   ),
   meta: { id },
 });

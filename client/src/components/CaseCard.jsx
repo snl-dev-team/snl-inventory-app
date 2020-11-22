@@ -10,7 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import EditIcon from '@material-ui/icons/Edit';
 import { useHistory } from 'react-router-dom';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import PaletteIcon from '@material-ui/icons/Palette';
 import LocalPharmacyIcon from '@material-ui/icons/LocalPharmacy';
@@ -53,13 +53,14 @@ export default function CaseCard({
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
+  const token = useSelector((state) => state.user.token);
 
   const handleClickEdit = () => {
     history.push(`/cases/edit/${id}`);
   };
 
   const handleClickDelete = () => {
-    dispatch(deleteCase(id));
+    dispatch(deleteCase(id, token));
   };
 
   return (

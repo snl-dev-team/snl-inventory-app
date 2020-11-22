@@ -38,6 +38,14 @@ export const fetchProducts = () => ({
     )
     .then((res) => res.data.data),
 });
+export const fetchProduct = (id) => ({
+  type: FETCH_PRODUCTS,
+  payload: axios
+    .get(
+      `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/product${id}`,
+    )
+    .then((res) => res.data),
+});
 
 export const updateProduct = (product) => ({
   type: UPDATE_PRODUCT,
@@ -72,7 +80,7 @@ export const deleteProduct = (id) => ({
 export const useMaterial = ({ productId, materialId, count }) => ({
   type: PRODUCT_USE_MATERIAL,
   payload: axios.put(
-    `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev//product/${productId}/material`,
+    `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/product/${productId}/material`,
     {
       product_id: productId,
       material_id: materialId,
@@ -89,7 +97,7 @@ export const useMaterial = ({ productId, materialId, count }) => ({
 export const unuseMaterial = ({ productId, materialId, count }) => ({
   type: PRODUCT_UNUSE_MATERIAL,
   payload: axios.delete(
-    `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev//product/${productId}/material`,
+    `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/product/${productId}/material`,
     {
       product_id: productId,
       material_id: materialId,

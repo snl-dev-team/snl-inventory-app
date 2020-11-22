@@ -911,6 +911,23 @@ def fetch_case_uses_product(id):
             status_code=400,
         )
 
+        data = process_select_response(res, CASE_USE_PRODUCT_COLUMNS)
+        res_obj = {}
+
+        for r in data:
+            res_obj[r['product_id']] = r['count']
+
+        return Response(
+            body=json.dumps(res_obj),
+            status_code=200,
+        )
+
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
+
 @app.route('/case/{id}/product', methods=['PUT'], authorizer=authorizer)
 def case_use_product(id):
     try:
@@ -1065,7 +1082,7 @@ def fetch_orders():
         data = process_select_response(res, ORDER_COLUMNS)
 
         return Response(
-            body=json.dumps({'data': data}),
+            body=json.dumps(data),
             status_code=200,
         )
 
@@ -1186,6 +1203,12 @@ def fetch_order_uses_case(id):
         return Response(
             body=json.dumps(res_obj),
             status_code=200,
+        )
+
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
         )
 
     except Exception as e:

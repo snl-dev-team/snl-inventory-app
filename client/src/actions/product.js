@@ -87,9 +87,9 @@ export const deleteProduct = (id, token) => ({
     `${URL}/product/${id}`,
     {
       headers: {
-
-      }
-    }
+        Authorization: token,
+      },
+    },
   ),
   meta: { id },
 });
@@ -105,6 +105,7 @@ export const useMaterial = (productId, materialId, count, token) => ({
     },
     {
       headers: {
+        Authorization: token,
         'content-type': 'application/json',
       },
     },

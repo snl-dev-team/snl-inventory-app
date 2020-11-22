@@ -5,6 +5,7 @@ import mysql.connector
 from chalice import Chalice, Response, CognitoUserPoolAuthorizer
 import json
 from datetime import datetime
+import logging
 
 app = Chalice(app_name='snl-inventory-app')
 
@@ -24,7 +25,7 @@ authorizer = CognitoUserPoolAuthorizer(
 
 
 def execute_statement(sql):
-    print(sql)
+    logging.log(logging.INFO, sql)
     response = rds_client.execute_statement(
         secretArn=database_secrets_arn,
         database=database_name,

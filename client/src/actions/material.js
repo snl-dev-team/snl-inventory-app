@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { URL } from '../constants/url';
 
 export const CREATE_MATERIAL = 'CREATE_MATERIAL';
 export const FETCH_MATERIALS = 'FETCH_MATERIALS';
@@ -10,7 +11,7 @@ export const createMaterial = (material, token) => ({
   type: CREATE_MATERIAL,
   payload: axios
     .post(
-      'https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/material',
+      `${URL}/material`,
       {
         name: material.name,
         number: material.number,
@@ -34,7 +35,7 @@ export const fetchMaterials = (token) => ({
   type: FETCH_MATERIALS,
   payload: axios
     .get(
-      'https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/material',
+      `${URL}/material`,
       {
         headers: {
           Authorization: token,
@@ -47,7 +48,7 @@ export const fetchMaterial = (id, token) => ({
   type: FETCH_MATERIAL,
   payload: axios
     .get(
-      `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/material/${id}`,
+      `${URL}/material/${id}`,
       {
         headers: {
           Authorization: token,
@@ -60,7 +61,7 @@ export const updateMaterial = (material, token) => ({
   type: UPDATE_MATERIAL,
   payload: axios
     .put(
-      `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/material/${material.id}`,
+      `${URL}/material/${material.id}`,
       {
         name: material.name,
         number: material.number,
@@ -83,7 +84,7 @@ export const updateMaterial = (material, token) => ({
 export const deleteMaterial = (id, token) => ({
   type: DELETE_MATERIAL,
   payload: axios.delete(
-    `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/material/${id}`,
+    `${URL}/material/${id}`,
     {
       headers: {
         Authorization: token,

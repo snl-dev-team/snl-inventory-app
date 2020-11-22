@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { URL } from '../constants/url';
 
 export const CREATE_PRODUCT = 'CREATE_PRODUCT';
 export const FETCH_PRODUCTS = 'FETCH_PRODUCTS';
@@ -10,7 +11,7 @@ export const createProduct = (product, token) => ({
   type: CREATE_PRODUCT,
   payload: axios
     .post(
-      'https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/product',
+      `${URL}/product`,
       {
         name: product.name,
         number: product.number,
@@ -33,7 +34,7 @@ export const fetchProducts = (token) => ({
   type: FETCH_PRODUCTS,
   payload: axios
     .get(
-      'https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/product',
+      `${URL}/product`,
       {
         headers: {
           Authorization: token,
@@ -46,7 +47,7 @@ export const fetchProduct = (id, token) => ({
   type: FETCH_PRODUCTS,
   payload: axios
     .get(
-      `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/product${id}`,
+      `${URL}/product/${id}`,
       {
         headers: {
           Authorization: token,
@@ -59,7 +60,7 @@ export const updateProduct = (product, token) => ({
   type: UPDATE_PRODUCT,
   payload: axios
     .put(
-      `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/product/${product.id}`,
+      `${URL}/product/${product.id}`,
       {
         name: product.name,
         number: product.number,
@@ -81,7 +82,7 @@ export const updateProduct = (product, token) => ({
 export const deleteProduct = (id, token) => ({
   type: DELETE_PRODUCT,
   payload: axios.delete(
-    `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/product/${id}`,
+    `${URL}/product/${id}`,
     {
       headers: {
         Authorization: token,

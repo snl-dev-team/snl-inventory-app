@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { URL } from '../constants/url';
 
 export const CREATE_CASE = 'CREATE_CASE';
 export const FETCH_CASES = 'FETCH_CASES';
@@ -10,7 +11,7 @@ export const createCase = (case_, token) => ({
   type: CREATE_CASE,
   payload: axios
     .post(
-      'https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/case',
+      '/case',
       {
         name: case_.name,
         product_name: case_.productName,
@@ -35,7 +36,7 @@ export const fetchCases = (token) => ({
   type: FETCH_CASES,
   payload: axios
     .get(
-      'https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/case',
+      `${URL}/case`,
       {
         headers: {
           Authorization: token,
@@ -48,7 +49,7 @@ export const fetchCase = (id, token) => ({
   type: FETCH_CASE,
   payload: axios
     .get(
-      `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/case/${id}`,
+      `${URL}/case/${id}`,
       {
         headers: {
           Authorization: token,
@@ -61,7 +62,7 @@ export const updateCase = (case_, token) => ({
   type: UPDATE_CASE,
   payload: axios
     .put(
-      `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/case/${case_.id}`,
+      `${URL}/case/${case_.id}`,
       {
         name: case_.name,
         product_name: case_.productName,
@@ -85,7 +86,7 @@ export const updateCase = (case_, token) => ({
 export const deleteCase = (id, token) => ({
   type: DELETE_CASE,
   payload: axios.delete(
-    `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/case/${id}`,
+    `${URL}/case/${id}`,
     {
       headers: {
         Authorization: token,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import clsx from 'clsx';
 import { makeStyles, useTheme, fade } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -30,7 +30,6 @@ import ProductsDashboard from './Products';
 import MaterialsDashboard from './Materials';
 import OrdersDashboard from './Orders';
 import CasesDashboard from './Cases';
-import { fetchMaterials } from '../../actions/material';
 import { signOut } from '../../actions/user';
 
 const drawerWidth = 240;
@@ -149,7 +148,6 @@ export default function Dashboard() {
   const [anchorEl, setAnchorEl] = useState(null);
   const history = useHistory();
   const dispatch = useDispatch();
-  const token = useSelector((state) => state.user.token);
 
   const isMenuOpen = Boolean(anchorEl);
 
@@ -160,10 +158,6 @@ export default function Dashboard() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-
-  useEffect(() => {
-    dispatch(fetchMaterials(token));
-  }, [dispatch, token]);
 
   const { isAuthorized } = useSelector((state) => state.user);
   if (!isAuthorized) return <Redirect to="/sign-in" />;

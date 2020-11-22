@@ -50,6 +50,7 @@ MATERIAL_COLUMNS = [
     ('date_modified',   str,   'stringValue'),
     ('price',           int,   'longValue'),
     ('units',           int,   'stringValue'),
+    ('notes',           str,   'stringValue')
 ]
 
 """
@@ -65,6 +66,7 @@ MATERIAL_COLUMNS = [
 | date_modified   | datetime                            | NO   |     | CURRENT_TIMESTAMP |                |
 | price           | int(10) unsigned                    | YES  |     | NULL              |                |
 | units           | enum('unit','kg','lb','g','L','mL') | YES  |     | unit              |                |
+| notes           | text                                | NO   |     | N/A               |                |
 +-----------------+-------------------------------------+------+-----+-------------------+----------------+
 """
 

@@ -1,0 +1,10 @@
+{
+  "python.venvPath": "${workspaceFolder}/server/venv",
+  "[python]": {
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4  
+  },
+  "editor.tabSize": 2,
+  "eslint.nodePath": "${workspaceFolder}/client/node_modules",
+  "eslint.workingDirectories": ["./client"],
+}

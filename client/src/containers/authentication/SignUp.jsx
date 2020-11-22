@@ -10,7 +10,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { useDispatch, useSelector } from 'react-redux';
 import { Redirect, useHistory } from 'react-router-dom';
-import { signUp } from '../actions/user';
+import { signUp } from '../../actions/user';
+import AuthAlerts from './AuthAlerts';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -57,7 +58,9 @@ const SignUp = () => {
 
   const classes = useStyles();
 
-  const { isAuthorized, email: globalEmail } = useSelector((state) => state.user);
+  const {
+    isAuthorized, email: globalEmail, error, info, success,
+  } = useSelector((state) => state.user);
 
   if (isAuthorized) {
     return <Redirect to="/" />;
@@ -74,6 +77,7 @@ const SignUp = () => {
         <Typography component="h1" variant="h5">
           Sign Up
         </Typography>
+        <AuthAlerts error={error} info={info} success={success} />
         <form className={classes.form}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -108,6 +112,7 @@ const SignUp = () => {
             color="primary"
             className={classes.submit}
             onClick={handleSignUp}
+            disabled={email === '' || password === ''}
           >
             Sign Up
           </Button>
@@ -118,6 +123,13 @@ const SignUp = () => {
             onClick={() => history.push('sign-in')}
           >
             Go to Sign In
+          </Button>
+          <Button
+            fullWidth
+            variant="contained"
+            onClick={() => history.push('forgot-password')}
+          >
+            Forgot Password
           </Button>
         </form>
       </div>

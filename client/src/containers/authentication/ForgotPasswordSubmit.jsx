@@ -10,7 +10,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { useDispatch, useSelector } from 'react-redux';
 import { Redirect, useHistory } from 'react-router-dom';
-import { confirmSignUp, resendCode, signOut } from '../actions/user';
+import { forgotPasswordAndSubmit, signOut } from '../../actions/user';
+import AuthAlerts from './AuthAlerts';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -44,15 +45,19 @@ const Copyright = () => (
   </Typography>
 );
 
-const SignUp = () => {
+const ForgotPasword = () => {
   const dispatch = useDispatch();
   const history = useHistory();
-
   const [code, setCode] = useState('');
-  const { isAuthorized, email } = useSelector((state) => state.user);
+  const [newPassword, setNewPassword] = useState('');
 
-  const handleConfirmSignUp = () => {
-    dispatch(confirmSignUp(email, code));
+  const {
+    isAuthorized, email, error, info, success,
+  } = useSelector((state) => state.user);
+
+  const handleForgotPassword = () => {
+    dispatch(forgotPasswordAndSubmit(email, code, newPassword));
+    history.push('/forgot-password/submit');
   };
 
   const classes = useStyles();
@@ -61,17 +66,14 @@ const SignUp = () => {
     return <Redirect to="/" />;
   }
 
-  if (email === null) {
-    return <Redirect to="/sign-up" />;
-  }
-
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
         <Typography component="h1" variant="h5">
-          Confirm Sign Up
+          Forgot Password
         </Typography>
+        <AuthAlerts error={error} info={info} success={success} />
         <form className={classes.form}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -81,9 +83,21 @@ const SignUp = () => {
                 fullWidth
                 name="code"
                 label="Code"
-                type="code"
+                type="text"
                 id="code"
                 onChange={(e) => setCode(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                name="new-password"
+                label="New Password"
+                type="password"
+                id="new-password"
+                onChange={(e) => setNewPassword(e.target.value)}
               />
             </Grid>
           </Grid>
@@ -92,17 +106,10 @@ const SignUp = () => {
             variant="contained"
             color="primary"
             className={classes.submit}
-            onClick={handleConfirmSignUp}
+            disabled={code === '' || newPassword === '' || success !== null}
+            onClick={handleForgotPassword}
           >
-            Confirm Sign Up
-          </Button>
-          <Button
-            fullWidth
-            variant="contained"
-            color="secondary"
-            onClick={() => resendCode(email)}
-          >
-            Resend Code
+            Reset Password
           </Button>
           <Button
             fullWidth
@@ -111,6 +118,13 @@ const SignUp = () => {
             onClick={() => { dispatch(signOut()); history.push('sign-in'); }}
           >
             Go to Sign In
+          </Button>
+          <Button
+            fullWidth
+            variant="contained"
+            onClick={() => { dispatch(signOut()); history.push('sign-up'); }}
+          >
+            Go to Sign Up
           </Button>
         </form>
       </div>
@@ -121,4 +135,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default ForgotPasword;

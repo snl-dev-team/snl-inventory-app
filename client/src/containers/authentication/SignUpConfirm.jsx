@@ -10,7 +10,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { useDispatch, useSelector } from 'react-redux';
 import { Redirect, useHistory } from 'react-router-dom';
-import { signIn } from '../actions/user';
+import { confirmSignUp, resendCode, signOut } from '../../actions/user';
+import AuthAlerts from './AuthAlerts';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -44,22 +45,27 @@ const Copyright = () => (
   </Typography>
 );
 
-const SignIn = () => {
+const SignUp = () => {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [code, setCode] = useState('');
+  const {
+    isAuthorized, email, error, info, success,
+  } = useSelector((state) => state.user);
 
-  const handleSignIn = () => {
-    dispatch(signIn(email, password));
+  const handleConfirmSignUp = () => {
+    dispatch(confirmSignUp(email, code));
   };
-  const classes = useStyles();
 
-  const isAuthorized = useSelector((state) => state.user.isAuthorized);
+  const classes = useStyles();
 
   if (isAuthorized) {
     return <Redirect to="/" />;
+  }
+
+  if (email === null) {
+    return <Redirect to="/sign-up" />;
   }
 
   return (
@@ -67,8 +73,9 @@ const SignIn = () => {
       <CssBaseline />
       <div className={classes.paper}>
         <Typography component="h1" variant="h5">
-          Sign In
+          Confirm Sign Up
         </Typography>
+        <AuthAlerts error={error} info={info} success={success} />
         <form className={classes.form}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -76,24 +83,11 @@ const SignIn = () => {
                 variant="outlined"
                 required
                 fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                onChange={(e) => setPassword(e.target.value)}
+                name="code"
+                label="Code"
+                type="code"
+                id="code"
+                onChange={(e) => setCode(e.target.value)}
               />
             </Grid>
           </Grid>
@@ -102,17 +96,27 @@ const SignIn = () => {
             variant="contained"
             color="primary"
             className={classes.submit}
-            onClick={handleSignIn}
+            onClick={handleConfirmSignUp}
+            disabled={code === '' || success !== null}
           >
-            Sign In
+            Confirm Sign Up
+          </Button>
+          <Button
+            fullWidth
+            variant="contained"
+            color="secondary"
+            disabled={success !== null}
+            onClick={() => dispatch(resendCode(email))}
+          >
+            Resend Code
           </Button>
           <Button
             fullWidth
             variant="contained"
             className={classes.submit}
-            onClick={() => history.push('sign-up')}
+            onClick={() => { dispatch(signOut()); history.push('sign-in'); }}
           >
-            Go to Sign Up
+            Go to Sign In
           </Button>
         </form>
       </div>
@@ -123,4 +127,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default SignUp;

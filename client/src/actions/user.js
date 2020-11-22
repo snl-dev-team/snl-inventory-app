@@ -15,6 +15,7 @@ export const signIn = (email, password) => ({
     username: email,
     password,
   }),
+  meta: { email },
 });
 
 export const signOut = () => ({
@@ -30,11 +31,13 @@ export const signUp = (email, password) => ({
 export const confirmSignUp = (email, code) => ({
   type: CONFIRM_SIGN_UP,
   payload: Auth.confirmSignUp(email, code),
+  meta: { email },
 });
 
 export const resendCode = (email) => ({
   type: RESEND_CODE,
   payload: Auth.resendSignUp(email),
+  meta: { email },
 });
 
 export const changePassword = (oldPassword, newPassword) => ({
@@ -46,9 +49,11 @@ export const changePassword = (oldPassword, newPassword) => ({
 export const forgotPassword = (email) => ({
   type: FORGOT_PASSWORD,
   payload: Auth.forgotPassword(email),
+  meta: { email },
 });
 
-export const forgotPasswordAndSubmit = (username, code, newPassword) => ({
+export const forgotPasswordAndSubmit = (email, code, newPassword) => ({
   type: FORGOT_PASSWORD_AND_SUBMIT,
-  payload: Auth.forgotPasswordSubmit(username, code, newPassword),
+  payload: Auth.forgotPasswordSubmit(email, code, newPassword),
+  meta: { email },
 });

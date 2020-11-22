@@ -24,7 +24,7 @@ const userReducer = (state = INITIAL_STATE, action) => {
     case `${SIGN_IN}_FULFILLED`:
       return {
         isAuthorized: true,
-        token: payload.signInUserSession.accessToken.jwtToken,
+        token: payload.signInUserSession.idToken.jwtToken,
         email: payload.username,
       };
     default:

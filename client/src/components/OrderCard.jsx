@@ -10,7 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import EditIcon from '@material-ui/icons/Edit';
 import { useHistory } from 'react-router-dom';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import GridOnIcon from '@material-ui/icons/GridOn';
 import { deleteOrder } from '../actions/order';
@@ -46,13 +46,14 @@ export default function OrderCard({
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
+  const token = useSelector((state) => state.user.token);
 
   const handleClickEdit = () => {
     history.push(`/orders/edit/${id}`);
   };
 
   const handleClickDelete = () => {
-    dispatch(deleteOrder(id));
+    dispatch(deleteOrder(id, token));
   };
 
   return (

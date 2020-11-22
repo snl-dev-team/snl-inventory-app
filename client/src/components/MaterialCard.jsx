@@ -10,7 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import EditIcon from '@material-ui/icons/Edit';
 import { useHistory } from 'react-router-dom';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { deleteMaterial } from '../actions/material';
 
@@ -48,12 +48,13 @@ export default function MaterialCard({
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
+  const token = useSelector((state) => state.user.token);
 
   const handleClickEdit = () => {
     history.push(`/materials/edit/${id}`);
   };
   const handleClickDelete = () => {
-    dispatch(deleteMaterial(id));
+    dispatch(deleteMaterial(id, token));
   };
 
   return (

@@ -10,7 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import EditIcon from '@material-ui/icons/Edit';
 import { useHistory } from 'react-router-dom';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import PaletteIcon from '@material-ui/icons/Palette';
 import { deleteProduct } from '../actions/product';
@@ -44,12 +44,13 @@ export default function ProductCard({
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
+  const token = useSelector((state) => state.user.token);
 
   const handleClickEdit = () => {
     history.push(`/products/edit/${id}`);
   };
   const handleClickDelete = () => {
-    dispatch(deleteProduct(id));
+    dispatch(deleteProduct(id, token));
   };
 
   return (

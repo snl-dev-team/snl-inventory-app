@@ -88,7 +88,6 @@ export const deleteCase = (id, token) => ({
     `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/case/${id}`,
     {
       headers: {
-        'content-type': 'application/json',
         Authorization: token,
       },
     },

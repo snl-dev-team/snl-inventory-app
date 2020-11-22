@@ -18,7 +18,7 @@ db_cluster_arn = os.environ.get('DATABASE_CLUSTER_ARN')
 authorizer = CognitoUserPoolAuthorizer(
     'snl-inventory-app',
     provider_arns=[
-        'arn:aws:cognito-idp:us-east-1:595723023717:userpool/us-east-1_tLGfEemRw'
+        'arn:aws:cognito-idp:us-east-1:595723023717:userpool/us-east-1_fiXPTAJzP'
     ]
 )
 
@@ -895,7 +895,7 @@ def fetch_order(id):
                 `order`
             WHERE
                 `id` = {id};
-            """.format(columns=columns_string)
+            """.format(columns=columns_string, id=id)
         res = execute_statement(sql)
         data = process_select_response(res, ORDER_COLUMNS)
 

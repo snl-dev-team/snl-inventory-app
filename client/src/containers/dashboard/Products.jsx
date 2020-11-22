@@ -34,9 +34,10 @@ const ProductsDashboard = () => {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
+  const token = useSelector((state) => state.user.token);
 
   useEffect(() => {
-    dispatch(fetchProducts());
+    dispatch(fetchProducts(token));
   });
 
   const products = useSelector(

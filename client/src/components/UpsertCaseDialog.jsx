@@ -16,6 +16,7 @@ export default function UpsertCaseDialog() {
   const history = useHistory();
   const dispatch = useDispatch();
   const { id } = useParams();
+  const token = useSelector((state) => state.user.token);
 
   const handleClose = () => {
     history.push('/cases');
@@ -70,14 +71,14 @@ export default function UpsertCaseDialog() {
 
   const createCaseAndClose = () => {
     dispatch(
-      createCase(payload),
+      createCase(payload, token),
     );
     history.push('/cases');
   };
 
   const updateCaseAndClose = () => {
     dispatch(
-      updateCase(payload),
+      updateCase(payload, token),
     );
     history.push('/cases');
   };

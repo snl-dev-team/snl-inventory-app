@@ -149,6 +149,7 @@ export default function Dashboard() {
   const [anchorEl, setAnchorEl] = useState(null);
   const history = useHistory();
   const dispatch = useDispatch();
+  const token = useSelector((state) => state.user.token);
 
   const isMenuOpen = Boolean(anchorEl);
 
@@ -161,8 +162,8 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    dispatch(fetchMaterials());
-  }, [dispatch]);
+    dispatch(fetchMaterials(token));
+  }, [dispatch, token]);
 
   const { isAuthorized } = useSelector((state) => state.user);
   if (!isAuthorized) return <Redirect to="/sign-in" />;

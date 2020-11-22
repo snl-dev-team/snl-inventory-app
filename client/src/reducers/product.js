@@ -75,7 +75,7 @@ const productReducer = (state = {}, action) => {
           return acc;
         }, {}),
       };
-    case `${PRODUCT_UNUSE_MATERIAL}_FULFILLED_BOB`:
+    case `${PRODUCT_UNUSE_MATERIAL}_FULFILLED`:
       return {
         ...state,
         ...payload.reduce((acc, curr) => {

@@ -22,13 +22,16 @@ import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import GridOnIcon from '@material-ui/icons/GridOn';
 import LocalPharmacyIcon from '@material-ui/icons/LocalPharmacy';
 import { Route, useHistory, Redirect } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PaletteIcon from '@material-ui/icons/Palette';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import ProductsDashboard from './Products';
 import MaterialsDashboard from './Materials';
 import OrdersDashboard from './Orders';
 import CasesDashboard from './Cases';
 import { fetchMaterials } from '../../actions/material';
+import { signOut } from '../../actions/user';
 
 const drawerWidth = 240;
 
@@ -139,12 +142,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function MiniDrawer() {
+export default function Dashboard() {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = useState(true);
+  const [anchorEl, setAnchorEl] = useState(null);
   const history = useHistory();
   const dispatch = useDispatch();
+
+  const isMenuOpen = Boolean(anchorEl);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -157,6 +163,33 @@ export default function MiniDrawer() {
   useEffect(() => {
     dispatch(fetchMaterials());
   }, [dispatch]);
+
+  const { isAuthorized } = useSelector((state) => state.user);
+  if (!isAuthorized) return <Redirect to="/sign-in" />;
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const menuId = 'primary-search-account-menu';
+
+  const renderMenu = (
+    <Menu
+      anchorEl={anchorEl}
+      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      id={menuId}
+      keepMounted
+      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      open={isMenuOpen}
+      onClose={handleMenuClose}
+    >
+      <MenuItem onClick={() => dispatch(signOut())}>Log out</MenuItem>
+    </Menu>
+  );
+
+  const handleProfileMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
   return (
     <div className={classes.root}>
@@ -204,6 +237,7 @@ export default function MiniDrawer() {
             aria-controls="menu-appbar"
             aria-haspopup="true"
             color="inherit"
+            onClick={handleProfileMenuOpen}
           >
             <AccountCircle />
           </IconButton>
@@ -303,6 +337,7 @@ export default function MiniDrawer() {
           <Redirect to="/materials" />
         </Route>
       </main>
+      {renderMenu}
     </div>
   );
 }

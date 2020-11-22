@@ -1,17 +1,28 @@
 import React from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { Provider } from 'react-redux';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import Amplify from 'aws-amplify';
 import Dashboard from './containers/dashboard/Dashboard';
 import SignUp from './containers/SignUp';
-import store from './store';
+import ConfirmSignUp from './containers/ConfirmSignUp';
+import SignIn from './containers/SignIn';
+
+Amplify.configure({
+  Auth: {
+    region: process.env.REACT_APP_REGION,
+    userPoolId: process.env.REACT_APP_USER_POOL_ID,
+    userPoolWebClientId: process.env.REACT_APP_USER_POOL_WEB_CLIENT_ID,
+  },
+});
 
 const App = () => (
-  <Provider store={store}>
-    <Router>
-      <Route exact path="/signup" component={SignUp} />
+  <Router>
+    <Switch>
+      <Route exact path="/sign-up" component={SignUp} />
+      <Route exact path="/sign-up/confirm" component={ConfirmSignUp} />
+      <Route exact path="/sign-in" component={SignIn} />
       <Route path="/" component={Dashboard} />
-    </Router>
-  </Provider>
+    </Switch>
+  </Router>
 );
 
 export default App;

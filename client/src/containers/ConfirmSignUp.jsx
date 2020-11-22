@@ -10,7 +10,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { useDispatch, useSelector } from 'react-redux';
 import { Redirect, useHistory } from 'react-router-dom';
-import { signUp } from '../actions/user';
+import { confirmSignUp, resendCode, signOut } from '../actions/user';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -48,23 +48,21 @@ const SignUp = () => {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [code, setCode] = useState('');
+  const { isAuthorized, email } = useSelector((state) => state.user);
 
-  const handleSignUp = () => {
-    dispatch(signUp(email, password));
+  const handleConfirmSignUp = () => {
+    dispatch(confirmSignUp(email, code));
   };
 
   const classes = useStyles();
-
-  const { isAuthorized, email: globalEmail } = useSelector((state) => state.user);
 
   if (isAuthorized) {
     return <Redirect to="/" />;
   }
 
-  if (globalEmail !== null) {
-    return <Redirect to="/sign-up/confirm" />;
+  if (email === null) {
+    return <Redirect to="/sign-up" />;
   }
 
   return (
@@ -72,7 +70,7 @@ const SignUp = () => {
       <CssBaseline />
       <div className={classes.paper}>
         <Typography component="h1" variant="h5">
-          Sign Up
+          Confirm Sign Up
         </Typography>
         <form className={classes.form}>
           <Grid container spacing={2}>
@@ -81,24 +79,11 @@ const SignUp = () => {
                 variant="outlined"
                 required
                 fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                onChange={(e) => setPassword(e.target.value)}
+                name="code"
+                label="Code"
+                type="code"
+                id="code"
+                onChange={(e) => setCode(e.target.value)}
               />
             </Grid>
           </Grid>
@@ -107,15 +92,23 @@ const SignUp = () => {
             variant="contained"
             color="primary"
             className={classes.submit}
-            onClick={handleSignUp}
+            onClick={handleConfirmSignUp}
           >
-            Sign Up
+            Confirm Sign Up
+          </Button>
+          <Button
+            fullWidth
+            variant="contained"
+            color="secondary"
+            onClick={() => resendCode(email)}
+          >
+            Resend Code
           </Button>
           <Button
             fullWidth
             variant="contained"
             className={classes.submit}
-            onClick={() => history.push('sign-in')}
+            onClick={() => { dispatch(signOut()); history.push('sign-in'); }}
           >
             Go to Sign In
           </Button>

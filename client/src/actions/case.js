@@ -6,7 +6,7 @@ export const FETCH_CASE = 'FETCH_CASE';
 export const UPDATE_CASE = 'UPDATE_CASE';
 export const DELETE_CASE = 'DELETE_CASE';
 
-export const createCase = (case_) => ({
+export const createCase = (case_, token) => ({
   type: CREATE_CASE,
   payload: axios
     .post(
@@ -23,6 +23,7 @@ export const createCase = (case_) => ({
       {
         headers: {
           'content-type': 'application/json',
+          Authorization: token,
         },
       },
     )
@@ -30,23 +31,33 @@ export const createCase = (case_) => ({
   meta: { case_ },
 });
 
-export const fetchCases = () => ({
+export const fetchCases = (token) => ({
   type: FETCH_CASES,
   payload: axios
     .get(
       'https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/case',
+      {
+        headers: {
+          Authorization: token,
+        },
+      },
     )
     .then((res) => res.data.data),
 });
-export const fetchCase = (id) => ({
+export const fetchCase = (id, token) => ({
   type: FETCH_CASE,
   payload: axios
     .get(
       `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/case/${id}`,
+      {
+        headers: {
+          Authorization: token,
+        },
+      },
     )
     .then((res) => res.data),
 });
-export const updateCase = (case_) => ({
+export const updateCase = (case_, token) => ({
   type: UPDATE_CASE,
   payload: axios
     .put(
@@ -63,6 +74,7 @@ export const updateCase = (case_) => ({
       {
         headers: {
           'content-type': 'application/json',
+          Authorization: token,
         },
       },
     )
@@ -70,10 +82,16 @@ export const updateCase = (case_) => ({
   meta: { case_ },
 });
 
-export const deleteCase = (id) => ({
+export const deleteCase = (id, token) => ({
   type: DELETE_CASE,
   payload: axios.delete(
     `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/case/${id}`,
+    {
+      headers: {
+        'content-type': 'application/json',
+        Authorization: token,
+      },
+    },
   ),
   meta: { id },
 });

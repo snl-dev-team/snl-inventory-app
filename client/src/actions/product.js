@@ -6,7 +6,7 @@ export const FETCH_PRODUCT = 'FETCH_PRODUCT';
 export const UPDATE_PRODUCT = 'UPDATE_PRODUCT';
 export const DELETE_PRODUCT = 'DELETE_PRODUCT';
 
-export const createProduct = (product) => ({
+export const createProduct = (product, token) => ({
   type: CREATE_PRODUCT,
   payload: axios
     .post(
@@ -21,6 +21,7 @@ export const createProduct = (product) => ({
       {
         headers: {
           'content-type': 'application/json',
+          Authorization: token,
         },
       },
     )
@@ -28,23 +29,33 @@ export const createProduct = (product) => ({
   meta: { product },
 });
 
-export const fetchProducts = () => ({
+export const fetchProducts = (token) => ({
   type: FETCH_PRODUCTS,
   payload: axios
     .get(
       'https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/product',
+      {
+        headers: {
+          Authorization: token,
+        },
+      },
     )
     .then((res) => res.data.data),
 });
-export const fetchProduct = (id) => ({
+export const fetchProduct = (id, token) => ({
   type: FETCH_PRODUCTS,
   payload: axios
     .get(
       `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/product${id}`,
+      {
+        headers: {
+          Authorization: token,
+        },
+      },
     )
     .then((res) => res.data),
 });
-export const updateProduct = (product) => ({
+export const updateProduct = (product, token) => ({
   type: UPDATE_PRODUCT,
   payload: axios
     .put(
@@ -59,6 +70,7 @@ export const updateProduct = (product) => ({
       {
         headers: {
           'content-type': 'application/json',
+          Authorization: token,
         },
       },
     )
@@ -66,10 +78,15 @@ export const updateProduct = (product) => ({
   meta: { product },
 });
 
-export const deleteProduct = (id) => ({
+export const deleteProduct = (id, token) => ({
   type: DELETE_PRODUCT,
   payload: axios.delete(
     `https://f575f737c8.execute-api.us-east-1.amazonaws.com/dev/product/${id}`,
+    {
+      headers: {
+        Authorization: token,
+      },
+    },
   ),
   meta: { id },
 });

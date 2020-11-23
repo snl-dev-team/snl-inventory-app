@@ -1477,7 +1477,7 @@ class Query(graphene.ObjectType):
     case = graphene.Field(Case, id=graphene.Int(required=True))
 
     orders = graphene.List(Order)
-    case = graphene.Field(Order, id=graphene.Int(required=True))
+    order = graphene.Field(Order, id=graphene.Int(required=True))
 
     @staticmethod
     def resolve_materials(parent, info):

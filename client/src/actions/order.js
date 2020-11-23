@@ -79,3 +79,50 @@ export const deleteOrder = (id, token) => ({
   ),
   meta: { id },
 });
+
+export const fetchOrderUsesCase = (orderId, token) => ({
+  type: actions.FETCH_ORDER_USES_CASE,
+  payload: axios.get(
+    `${URL}/order/${orderId}/case`,
+    {
+      headers: {
+        Authorization: token,
+      },
+    },
+  ),
+  meta: { orderId },
+});
+
+export const orderUseCase = (orderId, caseId, count, token) => ({
+  type: actions.ORDER_USE_CASE,
+  payload: axios.put(
+    `${URL}/order/${orderId}/case`,
+    {
+      case_id: caseId,
+      count,
+    },
+    {
+      headers: {
+        Authorization: token,
+        'content-type': 'application/json',
+      },
+    },
+  ).then((res) => res.data),
+  meta: { orderId, caseId, count },
+});
+
+export const orderUnuseCase = (orderId, caseId, token) => ({
+  type: actions.ORDER_UNUSE_CASE,
+  payload: axios.delete(
+    `${URL}/order/${orderId}/case`,
+    {
+      case_id: caseId,
+    },
+    {
+      headers: {
+        Authorization: token,
+      },
+    },
+  ).then((res) => res.data),
+  meta: { orderId, caseId },
+});

@@ -254,6 +254,7 @@ PRODUCT_COLUMNS = [
 | date_created    | datetime         | NO   |     | CURRENT_TIMESTAMP |                |
 | date_modified   | datetime         | NO   |     | CURRENT_TIMESTAMP |                |
 | completed       | tinyint(1)       | YES  |     | 0                 |                |
+| notes           | text             | NO   |     | N/A               |                |
 +-----------------+------------------+------+-----+-------------------+----------------+
 
 +-------------+----------------+------+-----+---------+-------+
@@ -505,6 +506,7 @@ CASE_COLUMNS = [
 | date_created    | datetime         | NO   |     | CURRENT_TIMESTAMP |                |
 | date_modified   | datetime         | NO   |     | CURRENT_TIMESTAMP |                |
 | shipped         | tinyint(1)       | YES  |     | 0                 |                |
+| notes           | text             | NO   |     | N/A               |                |
 +-----------------+------------------+------+-----+-------------------+----------------+
 
 +-------------+----------------+------+-----+---------+-------+
@@ -812,6 +814,7 @@ ORDER_COLUMNS = [
 | number        | varchar(255) | NO   |     | NULL              |                |
 | date_created  | datetime     | NO   |     | CURRENT_TIMESTAMP |                |
 | date_modified | datetime     | NO   |     | CURRENT_TIMESTAMP |                |
+| notes         | text         | NO   |     | N/A               |                |
 +---------------+--------------+------+-----+-------------------+----------------+
 
 +----------+------------------+------+-----+---------+-------+

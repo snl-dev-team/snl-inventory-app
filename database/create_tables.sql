@@ -75,6 +75,7 @@ CREATE TABLE IF NOT EXISTS `order` (
     `number`                VARCHAR(255) NOT NULL,
     `date_created`          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `date_modified`         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `completed`	            BOOL DEFAULT FALSE,
     
     PRIMARY KEY (`id`)
 );

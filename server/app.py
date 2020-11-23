@@ -6,6 +6,7 @@ from chalice import Chalice, Response, CognitoUserPoolAuthorizer
 import json
 from datetime import datetime
 import logging
+import graphene
 
 app = Chalice(app_name='snl-inventory-app')
 
@@ -24,13 +25,14 @@ authorizer = CognitoUserPoolAuthorizer(
 )
 
 
-def execute_statement(sql):
+def execute_statement(sql, sql_parameters=[]):
     logging.log(logging.INFO, sql)
     response = rds_client.execute_statement(
         secretArn=database_secrets_arn,
         database=database_name,
         resourceArn=db_cluster_arn,
-        sql=sql
+        sql=sql,
+        parameters=sql_parameters
     )
     return response
 
@@ -1307,3 +1309,68 @@ def order_unuse_case(id):
             body=json.dumps({'message': str(e)}),
             status_code=400,
         )
+
+
+class Material(graphene.ObjectType):
+    id = graphene.Int()
+    name = graphene.String()
+    number = graphene.String()
+    count = graphene.Float()
+    expiration_date = graphene.String()
+    date_created = graphene.String()
+    date_modified = graphene.String()
+    price = graphene.Int()
+    units = graphene.String()
+
+
+class Product(graphene.ObjectType):
+    id = graphene.Int()
+    name = graphene.String()
+    number = graphene.String()
+    count = graphene.Float()
+    expiration_date = graphene.String()
+    date_created = graphene.String()
+    date_modified = graphene.String()
+    completed = graphene.Boolean()
+
+
+class Query(graphene.ObjectType):
+    materials = graphene.List(Material)
+    material = graphene.Field(Material, id=graphene.Int(required=True))
+
+    def resolve_materials(self, info):
+        sql = """
+            SELECT * FROM material;
+        """
+        res = execute_statement(sql)
+        return process_select_response(res, MATERIAL_COLUMNS)
+
+    def resolve_material(self, info, id):
+        parameters = [{'name': 'id', 'value': {
+            'longValue': id}}]
+        sql = """
+            SELECT * FROM `material` WHERE `id` = :id;
+        """
+        res = execute_statement(sql, sql_parameters=parameters)
+        return process_select_response(res, MATERIAL_COLUMNS)[0]
+
+    def resolve_product(self, info):
+        sql = """
+            SELECT * FROM product WHERE `id` = :id;
+        """
+        parameters = [{'name': 'id', 'value': {
+            'longValue': id}}]
+        res = execute_statement(sql, sql_parameters=parameters)
+        return process_select_response(res, PRODUCT_COLUMNS)
+
+
+schema = graphene.Schema(
+    query=Query,
+)
+
+
+@app.route('/graphql', methods=['POST'])
+def graphql():
+    query = json.loads(app.current_request.raw_body.decode())['query']
+    result = schema.execute(query)
+    return result.data

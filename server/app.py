@@ -815,7 +815,11 @@ ORDER_COLUMNS = [
     ('number',          str,   'stringValue'),
     ('date_created',    str,   'stringValue'),
     ('date_modified',   str,   'stringValue'),
+<<<<<<< HEAD
     ('notes',           str,   'stringValue')
+=======
+    ('completed',       bool,  'booleanValue')
+>>>>>>> update server
 ]
 
 """
@@ -826,7 +830,11 @@ ORDER_COLUMNS = [
 | number        | varchar(255) | NO   |     | NULL              |                |
 | date_created  | datetime     | NO   |     | CURRENT_TIMESTAMP |                |
 | date_modified | datetime     | NO   |     | CURRENT_TIMESTAMP |                |
+<<<<<<< HEAD
 | notes         | text         | NO   |     | N/A               |                |
+=======
+| completed     | bool         | NO   |     | FALSE             |                |
+>>>>>>> update server
 +---------------+--------------+------+-----+-------------------+----------------+
 
 +----------+------------------+------+-----+---------+-------+
@@ -939,7 +947,11 @@ def update_order(id):
             UPDATE `order` SET
                 number = '{number}',
                 date_modified = CURRENT_TIMESTAMP,
+<<<<<<< HEAD
                 notes = '{notes}'
+=======
+                completed = {completed}
+>>>>>>> update server
             WHERE id = {id}
             """.format(**body, id=id)
 

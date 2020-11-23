@@ -1332,36 +1332,228 @@ class Product(graphene.ObjectType):
     date_created = graphene.String()
     date_modified = graphene.String()
     completed = graphene.Boolean()
+    materials = graphene.List(Material)
+
+    @staticmethod
+    def resolve_materials(parent, info):
+        sql = """
+            SELECT
+                `material`.id,
+                `material`.name,
+                `material`.number,
+                `product_uses_material`.count,
+                `material`.expiration_date,
+                `material`.date_created,
+                `material`.date_modified,
+                `material`.price,
+                `material`.units
+            FROM
+                `product`,
+                `product_uses_material`,
+                `material`
+            WHERE
+                `product`.id = :product_id
+                AND `product_uses_material`.product_id = :product_id
+
+        """
+        parameters = [{'name': 'product_id', 'value': {
+            'longValue': parent['id']}}]
+        res = execute_statement(sql, sql_parameters=parameters)
+        return process_select_response(res, MATERIAL_COLUMNS)
+
+
+class Case(graphene.ObjectType):
+    id = graphene.Int()
+    name = graphene.String()
+    product_name = graphene.String()
+    product_count = graphene.Int()
+    count = graphene.Float()
+    number = graphene.String()
+    expiration_date = graphene.String()
+    date_created = graphene.String()
+    date_modified = graphene.String()
+    shipped = graphene.Boolean()
+    materials = graphene.List(Material)
+    products = graphene.List(Product)
+
+    @staticmethod
+    def resolve_materials(parent, info):
+        sql = """
+            SELECT
+                `material`.id,
+                `material`.name,
+                `material`.number,
+                `case_uses_material`.count,
+                `material`.expiration_date,
+                `material`.date_created,
+                `material`.date_modified,
+                `material`.price,
+                `material`.units
+            FROM
+                `case`,
+                `case_uses_material`,
+                `material`
+            WHERE
+                `case`.id = :case_id
+                AND `case_uses_material`.case_id = :case_id
+
+        """
+        parameters = [{'name': 'case_id', 'value': {
+            'longValue': parent['id']}}]
+        res = execute_statement(sql, sql_parameters=parameters)
+        return process_select_response(res, MATERIAL_COLUMNS)
+
+    @staticmethod
+    def resolve_products(parent, info):
+        sql = """
+            SELECT
+                `product`.id,
+                `product`.name,
+                `product`.number,
+                `case_uses_product`.count,
+                `product`.expiration_date,
+                `product`.date_created,
+                `product`.date_modified,
+                `product`.completed
+            FROM
+                `case`,
+                `case_uses_product`,
+                `product`
+            WHERE
+                `case`.id = :case_id
+                AND `case_uses_product`.case_id = :case_id
+
+        """
+        parameters = [{'name': 'case_id', 'value': {
+            'longValue': parent['id']}}]
+        res = execute_statement(sql, sql_parameters=parameters)
+        return process_select_response(res, PRODUCT_COLUMNS)
+
+
+class Order(graphene.ObjectType):
+    id = graphene.Int()
+    number = graphene.String()
+    date_created = graphene.String()
+    date_modified = graphene.String()
+    cases = graphene.List(Case)
+
+    @staticmethod
+    def resolve_cases(parent, info):
+        sql = """
+            SELECT 
+                `case`.id,
+                `case`.name,
+                `case`.product_name,
+                `case`.product_count,
+                `order_uses_case`.count,
+                `case`.number,
+                `case`.expiration_date,
+                `case`.date_created,
+                `case`.date_modified,
+                `case`.shipped
+            FROM 
+                `order`, 
+                `order_uses_case`,
+                `case`
+            WHERE
+                `order`.id = :order_id
+                AND `order_uses_case`.order_id = :order_id
+
+        """
+        parameters = [{'name': 'order_id', 'value': {
+            'longValue': parent['id']}}]
+        res = execute_statement(sql, sql_parameters=parameters)
+        return process_select_response(res, PRODUCT_COLUMNS)
 
 
 class Query(graphene.ObjectType):
     materials = graphene.List(Material)
     material = graphene.Field(Material, id=graphene.Int(required=True))
 
-    def resolve_materials(self, info):
+    products = graphene.List(Product)
+    product = graphene.Field(Product, id=graphene.Int(required=True))
+
+    cases = graphene.List(Case)
+    case = graphene.Field(Case, id=graphene.Int(required=True))
+
+    orders = graphene.List(Order)
+    case = graphene.Field(Order, id=graphene.Int(required=True))
+
+    @staticmethod
+    def resolve_materials(parent, info):
         sql = """
             SELECT * FROM material;
         """
         res = execute_statement(sql)
         return process_select_response(res, MATERIAL_COLUMNS)
 
-    def resolve_material(self, info, id):
+    @staticmethod
+    def resolve_material(parent, info, id):
         parameters = [{'name': 'id', 'value': {
             'longValue': id}}]
         sql = """
             SELECT * FROM `material` WHERE `id` = :id;
         """
         res = execute_statement(sql, sql_parameters=parameters)
-        return process_select_response(res, MATERIAL_COLUMNS)[0]
+        rows = process_select_response(res, MATERIAL_COLUMNS)
+        return rows[0] if rows else None
 
-    def resolve_product(self, info):
+    @staticmethod
+    def resolve_products(parent, info):
         sql = """
-            SELECT * FROM product WHERE `id` = :id;
+            SELECT * FROM `product`;
+        """
+        res = execute_statement(sql)
+        return process_select_response(res, PRODUCT_COLUMNS)
+
+    @staticmethod
+    def resolve_product(parent, info, id):
+        sql = """
+            SELECT * FROM `product` WHERE `id` = :id;
         """
         parameters = [{'name': 'id', 'value': {
             'longValue': id}}]
         res = execute_statement(sql, sql_parameters=parameters)
-        return process_select_response(res, PRODUCT_COLUMNS)
+        rows = process_select_response(res, PRODUCT_COLUMNS)
+        return rows[0] if rows else None
+
+    @staticmethod
+    def resolve_cases(parent, info):
+        sql = """
+            SELECT * FROM `case`;
+        """
+        res = execute_statement(sql)
+        return process_select_response(res, CASE_COLUMNS)
+
+    @staticmethod
+    def resolve_case(parent, info, id):
+        sql = """
+            SELECT * FROM `case` WHERE `id` = :id;
+        """
+        parameters = [{'name': 'id', 'value': {
+            'longValue': id}}]
+        res = execute_statement(sql, sql_parameters=parameters)
+        rows = process_select_response(res, CASE_COLUMNS)
+        return rows[0] if rows else None
+
+    @staticmethod
+    def resolve_orders(parent, info):
+        sql = """
+            SELECT * FROM `order`;
+        """
+        res = execute_statement(sql)
+        return process_select_response(res, CASE_COLUMNS)
+
+    @staticmethod
+    def resolve_order(parent, info, id):
+        sql = """
+            SELECT * FROM `order` WHERE `id` = :id;
+        """
+        parameters = [{'name': 'id', 'value': {
+            'longValue': id}}]
+        res = execute_statement(sql, sql_parameters=parameters)
+        rows = process_select_response(res, CASE_COLUMNS)
+        return rows[0] if rows else None
 
 
 schema = graphene.Schema(

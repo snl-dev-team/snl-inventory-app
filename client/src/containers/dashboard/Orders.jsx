@@ -1,3 +1,6 @@
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/named */
+/* eslint-disable import/no-named-as-default-member */
 import React, { useEffect } from 'react';
 import Fab from '@material-ui/core/Fab';
 import { makeStyles } from '@material-ui/core/styles';
@@ -53,6 +56,7 @@ const OrdersDashboard = () => {
               dateCreated={order.dateCreated}
               dateModified={order.dateModified}
               notes={order.notes}
+              completed={order.completed}
             />
           </Grid>
         ))}

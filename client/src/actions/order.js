@@ -62,6 +62,7 @@ export const updateOrder = (order, token) => ({
       {
         number: order.number,
         notes: order.notes,
+        completed: order.completed ? 1 : 0,
       },
       {
         headers: {

@@ -42,6 +42,7 @@ export default function OrderCard({
   number,
   dateCreated,
   dateModified,
+  completed,
 }) {
   const classes = useStyles();
   const history = useHistory();
@@ -74,6 +75,9 @@ export default function OrderCard({
             {' '}
             {dateModified}
             <br />
+            Completed:
+            {' '}
+            {completed ? 'Yes' : 'No'}
           </span>
         </Typography>
       </CardContent>
@@ -99,4 +103,5 @@ OrderCard.propTypes = {
   number: PropTypes.string.isRequired,
   dateCreated: PropTypes.string.isRequired,
   dateModified: PropTypes.string.isRequired,
+  completed: PropTypes.bool.isRequired,
 };

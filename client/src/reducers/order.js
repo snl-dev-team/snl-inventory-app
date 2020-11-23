@@ -1,3 +1,4 @@
+/* eslint-disable import/named */
 import {
   FETCH_ORDERS,
   FETCH_ORDER,
@@ -20,6 +21,7 @@ const orderReducer = (state = {}, action) => {
             dateCreated: curr.date_created,
             dateModified: curr.date_modified,
             notes: curr.notes,
+            completed: curr.completed,
           };
           return acc;
         }, {}),
@@ -47,6 +49,7 @@ const orderReducer = (state = {}, action) => {
           id: payload.id,
           dateCreated: payload.date_created,
           dateModified: payload.date_modified,
+          completed: false,
         },
       };
     }

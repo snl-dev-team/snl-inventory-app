@@ -1,3 +1,4 @@
+import graphene
 import os
 import boto3
 import sys
@@ -6,7 +7,7 @@ from chalice import Chalice, Response, CognitoUserPoolAuthorizer
 import json
 from datetime import datetime
 import logging
-import graphene
+from datetime import date, datetime
 
 app = Chalice(app_name='snl-inventory-app')
 
@@ -39,13 +40,16 @@ def execute_statement(sql, sql_parameters=[]):
 
 def process_select_response(response, columns):
     records = response['records']
+    print(json.dumps(records, indent=2))
     data = []
     for record in records:
         data_row = {}
         for entry, column in zip(record, columns):
-            name, _, entry_type = column
+            print(entry)
+            print(column)
+            name, caster, entry_type = column['name'], column['caster'], column['boto3']
             value = entry.get(entry_type, None)
-            data_row[name] = value
+            data_row[name] = None if value is None else caster(value)
         data.append(data_row)
     return data
 
@@ -463,6 +467,7 @@ def delete_product(id):
             status_code=400,
         )
 
+
 @app.route('/product/{id}/material', methods=['GET'])
 def fetch_product_uses_material(id):
     columns_string = ', '.join(i[0] for i in PRODUCT_USES_MATERIAL_COLUMNS)
@@ -535,7 +540,7 @@ def product_use_material(id):
 def product_unuse_material(id):
     try:
         body = app.current_request.json_body
-        
+
         update_material_sql = """
             UPDATE `material` 
             SET `count` = `count` + (SELECT IFNULL((SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND `material_id`={material_id}), 0))
@@ -803,6 +808,7 @@ def delete_case(id):
             status_code=400,
         )
 
+
 @app.route('/case/{id}/material', methods=['GET'])
 def fetch_case_uses_material(id):
     columns_string = ', '.join(i[0] for i in CASE_USE_MATERIAL_COLUMNS)
@@ -831,6 +837,7 @@ def fetch_case_uses_material(id):
             body=json.dumps({'message': str(e)}),
             status_code=400,
         )
+
 
 @app.route('/case/{id}/material', methods=['PUT'], authorizer=authorizer)
 def case_use_material(id):
@@ -899,6 +906,7 @@ def case_unuse_material(id):
             status_code=400,
         )
 
+
 @app.route('/case/{id}/product', methods=['GET'])
 def fetch_case_uses_product(id):
     columns_string = ', '.join(i[0] for i in CASE_USE_PRODUCT_COLUMNS)
@@ -945,11 +953,12 @@ def fetch_case_uses_product(id):
             status_code=400,
         )
 
+
 @app.route('/case/{id}/product', methods=['PUT'], authorizer=authorizer)
 def case_use_product(id):
     try:
         body = app.current_request.json_body
-        
+
         update_product_sql = """
             UPDATE `product` SET `count` = CASE
                 WHEN {count} > (SELECT IFNULL((SELECT `count` FROM `case_uses_product` WHERE `case_id`={id} AND `product_id`={product_id}), 0)) AND (SELECT IFNULL((SELECT `count` FROM `case_uses_product` WHERE `case_id`={id} AND`product_id`={product_id}), 0)) > 0 THEN `count` - ({count} - (SELECT `count` FROM `case_uses_product` WHERE `case_id`={id} AND`product_id`={product_id}))
@@ -1207,6 +1216,7 @@ def delete_order(id):
             status_code=400,
         )
 
+
 @app.route('/order/{id}/case', methods=['GET'])
 def fetch_order_uses_case(id):
     columns_string = ', '.join(i[0] for i in ORDER_USE_CASE_COLUMNS)
@@ -1241,6 +1251,7 @@ def fetch_order_uses_case(id):
             body=json.dumps({'message': str(e)}),
             status_code=400,
         )
+
 
 @app.route('/order/{id}/case', methods=['PUT'], authorizer=authorizer)
 def order_use_case(id):
@@ -1311,159 +1322,224 @@ def order_unuse_case(id):
         )
 
 
-class Material(graphene.ObjectType):
+@app.route('/graphql', methods=['POST'])
+def graphql():
+    query = json.loads(app.current_request.raw_body.decode())['query']
+    result = schema.execute(query)
+    return result.data
+
+
+class ObjectTypeBase(graphene.ObjectType):
+
+    TYPE_MAP = [
+        {
+            'graphene': graphene.types.scalars.Int,
+            'caster': int,
+            'boto3': 'longValue',
+        },
+        {
+            'graphene': graphene.types.scalars.String,
+            'caster': str,
+            'boto3': 'stringValue',
+        },
+        {
+            'graphene': graphene.types.scalars.Float,
+            'caster': float,
+            'boto3': 'doubleValue',
+        },
+        {
+            'graphene': graphene.types.scalars.Boolean,
+            'caster': bool,
+            'boto3': 'booleanValue',
+        },
+        {
+            'graphene': graphene.types.datetime.Date,
+            'caster': date.fromisoformat,
+            'boto3': 'stringValue',
+        },
+        {
+            'graphene': graphene.types.datetime.DateTime,
+            'caster': datetime.fromisoformat,
+            'boto3': 'stringValue',
+        }
+    ]
+
+    def __init__(self, table_name, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.table_name = table_name
+
+    def get_sql_parameters(self):
+        parameters = []
+        types = type(self).__dict__
+        for name, value in self.__dict__.items():
+            curr_type = next(
+                (i for i in self.TYPE_MAP if isinstance(
+                    types[name], i['graphene'])),
+                None
+            )
+            if curr_type is not None:
+                parameters.append(
+                    {'name': name, 'value': {curr_type['boto3']: value}}
+                )
+
+        return parameters
+
+    @classmethod
+    def get_columns(cls):
+        columns = []
+        types = cls.__dict__
+        for name, type_ in types.items():
+            curr_type = next(
+                (i for i in cls.TYPE_MAP if isinstance(
+                    type_, i['graphene'])),
+                None
+            )
+            if curr_type is not None:
+                columns.append({
+                    'name': name,
+                    'caster': curr_type['caster'],
+                    'boto3': curr_type['boto3'],
+                })
+        return columns
+
+    @classmethod
+    def get_column_string(cls):
+        columns = cls.get_columns()
+        column_string = ',\n'.join(
+            [f"`{cls.__name__.lower()}`.`{c['name']}`" for c in columns])
+        print(column_string)
+        return column_string
+
+
+class Material(ObjectTypeBase):
     id = graphene.Int()
     name = graphene.String()
     number = graphene.String()
     count = graphene.Float()
-    expiration_date = graphene.String()
-    date_created = graphene.String()
-    date_modified = graphene.String()
+    expiration_date = graphene.Date()
+    date_created = graphene.DateTime()
+    date_modified = graphene.DateTime()
     price = graphene.Int()
     units = graphene.String()
+    notes = graphene.String()
 
 
-class Product(graphene.ObjectType):
+class Product(ObjectTypeBase):
     id = graphene.Int()
     name = graphene.String()
     number = graphene.String()
-    count = graphene.Float()
-    expiration_date = graphene.String()
-    date_created = graphene.String()
-    date_modified = graphene.String()
+    count = graphene.Int()
+    expiration_date = graphene.Date()
+    date_created = graphene.DateTime()
+    date_modified = graphene.DateTime()
+    notes = graphene.String()
     completed = graphene.Boolean()
     materials = graphene.List(Material)
 
     @staticmethod
     def resolve_materials(parent, info):
-        sql = """
-            SELECT
-                `material`.id,
-                `material`.name,
-                `material`.number,
-                `product_uses_material`.count,
-                `material`.expiration_date,
-                `material`.date_created,
-                `material`.date_modified,
-                `material`.price,
-                `material`.units
-            FROM
-                `product`,
-                `product_uses_material`,
-                `material`
-            WHERE
-                `product`.id = :product_id
-                AND `product_uses_material`.product_id = :product_id
+        sql = f"""
+        SELECT
+            {Material.get_column_string()}
+            `product_uses_material`.`count` count
+        FROM
+            `product`,
+            `product_uses_material`,
+            `material`
+        WHERE
+            `product`.`id` = :product_id
+            AND `product_uses_material`.`product_id` = :product_id;
 
         """
-        parameters = [{'name': 'product_id', 'value': {
-            'longValue': parent['id']}}]
-        res = execute_statement(sql, sql_parameters=parameters)
-        return process_select_response(res, MATERIAL_COLUMNS)
+        res = execute_statement(
+            sql,
+            sql_parameters=[
+                {'name': 'product_id', 'value': {'longValue': parent['id']}}
+            ]
+        )
+        return process_select_response(res, Material.get_columns())
 
 
-class Case(graphene.ObjectType):
+class Case(ObjectTypeBase):
     id = graphene.Int()
     name = graphene.String()
     product_name = graphene.String()
     product_count = graphene.Int()
     count = graphene.Float()
     number = graphene.String()
-    expiration_date = graphene.String()
-    date_created = graphene.String()
-    date_modified = graphene.String()
+    expiration_date = graphene.Date()
+    date_created = graphene.DateTime()
+    date_modified = graphene.DateTime()
     shipped = graphene.Boolean()
+    notes = graphene.String()
     materials = graphene.List(Material)
     products = graphene.List(Product)
 
     @staticmethod
     def resolve_materials(parent, info):
-        sql = """
-            SELECT
-                `material`.id,
-                `material`.name,
-                `material`.number,
-                `case_uses_material`.count,
-                `material`.expiration_date,
-                `material`.date_created,
-                `material`.date_modified,
-                `material`.price,
-                `material`.units
-            FROM
-                `case`,
-                `case_uses_material`,
-                `material`
-            WHERE
-                `case`.id = :case_id
-                AND `case_uses_material`.case_id = :case_id
-
+        sql = f"""
+        SELECT
+            {Material.get_column_string()},
+            `case_uses_material`.`count` use_count
+        FROM
+            `case`,
+            `case_uses_material`,
+            `material`
+        WHERE
+            `case`.id = :case_id
+            AND `case_uses_material`.`case_id` = :case_id;
         """
         parameters = [{'name': 'case_id', 'value': {
             'longValue': parent['id']}}]
         res = execute_statement(sql, sql_parameters=parameters)
-        return process_select_response(res, MATERIAL_COLUMNS)
+        return process_select_response(res, Material.get_columns())
 
     @staticmethod
     def resolve_products(parent, info):
-        sql = """
-            SELECT
-                `product`.id,
-                `product`.name,
-                `product`.number,
-                `case_uses_product`.count,
-                `product`.expiration_date,
-                `product`.date_created,
-                `product`.date_modified,
-                `product`.completed
-            FROM
-                `case`,
-                `case_uses_product`,
-                `product`
-            WHERE
-                `case`.id = :case_id
-                AND `case_uses_product`.case_id = :case_id
-
+        sql = f"""
+        SELECT
+            {Product.get_column_string()},
+            `case_uses_product`.`count` use_count
+        FROM
+            `case`,
+            `case_uses_product`,
+            `product`
+        WHERE
+            `case`.id = :case_id
+            AND `case_uses_product`.case_id = :case_id;
         """
         parameters = [{'name': 'case_id', 'value': {
             'longValue': parent['id']}}]
         res = execute_statement(sql, sql_parameters=parameters)
-        return process_select_response(res, PRODUCT_COLUMNS)
+        return process_select_response(res, Product.get_columns())
 
 
-class Order(graphene.ObjectType):
+class Order(ObjectTypeBase):
     id = graphene.Int()
     number = graphene.String()
-    date_created = graphene.String()
-    date_modified = graphene.String()
+    date_created = graphene.DateTime()
+    date_modified = graphene.DateTime()
+    notes = graphene.String()
     cases = graphene.List(Case)
 
     @staticmethod
     def resolve_cases(parent, info):
-        sql = """
-            SELECT 
-                `case`.id,
-                `case`.name,
-                `case`.product_name,
-                `case`.product_count,
-                `order_uses_case`.count,
-                `case`.number,
-                `case`.expiration_date,
-                `case`.date_created,
-                `case`.date_modified,
-                `case`.shipped
-            FROM 
-                `order`, 
-                `order_uses_case`,
-                `case`
-            WHERE
-                `order`.id = :order_id
-                AND `order_uses_case`.order_id = :order_id
-
+        sql = f"""
+        SELECT
+            {Case.get_column_string()},
+            `order_uses_case`.`count` use_count
+        FROM
+            `order`,
+            `order_uses_case`,
+            `case`
+        WHERE
+            `order`.id = :order_id
+            AND `order_uses_case`.order_id = :order_id;
         """
         parameters = [{'name': 'order_id', 'value': {
             'longValue': parent['id']}}]
         res = execute_statement(sql, sql_parameters=parameters)
-        return process_select_response(res, PRODUCT_COLUMNS)
+        return process_select_response(res, Case.get_columns())
 
 
 class Query(graphene.ObjectType):
@@ -1481,88 +1557,148 @@ class Query(graphene.ObjectType):
 
     @staticmethod
     def resolve_materials(parent, info):
-        sql = """
-            SELECT * FROM material;
-        """
+        sql = f"SELECT {Material.get_column_string()} FROM material;"
         res = execute_statement(sql)
-        return process_select_response(res, MATERIAL_COLUMNS)
+        return process_select_response(res, Material.get_columns())
 
     @staticmethod
     def resolve_material(parent, info, id):
-        parameters = [{'name': 'id', 'value': {
-            'longValue': id}}]
-        sql = """
-            SELECT * FROM `material` WHERE `id` = :id;
+        sql = f"""
+        SELECT
+            {Material.get_column_string()}
+        FROM `material` WHERE `id` = :id;
         """
-        res = execute_statement(sql, sql_parameters=parameters)
-        rows = process_select_response(res, MATERIAL_COLUMNS)
+        res = execute_statement(
+            sql,
+            sql_parameters=[{'name': 'id', 'value': {'longValue': id}}],
+        )
+        rows = process_select_response(res, Material.get_columns())
         return rows[0] if rows else None
 
     @staticmethod
     def resolve_products(parent, info):
-        sql = """
-            SELECT * FROM `product`;
+        sql = f"""
+        SELECT
+            {Product.get_column_string()}
+        FROM `product`;
         """
         res = execute_statement(sql)
-        return process_select_response(res, PRODUCT_COLUMNS)
+        return process_select_response(res, Product.get_columns())
 
     @staticmethod
     def resolve_product(parent, info, id):
-        sql = """
-            SELECT * FROM `product` WHERE `id` = :id;
+        sql = f"""
+        SELECT
+            {Product.get_column_string()}
+        FROM `product` WHERE `id` = :id;
         """
-        parameters = [{'name': 'id', 'value': {
-            'longValue': id}}]
-        res = execute_statement(sql, sql_parameters=parameters)
-        rows = process_select_response(res, PRODUCT_COLUMNS)
+        res = execute_statement(
+            sql,
+            sql_parameters=[{'name': 'id', 'value': {'longValue': id}}]
+        )
+        rows = process_select_response(res, Product.get_columns())
         return rows[0] if rows else None
 
     @staticmethod
     def resolve_cases(parent, info):
-        sql = """
-            SELECT * FROM `case`;
-        """
+        sql = f"SELECT {Case.get_column_string()} FROM `case`;"
         res = execute_statement(sql)
-        return process_select_response(res, CASE_COLUMNS)
+        return process_select_response(res, Case.get_columns())
 
     @staticmethod
     def resolve_case(parent, info, id):
-        sql = """
-            SELECT * FROM `case` WHERE `id` = :id;
-        """
-        parameters = [{'name': 'id', 'value': {
-            'longValue': id}}]
-        res = execute_statement(sql, sql_parameters=parameters)
-        rows = process_select_response(res, CASE_COLUMNS)
+        sql = f"SELECT {Case.get_column_string()} FROM `case` WHERE `id` = :id;"
+        res = execute_statement(
+            sql,
+            sql_parameters=[{'name': 'id', 'value': {'longValue': id}}]
+        )
+        rows = process_select_response(res, Case.get_columns())
         return rows[0] if rows else None
 
-    @staticmethod
+    @ staticmethod
     def resolve_orders(parent, info):
-        sql = """
-            SELECT * FROM `order`;
-        """
+        sql = f"SELECT {Order.get_column_string()} FROM `order`;"
         res = execute_statement(sql)
-        return process_select_response(res, CASE_COLUMNS)
+        return process_select_response(res, Order.get_columns())
 
-    @staticmethod
+    @ staticmethod
     def resolve_order(parent, info, id):
-        sql = """
-            SELECT * FROM `order` WHERE `id` = :id;
-        """
-        parameters = [{'name': 'id', 'value': {
-            'longValue': id}}]
-        res = execute_statement(sql, sql_parameters=parameters)
-        rows = process_select_response(res, CASE_COLUMNS)
+        sql = f"SELECT{Order.get_column_string()} FROM `order` WHERE `id` = :id;"
+        res = execute_statement(
+            sql,
+            sql_parameters=[{'name': 'id', 'value': {'longValue': id}}],
+        )
+        rows = process_select_response(res, Order.get_columns())
         return rows[0] if rows else None
+
+
+class MaterialInput(graphene.InputObjectType):
+    name = graphene.String(required=True)
+    number = graphene.String(required=True)
+    count = graphene.Float(required=True)
+    expiration_date = graphene.Date(required=True)
+    price = graphene.Int(required=True)
+    units = graphene.String(required=True)
+    notes = graphene.String(required=True)
+
+
+class CreateMaterial(graphene.Mutation):
+    class Arguments:
+        material = MaterialInput(required=True)
+
+    material = graphene.Field(Material)
+
+    @ staticmethod
+    def mutate(parent, info, material):
+        sql = """
+        INSERT INTO
+            `material` (
+                `name`,
+                `number`,
+                `count`,
+                `expiration_date`,
+                `price`,
+                `units`,
+                `notes`
+            )
+            VALUES (
+                :name,
+                :number,
+                :count,
+                :expiration_date,
+                :price,
+                :units,
+                :notes
+            )
+        """
+        parameters = material.get_sql_parameters()
+        res = execute_statement(sql, sql_parameters=parameters)
+        created_id = res['generatedFields'][0]['longValue']
+        date_created = date_modified = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+
+        return {
+            'material': material.create_material(created_id, date_created, date_modified)
+        }
+
+
+class Mutation(graphene.ObjectType):
+    create_material = CreateMaterial.Field()
 
 
 schema = graphene.Schema(
     query=Query,
+    mutation=Mutation
 )
 
 
-@app.route('/graphql', methods=['POST'])
-def graphql():
-    query = json.loads(app.current_request.raw_body.decode())['query']
-    result = schema.execute(query)
-    return result.data
+# print(schema.execute("""
+#   mutation
+#   matMul {
+#     createMaterial(material: {name: "test", number: "lot 123", count: 2.0, expirationDate: "2020-09-09", price: 10, units: "kg", notes: ""}) {
+#       material {
+#           units
+#           id
+#       }
+#     }
+#   }
+# """))

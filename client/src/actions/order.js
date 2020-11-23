@@ -60,6 +60,7 @@ export const updateOrder = (order, token) => ({
       `${URL}/order/${order.id}`,
       {
         number: order.number,
+        completed: order.completed ? 1 : 0,
       },
       {
         headers: {

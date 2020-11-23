@@ -19,6 +19,8 @@ const caseReducer = (state = {}, action) => {
             shipped: curr.shipped,
             dateCreated: curr.date_created,
             dateModified: curr.date_modified,
+            materials: {},
+            products: {},
           };
           return acc;
         }, {}),
@@ -27,6 +29,8 @@ const caseReducer = (state = {}, action) => {
       return {
         ...state,
         [payload.id]: {
+          materials: {},
+          products: {},
           ...payload,
           id: payload.id,
           name: payload.name,
@@ -47,6 +51,8 @@ const caseReducer = (state = {}, action) => {
       return {
         ...state,
         [payload.id]: {
+          materials: {},
+          products: {},
           ...case_,
           id: payload.id,
           dateCreated: payload.date_created,
@@ -61,6 +67,8 @@ const caseReducer = (state = {}, action) => {
       return {
         ...state,
         [case_.id]: {
+          materials: {},
+          products: {},
           ...state[case_.id],
           ...case_,
           dateModified: payload.date_modified,
@@ -73,6 +81,53 @@ const caseReducer = (state = {}, action) => {
       const deleteState = Object.assign(state);
       delete deleteState[id];
       return deleteState;
+    }
+
+    case `${actions.FETCH_CASE_USES_MATERIAL}_FULFILLED`: {
+      const { caseId } = meta;
+
+      return {
+        ...state,
+        [caseId]: {
+          ...state[caseId],
+          materials: {
+            ...payload.reduce((acc, curr) => {
+              acc[curr.material_id] = curr.count;
+              return acc;
+            }, {}),
+          },
+        },
+      };
+    }
+
+    case `${actions.CASE_USE_MATERIAL}_FULFILLED`: {
+      const { caseId, materialId, count } = meta;
+
+      return {
+        ...state,
+        [caseId]: {
+          ...state[caseId],
+          materials: {
+            ...state[caseId].materials,
+            [materialId]: count,
+          },
+        },
+      };
+    }
+
+    case `${actions.CASE_UNUSE_MATERIAL}_FULFILLED`: {
+      const { caseId, materialId } = meta;
+
+      return {
+        ...state,
+        [caseId]: {
+          ...state[caseId],
+          materials: {
+            ...state[caseId].materials,
+            [materialId]: undefined,
+          },
+        },
+      };
     }
 
     default:

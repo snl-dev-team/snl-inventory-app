@@ -59,10 +59,19 @@ const productReducer = (state = {}, action) => {
       return deleteState;
     }
 
-    case `${actions.PRODUCT_USE_MATERIAL}_FULFILLED`:
+    case `${actions.PRODUCT_USE_MATERIAL}_FULFILLED`: {
+      const { productId, materialId, count } = meta;
       return {
         ...state,
+        [productId]: {
+          ...state[productId],
+          materials: {
+            ...state[productId].materials,
+            [materialId]: count,
+          },
+        },
       };
+    }
 
     case `${actions.PRODUCT_UNUSE_MATERIAL}_FULFILLED`: {
       const { productId, materialId } = meta;

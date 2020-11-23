@@ -800,6 +800,7 @@ ORDER_COLUMNS = [
     ('number',          str,   'stringValue'),
     ('date_created',    str,   'stringValue'),
     ('date_modified',   str,   'stringValue'),
+    ('completed',       bool,  'booleanValue')
 ]
 
 """
@@ -810,6 +811,7 @@ ORDER_COLUMNS = [
 | number        | varchar(255) | NO   |     | NULL              |                |
 | date_created  | datetime     | NO   |     | CURRENT_TIMESTAMP |                |
 | date_modified | datetime     | NO   |     | CURRENT_TIMESTAMP |                |
+| completed     | bool         | NO   |     | FALSE             |                |
 +---------------+--------------+------+-----+-------------------+----------------+
 
 +----------+------------------+------+-----+---------+-------+
@@ -919,7 +921,8 @@ def update_order(id):
         sql = """
             UPDATE `order` SET
                 number = '{number}',
-                date_modified = CURRENT_TIMESTAMP
+                date_modified = CURRENT_TIMESTAMP,
+                completed = {completed}
             WHERE id = {id}
             """.format(**body, id=id)
 

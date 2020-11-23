@@ -78,7 +78,11 @@ CREATE TABLE IF NOT EXISTS `order` (
     `number`                VARCHAR(255) NOT NULL,
     `date_created`          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `date_modified`         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+<<<<<<< HEAD
     `notes`                 TEXT NOT NULL,
+=======
+    `completed`	            BOOL DEFAULT FALSE,
+>>>>>>> update table
     
     PRIMARY KEY (`id`)
 );

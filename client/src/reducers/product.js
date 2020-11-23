@@ -59,6 +59,23 @@ const productReducer = (state = {}, action) => {
       return deleteState;
     }
 
+    case `${actions.FETCH_PRODUCT_USES_MATERIAL}_FULFILLED`: {
+      const { productId } = meta;
+
+      return {
+        ...state,
+        [productId]: {
+          ...state[productId],
+          materials: {
+            ...payload.reduce((acc, curr) => {
+              acc[curr.material_id] = curr.count;
+              return acc;
+            }, {}),
+          },
+        },
+      };
+    }
+
     case `${actions.PRODUCT_USE_MATERIAL}_FULFILLED`: {
       const { productId, materialId, count } = meta;
       return {

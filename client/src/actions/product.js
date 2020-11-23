@@ -87,6 +87,19 @@ export const deleteProduct = (id, token) => ({
   meta: { id },
 });
 
+export const fetchProductUsesMaterial = (productId, token) => ({
+  type: actions.FETCH_PRODUCT_USES_MATERIAL,
+  payload: axios.get(
+    `${URL}/product/${productId}/material`,
+    {
+      headers: {
+        Authorization: token,
+      },
+    },
+  ),
+  meta: { productId },
+});
+
 export const productUseMaterial = (productId, materialId, count, token) => ({
   type: actions.PRODUCT_USE_MATERIAL,
   payload: axios.put(

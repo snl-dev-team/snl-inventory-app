@@ -1,17 +1,10 @@
-import {
-  FETCH_PRODUCTS,
-  CREATE_PRODUCT,
-  UPDATE_PRODUCT,
-  DELETE_PRODUCT,
-  PRODUCT_USE_MATERIAL,
-  PRODUCT_UNUSE_MATERIAL,
-} from '../actions/product';
+import * as actions from '../constants/productActionTypes';
 
 const productReducer = (state = {}, action) => {
   const { type, payload, meta } = action;
 
   switch (type) {
-    case `${FETCH_PRODUCTS}_FULFILLED`:
+    case `${actions.FETCH_PRODUCTS}_FULFILLED`:
       return {
         ...state,
         ...payload.reduce((acc, curr) => {
@@ -30,7 +23,7 @@ const productReducer = (state = {}, action) => {
         }, {}),
       };
 
-    case `${CREATE_PRODUCT}_FULFILLED`: {
+    case `${actions.CREATE_PRODUCT}_FULFILLED`: {
       const { product } = meta;
 
       return {
@@ -45,7 +38,7 @@ const productReducer = (state = {}, action) => {
       };
     }
 
-    case `${UPDATE_PRODUCT}_FULFILLED`: {
+    case `${actions.UPDATE_PRODUCT}_FULFILLED`: {
       const { product } = meta;
 
       return {
@@ -59,19 +52,19 @@ const productReducer = (state = {}, action) => {
       };
     }
 
-    case `${DELETE_PRODUCT}_FULFILLED`: {
+    case `${actions.DELETE_PRODUCT}_FULFILLED`: {
       const { id } = meta;
       const deleteState = Object.assign(state);
       delete deleteState[id];
       return deleteState;
     }
 
-    case `${PRODUCT_USE_MATERIAL}_FULFILLED`:
+    case `${actions.PRODUCT_USE_MATERIAL}_FULFILLED`:
       return {
         ...state,
       };
 
-    case `${PRODUCT_UNUSE_MATERIAL}_FULFILLED`: {
+    case `${actions.PRODUCT_UNUSE_MATERIAL}_FULFILLED`: {
       const { productId, materialId } = meta;
 
       return {

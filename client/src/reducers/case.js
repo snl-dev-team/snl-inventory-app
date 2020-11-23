@@ -1,16 +1,10 @@
-import {
-  FETCH_CASES,
-  FETCH_CASE,
-  CREATE_CASE,
-  UPDATE_CASE,
-  DELETE_CASE,
-} from '../actions/case';
+import * as actions from '../constants/caseActionTypes';
 
 const caseReducer = (state = {}, action) => {
   const { type, payload, meta } = action;
 
   switch (type) {
-    case `${FETCH_CASES}_FULFILLED`:
+    case `${actions.FETCH_CASES}_FULFILLED`:
       return {
         ...state,
         ...payload.reduce((acc, curr) => {
@@ -29,7 +23,7 @@ const caseReducer = (state = {}, action) => {
           return acc;
         }, {}),
       };
-    case `${FETCH_CASE}_FULFILLED`:
+    case `${actions.FETCH_CASE}_FULFILLED`:
       return {
         ...state,
         [payload.id]: {
@@ -47,7 +41,7 @@ const caseReducer = (state = {}, action) => {
         },
       };
 
-    case `${CREATE_CASE}_FULFILLED`: {
+    case `${actions.CREATE_CASE}_FULFILLED`: {
       const { case_ } = meta;
 
       return {
@@ -61,7 +55,7 @@ const caseReducer = (state = {}, action) => {
       };
     }
 
-    case `${UPDATE_CASE}_FULFILLED`: {
+    case `${actions.UPDATE_CASE}_FULFILLED`: {
       const { case_ } = meta;
 
       return {
@@ -74,7 +68,7 @@ const caseReducer = (state = {}, action) => {
       };
     }
 
-    case `${DELETE_CASE}_FULFILLED`: {
+    case `${actions.DELETE_CASE}_FULFILLED`: {
       const { id } = meta;
       const deleteState = Object.assign(state);
       delete deleteState[id];

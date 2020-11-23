@@ -1,14 +1,9 @@
 import axios from 'axios';
 import { URL } from '../constants/url';
-
-export const CREATE_MATERIAL = 'CREATE_MATERIAL';
-export const FETCH_MATERIALS = 'FETCH_MATERIALS';
-export const FETCH_MATERIAL = 'FETCH_MATERIAL';
-export const UPDATE_MATERIAL = 'UPDATE_MATERIAL';
-export const DELETE_MATERIAL = 'DELETE_MATERIAL';
+import * as actions from '../constants/materialActionTypes';
 
 export const createMaterial = (material, token) => ({
-  type: CREATE_MATERIAL,
+  type: actions.CREATE_MATERIAL,
   payload: axios
     .post(
       `${URL}/material`,
@@ -32,7 +27,7 @@ export const createMaterial = (material, token) => ({
 });
 
 export const fetchMaterials = (token) => ({
-  type: FETCH_MATERIALS,
+  type: actions.FETCH_MATERIALS,
   payload: axios
     .get(
       `${URL}/material`,
@@ -45,7 +40,7 @@ export const fetchMaterials = (token) => ({
     .then((res) => res.data.data),
 });
 export const fetchMaterial = (id, token) => ({
-  type: FETCH_MATERIAL,
+  type: actions.FETCH_MATERIAL,
   payload: axios
     .get(
       `${URL}/material/${id}`,
@@ -58,7 +53,7 @@ export const fetchMaterial = (id, token) => ({
     .then((res) => res.data),
 });
 export const updateMaterial = (material, token) => ({
-  type: UPDATE_MATERIAL,
+  type: actions.UPDATE_MATERIAL,
   payload: axios
     .put(
       `${URL}/material/${material.id}`,
@@ -82,7 +77,7 @@ export const updateMaterial = (material, token) => ({
 });
 
 export const deleteMaterial = (id, token) => ({
-  type: DELETE_MATERIAL,
+  type: actions.DELETE_MATERIAL,
   payload: axios.delete(
     `${URL}/material/${id}`,
     {

@@ -1,16 +1,10 @@
-import {
-  FETCH_MATERIALS,
-  FETCH_MATERIAL,
-  CREATE_MATERIAL,
-  UPDATE_MATERIAL,
-  DELETE_MATERIAL,
-} from '../actions/material';
+import * as actions from '../constants/materialActionTypes';
 
 const materialReducer = (state = {}, action) => {
   const { type, payload, meta } = action;
 
   switch (type) {
-    case `${FETCH_MATERIALS}_FULFILLED`:
+    case `${actions.FETCH_MATERIALS}_FULFILLED`:
       return {
         ...state,
         ...payload.reduce((acc, curr) => {
@@ -28,7 +22,7 @@ const materialReducer = (state = {}, action) => {
           return acc;
         }, {}),
       };
-    case `${FETCH_MATERIAL}_FULFILLED`:
+    case `${actions.FETCH_MATERIAL}_FULFILLED`:
       return {
         ...state,
         [payload.id]: {
@@ -45,7 +39,7 @@ const materialReducer = (state = {}, action) => {
         },
       };
 
-    case `${CREATE_MATERIAL}_FULFILLED`: {
+    case `${actions.CREATE_MATERIAL}_FULFILLED`: {
       const { material } = meta;
 
       return {
@@ -59,7 +53,7 @@ const materialReducer = (state = {}, action) => {
       };
     }
 
-    case `${UPDATE_MATERIAL}_FULFILLED`: {
+    case `${actions.UPDATE_MATERIAL}_FULFILLED`: {
       const { material } = meta;
 
       return {
@@ -72,7 +66,7 @@ const materialReducer = (state = {}, action) => {
       };
     }
 
-    case `${DELETE_MATERIAL}_FULFILLED`: {
+    case `${actions.DELETE_MATERIAL}_FULFILLED`: {
       const { id } = meta;
       const deleteState = Object.assign(state);
       delete deleteState[id];

@@ -1,16 +1,9 @@
 import axios from 'axios';
 import { URL } from '../constants/url';
-
-export const CREATE_PRODUCT = 'CREATE_PRODUCT';
-export const FETCH_PRODUCTS = 'FETCH_PRODUCTS';
-export const FETCH_PRODUCT = 'FETCH_PRODUCT';
-export const UPDATE_PRODUCT = 'UPDATE_PRODUCT';
-export const DELETE_PRODUCT = 'DELETE_PRODUCT';
-export const PRODUCT_USE_MATERIAL = 'PRODUCT_USE_MATERIAL';
-export const PRODUCT_UNUSE_MATERIAL = 'PRODUCT_UNUSE_MATERIAL';
+import * as actions from '../constants/productActionTypes';
 
 export const createProduct = (product, token) => ({
-  type: CREATE_PRODUCT,
+  type: actions.CREATE_PRODUCT,
   payload: axios
     .post(
       `${URL}/product`,
@@ -33,7 +26,7 @@ export const createProduct = (product, token) => ({
 });
 
 export const fetchProducts = (token) => ({
-  type: FETCH_PRODUCTS,
+  type: actions.FETCH_PRODUCTS,
   payload: axios
     .get(
       `${URL}/product`,
@@ -46,7 +39,7 @@ export const fetchProducts = (token) => ({
     .then((res) => res.data.data),
 });
 export const fetchProduct = (id, token) => ({
-  type: FETCH_PRODUCTS,
+  type: actions.FETCH_PRODUCTS,
   payload: axios
     .get(
       `${URL}/product/${id}`,
@@ -59,7 +52,7 @@ export const fetchProduct = (id, token) => ({
     .then((res) => res.data),
 });
 export const updateProduct = (product, token) => ({
-  type: UPDATE_PRODUCT,
+  type: actions.UPDATE_PRODUCT,
   payload: axios
     .put(
       `${URL}/product/${product.id}`,
@@ -82,7 +75,7 @@ export const updateProduct = (product, token) => ({
 });
 
 export const deleteProduct = (id, token) => ({
-  type: DELETE_PRODUCT,
+  type: actions.DELETE_PRODUCT,
   payload: axios.delete(
     `${URL}/product/${id}`,
     {
@@ -95,7 +88,7 @@ export const deleteProduct = (id, token) => ({
 });
 
 export const useMaterial = (productId, materialId, count, token) => ({
-  type: PRODUCT_USE_MATERIAL,
+  type: actions.PRODUCT_USE_MATERIAL,
   payload: axios.put(
     `${URL}/product/${productId}/material`,
     {
@@ -113,7 +106,7 @@ export const useMaterial = (productId, materialId, count, token) => ({
 });
 
 export const unuseMaterial = (productId, materialId, token) => ({
-  type: PRODUCT_UNUSE_MATERIAL,
+  type: actions.PRODUCT_UNUSE_MATERIAL,
   payload: axios.delete(
     `${URL}/product/${productId}/material`,
     {

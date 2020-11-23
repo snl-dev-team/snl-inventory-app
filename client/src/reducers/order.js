@@ -1,16 +1,10 @@
-import {
-  FETCH_ORDERS,
-  FETCH_ORDER,
-  CREATE_ORDER,
-  UPDATE_ORDER,
-  DELETE_ORDER,
-} from '../actions/order';
+import * as actions from '../constants/orderActionTypes'
 
 const orderReducer = (state = {}, action) => {
   const { type, payload, meta } = action;
 
   switch (type) {
-    case `${FETCH_ORDERS}_FULFILLED`:
+    case `${actions.FETCH_ORDERS}_FULFILLED`:
       return {
         ...state,
         ...payload.reduce((acc, curr) => {
@@ -23,7 +17,7 @@ const orderReducer = (state = {}, action) => {
           return acc;
         }, {}),
       };
-    case `${FETCH_ORDER}_FULFILLED`:
+    case `${actions.FETCH_ORDER}_FULFILLED`:
       return {
         ...state,
         [payload.id]: {
@@ -34,7 +28,7 @@ const orderReducer = (state = {}, action) => {
         },
       };
 
-    case `${CREATE_ORDER}_FULFILLED`: {
+    case `${actions.CREATE_ORDER}_FULFILLED`: {
       const { order } = meta;
 
       return {
@@ -48,7 +42,7 @@ const orderReducer = (state = {}, action) => {
       };
     }
 
-    case `${UPDATE_ORDER}_FULFILLED`: {
+    case `${actions.UPDATE_ORDER}_FULFILLED`: {
       const { order } = meta;
 
       return {
@@ -61,7 +55,7 @@ const orderReducer = (state = {}, action) => {
       };
     }
 
-    case `${DELETE_ORDER}_FULFILLED`: {
+    case `${actions.DELETE_ORDER}_FULFILLED`: {
       const { id } = meta;
       const deleteState = Object.assign(state);
       delete deleteState[id];

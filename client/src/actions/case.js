@@ -1,14 +1,9 @@
 import axios from 'axios';
 import { URL } from '../constants/url';
-
-export const CREATE_CASE = 'CREATE_CASE';
-export const FETCH_CASES = 'FETCH_CASES';
-export const FETCH_CASE = 'FETCH_CASE';
-export const UPDATE_CASE = 'UPDATE_CASE';
-export const DELETE_CASE = 'DELETE_CASE';
+import * as actions from '../constants/caseActionTypes';
 
 export const createCase = (case_, token) => ({
-  type: CREATE_CASE,
+  type: actions.CREATE_CASE,
   payload: axios
     .post(
       '/case',
@@ -33,7 +28,7 @@ export const createCase = (case_, token) => ({
 });
 
 export const fetchCases = (token) => ({
-  type: FETCH_CASES,
+  type: actions.FETCH_CASES,
   payload: axios
     .get(
       `${URL}/case`,
@@ -46,7 +41,7 @@ export const fetchCases = (token) => ({
     .then((res) => res.data.data),
 });
 export const fetchCase = (id, token) => ({
-  type: FETCH_CASE,
+  type: actions.FETCH_CASE,
   payload: axios
     .get(
       `${URL}/case/${id}`,
@@ -59,7 +54,7 @@ export const fetchCase = (id, token) => ({
     .then((res) => res.data),
 });
 export const updateCase = (case_, token) => ({
-  type: UPDATE_CASE,
+  type: actions.UPDATE_CASE,
   payload: axios
     .put(
       `${URL}/case/${case_.id}`,
@@ -84,7 +79,7 @@ export const updateCase = (case_, token) => ({
 });
 
 export const deleteCase = (id, token) => ({
-  type: DELETE_CASE,
+  type: actions.DELETE_CASE,
   payload: axios.delete(
     `${URL}/case/${id}`,
     {

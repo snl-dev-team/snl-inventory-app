@@ -24,6 +24,7 @@ const productReducer = (state = {}, action) => {
             completed: curr.completed,
             dateCreated: curr.date_created,
             dateModified: curr.date_modified,
+            materials: {},
           };
           return acc;
         }, {}),
@@ -35,6 +36,7 @@ const productReducer = (state = {}, action) => {
       return {
         ...state,
         [payload.id]: {
+          materials: {},
           ...product,
           id: payload.id,
           dateCreated: payload.date_created,
@@ -49,6 +51,7 @@ const productReducer = (state = {}, action) => {
       return {
         ...state,
         [product.id]: {
+          material: {},
           ...state[product.id],
           ...product,
           dateModified: payload.date_modified,
@@ -66,27 +69,22 @@ const productReducer = (state = {}, action) => {
     case `${PRODUCT_USE_MATERIAL}_FULFILLED`:
       return {
         ...state,
-        ...payload.reduce((acc, curr) => {
-          acc[curr.product_id] = {
-            productId: curr.product_id,
-            materialId: curr.material_id,
-            count: curr.count,
-          };
-          return acc;
-        }, {}),
       };
-    case `${PRODUCT_UNUSE_MATERIAL}_FULFILLED`:
+
+    case `${PRODUCT_UNUSE_MATERIAL}_FULFILLED`: {
+      const { productId, materialId } = meta;
+
       return {
         ...state,
-        ...payload.reduce((acc, curr) => {
-          acc[curr.product_id] = {
-            productId: curr.product_id,
-            materialId: curr.material_id,
-            count: curr.count,
-          };
-          return acc;
-        }, {}),
+        [productId]: {
+          ...state[productId],
+          materials: {
+            ...state[productId].materials,
+            [materialId]: undefined,
+          },
+        },
       };
+    }
 
     default:
       return state;

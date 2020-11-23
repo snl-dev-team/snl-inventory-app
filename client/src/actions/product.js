@@ -99,7 +99,6 @@ export const useMaterial = (productId, materialId, count, token) => ({
   payload: axios.put(
     `${URL}/product/${productId}/material`,
     {
-      product_id: productId,
       material_id: materialId,
       count,
     },
@@ -110,16 +109,15 @@ export const useMaterial = (productId, materialId, count, token) => ({
       },
     },
   ).then((res) => res.data),
+  meta: { productId, materialId, count },
 });
 
-export const unuseMaterial = (productId, materialId, count, token) => ({
+export const unuseMaterial = (productId, materialId, token) => ({
   type: PRODUCT_UNUSE_MATERIAL,
   payload: axios.delete(
     `${URL}/product/${productId}/material`,
     {
-      product_id: productId,
       material_id: materialId,
-      count,
     },
     {
       headers: {
@@ -127,4 +125,5 @@ export const unuseMaterial = (productId, materialId, count, token) => ({
       },
     },
   ).then((res) => res.data),
+  meta: { productId, materialId },
 });

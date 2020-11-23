@@ -6,5 +6,8 @@
   },
   "editor.tabSize": 2,
   "eslint.nodePath": "${workspaceFolder}/client/node_modules",
-  "eslint.workingDirectories": ["./client"],
+  "eslint.workingDirectories": [
+    "./client"
+  ],
+  "python.pythonPath": "server/venv/bin/python3",
 }

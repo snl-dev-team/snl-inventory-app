@@ -136,3 +136,49 @@ export const caseUnuseMaterial = (caseId, materialId, token) => ({
   ),
   meta: { caseId, materialId },
 });
+
+export const fetchCaseUsesProduct = (caseId, token) => ({
+  type: actions.FETCH_CASE_USES_PRODUCT,
+  payload: axios.get(
+    `${URL}/case/${caseId}/product`,
+    {
+      headers: {
+        Authorization: token,
+      },
+    },
+  ),
+  meta: { caseId },
+});
+
+export const caseUseProduct = (caseId, productId, count, token) => ({
+  type: actions.CASE_USE_PRODUCT,
+  payload: axios.put(
+    `${URL}/case/${caseId}/product`,
+    {
+      product_id: productId,
+      count,
+    },
+    {
+      headers: {
+        Authorization: token,
+      },
+    },
+  ),
+  meta: { caseId, productId, count },
+});
+
+export const caseUnuseProduct = (caseId, productId, token) => ({
+  type: actions.CASE_UNUSE_PRODUCT,
+  payload: axios.delete(
+    `${URL}/case/${caseId}/product`,
+    {
+      product_id: productId,
+    },
+    {
+      headers: {
+        Authorization: token,
+      },
+    },
+  ),
+  meta: { caseId, productId },
+});

@@ -27,7 +27,9 @@ export default function UpsertOrderDialog() {
   const [number, setNumber] = useState(
     order !== undefined ? order.number : '',
   );
-
+  const [notes, setNotes] = useState(
+    order !== undefined ? order.notes : '',
+  );
   const canSave = true;
 
   const getTitle = () => {
@@ -40,6 +42,7 @@ export default function UpsertOrderDialog() {
   const payload = {
     id: parseInt(id, 10),
     number,
+    notes,
   };
 
   const createOrderAndClose = () => {
@@ -77,6 +80,17 @@ export default function UpsertOrderDialog() {
                 fullWidth
                 value={number}
                 onChange={(e) => setNumber(e.target.value)}
+              />
+            </Grid>
+            <Grid item>
+              <TextField
+                autoFocus
+                margin="dense"
+                label="Notes"
+                multiline
+                rowsMax={6}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
               />
             </Grid>
           </Grid>

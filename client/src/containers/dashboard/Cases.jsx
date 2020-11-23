@@ -55,6 +55,7 @@ const CasesDashboard = () => {
               dateCreated={case_.dateCreated}
               dateModified={case_.dateModified}
               shipped={case_.shipped}
+              notes={case_.noets}
             />
           </Grid>
         ))}

@@ -25,6 +25,7 @@ const caseReducer = (state = {}, action) => {
             shipped: curr.shipped,
             dateCreated: curr.date_created,
             dateModified: curr.date_modified,
+            notes: curr.notes,
           };
           return acc;
         }, {}),
@@ -44,6 +45,7 @@ const caseReducer = (state = {}, action) => {
           shipped: payload.shipped,
           dateCreated: payload.date_created,
           dateModified: payload.date_modified,
+          notes: payload.notes,
         },
       };
 
@@ -53,6 +55,7 @@ const caseReducer = (state = {}, action) => {
       return {
         ...state,
         [payload.id]: {
+          notes: '',
           ...case_,
           id: payload.id,
           dateCreated: payload.date_created,

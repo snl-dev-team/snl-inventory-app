@@ -60,6 +60,7 @@ export const updateOrder = (order, token) => ({
       `${URL}/order/${order.id}`,
       {
         number: order.number,
+        notes: order.notes,
       },
       {
         headers: {

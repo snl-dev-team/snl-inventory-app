@@ -44,7 +44,7 @@ const productReducer = (state = {}, action) => {
       return {
         ...state,
         [product.id]: {
-          material: {},
+          materials: {},
           ...state[product.id],
           ...product,
           dateModified: payload.date_modified,

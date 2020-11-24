@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Amplify from 'aws-amplify';
 import GraphiQL from 'graphiql';
-import axios from 'axios';
+import fetch from 'isomorphic-fetch';
 import Dashboard from './containers/dashboard/Dashboard';
 import SignUp from './containers/authentication/SignUp';
 import SignUpConfirm from './containers/authentication/SignUpConfirm';
@@ -13,13 +13,11 @@ import { URL } from './constants/url';
 import 'graphiql/graphiql.css';
 
 function graphQLFetcher(graphQLParams) {
-  return axios.post(
-    `${URL}/graphql`,
-    graphQLParams,
-    {
-      headers: { 'Content-Type': 'application/json' },
-    },
-  ).then((res) => res.data);
+  return fetch(`${URL}/graphql`, {
+    method: 'post',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(graphQLParams),
+  }).then((response) => response.json());
 }
 
 Amplify.configure({

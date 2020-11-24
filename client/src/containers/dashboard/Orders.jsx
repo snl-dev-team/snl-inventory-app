@@ -5,6 +5,7 @@ import AddIcon from '@material-ui/icons/Add';
 import Grid from '@material-ui/core/Grid';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, Route } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import OrderCard from '../../components/OrderCard';
 import { fetchOrders, fetchOrder } from '../../actions/order';
 import UpsertOrderDialog from '../../components/UpsertOrderDialog';
@@ -23,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const OrdersDashboard = () => {
+const OrdersDashboard = ({ searchString = '' }) => {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
@@ -35,7 +36,8 @@ const OrdersDashboard = () => {
   }, [dispatch, token]);
 
   const orders = useSelector(
-    (state) => Object.values(state.orders),
+    (state) => Object.values(state.orders)
+      .filter((order) => (order.number.toLowerCase().includes(searchString))),
     (before, after) => JSON.stringify(before) === JSON.stringify(after),
   );
 
@@ -83,3 +85,7 @@ const OrdersDashboard = () => {
 };
 
 export default OrdersDashboard;
+
+OrdersDashboard.propTypes = {
+  searchString: PropTypes.string.isRequired,
+};

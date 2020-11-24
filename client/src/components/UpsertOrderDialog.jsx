@@ -1,3 +1,4 @@
+/* eslint-disable import/named */
 import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -8,6 +9,8 @@ import Grid from '@material-ui/core/Grid';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { useHistory, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { FormControlLabel } from '@material-ui/core';
+import Switch from '@material-ui/core/Switch';
 import { createOrder, updateOrder } from '../actions/order';
 
 export default function UpsertOrderDialog() {
@@ -30,6 +33,10 @@ export default function UpsertOrderDialog() {
   const [notes, setNotes] = useState(
     order !== undefined ? order.notes : '',
   );
+  const [completed, setCompleted] = useState(
+    order !== undefined ? order.completed : false,
+  );
+
   const canSave = true;
 
   const getTitle = () => {
@@ -43,6 +50,7 @@ export default function UpsertOrderDialog() {
     id: parseInt(id, 10),
     number,
     notes,
+    completed,
   };
 
   const createOrderAndClose = () => {
@@ -91,6 +99,18 @@ export default function UpsertOrderDialog() {
                 rowsMax={6}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
+              />
+              <FormControlLabel
+                style={{ paddingTop: 25 }}
+                control={(
+                  <Switch
+                    checked={completed}
+                    size="small"
+                    onChange={(e) => setCompleted(e.target.checked)}
+                  />
+                )}
+                labelPlacement="start"
+                label="Completed"
               />
             </Grid>
           </Grid>

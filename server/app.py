@@ -815,7 +815,8 @@ ORDER_COLUMNS = [
     ('number',          str,   'stringValue'),
     ('date_created',    str,   'stringValue'),
     ('date_modified',   str,   'stringValue'),
-    ('notes',           str,   'stringValue')
+    ('notes',           str,   'stringValue'),
+    ('completed',       bool,  'booleanValue')
 ]
 
 """
@@ -827,6 +828,7 @@ ORDER_COLUMNS = [
 | date_created  | datetime     | NO   |     | CURRENT_TIMESTAMP |                |
 | date_modified | datetime     | NO   |     | CURRENT_TIMESTAMP |                |
 | notes         | text         | NO   |     | N/A               |                |
+| completed     | bool         | NO   |     | FALSE             |                |
 +---------------+--------------+------+-----+-------------------+----------------+
 
 +----------+------------------+------+-----+---------+-------+
@@ -939,7 +941,8 @@ def update_order(id):
             UPDATE `order` SET
                 number = '{number}',
                 date_modified = CURRENT_TIMESTAMP,
-                notes = '{notes}'
+                notes = '{notes}',
+                completed = {completed}
             WHERE id = {id}
             """.format(**body, id=id)
 

@@ -32,6 +32,7 @@ const orderReducer = (state = {}, action) => {
           number: payload.number,
           dateCreated: payload.date_created,
           dateModified: payload.date_modified,
+          completed: payload.completed,
         },
       };
 
@@ -41,11 +42,11 @@ const orderReducer = (state = {}, action) => {
       return {
         ...state,
         [payload.id]: {
+          completed: false,
           ...order,
           id: payload.id,
           dateCreated: payload.date_created,
           dateModified: payload.date_modified,
-          completed: false,
         },
       };
     }

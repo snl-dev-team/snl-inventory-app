@@ -14,6 +14,7 @@ export const createOrder = (order, token) => ({
       `${URL}/order`,
       {
         number: order.number,
+        notes: order.notes,
       },
       {
         headers: {
@@ -60,6 +61,7 @@ export const updateOrder = (order, token) => ({
       `${URL}/order/${order.id}`,
       {
         number: order.number,
+        notes: order.notes,
       },
       {
         headers: {

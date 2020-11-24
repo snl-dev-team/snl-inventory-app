@@ -19,6 +19,7 @@ const orderReducer = (state = {}, action) => {
             number: curr.number,
             dateCreated: curr.date_created,
             dateModified: curr.date_modified,
+            notes: curr.notes,
           };
           return acc;
         }, {}),
@@ -31,6 +32,7 @@ const orderReducer = (state = {}, action) => {
           number: payload.number,
           dateCreated: payload.date_created,
           dateModified: payload.date_modified,
+          notes: payload.notes,
         },
       };
 
@@ -40,6 +42,7 @@ const orderReducer = (state = {}, action) => {
       return {
         ...state,
         [payload.id]: {
+          notes: '',
           ...order,
           id: payload.id,
           dateCreated: payload.date_created,

@@ -19,6 +19,7 @@ export const createMaterial = (material, token) => ({
         expiration_date: material.expirationDate,
         price: material.price,
         units: material.units,
+        notes: material.notes,
       },
       {
         headers: {
@@ -69,6 +70,7 @@ export const updateMaterial = (material, token) => ({
         expiration_date: material.expirationDate,
         price: material.price,
         units: material.units,
+        notes: material.notes,
       },
       {
         headers: {

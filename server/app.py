@@ -58,6 +58,7 @@ MATERIAL_COLUMNS = [
     ('date_modified',   str,   'stringValue'),
     ('price',           int,   'longValue'),
     ('units',           int,   'stringValue'),
+    ('notes',           str,   'stringValue')
 ]
 
 """
@@ -73,6 +74,7 @@ MATERIAL_COLUMNS = [
 | date_modified   | datetime                            | NO   |     | CURRENT_TIMESTAMP |                |
 | price           | int(10) unsigned                    | YES  |     | NULL              |                |
 | units           | enum('unit','kg','lb','g','L','mL') | YES  |     | unit              |                |
+| notes           | text                                | NO   |     | N/A               |                |
 +-----------------+-------------------------------------+------+-----+-------------------+----------------+
 """
 
@@ -89,7 +91,8 @@ def create_material():
                     `count`,
                     `expiration_date`,
                     `price`,
-                    `units`
+                    `units`,
+                    `notes`
                 )
                 VALUES (
                     '{name}',
@@ -97,7 +100,8 @@ def create_material():
                     {count},
                     '{expiration_date}',
                     {price},
-                    '{units}'
+                    '{units}',
+                    '{notes}'
                 )
             """.format(**body)
 
@@ -187,7 +191,8 @@ def update_material(id):
                 expiration_date = '{expiration_date}',
                 price = {price},
                 units = '{units}',
-                date_modified = CURRENT_TIMESTAMP
+                date_modified = CURRENT_TIMESTAMP,
+                notes = '{notes}'
             WHERE id = {id}
             """.format(**body, id=id)
 
@@ -238,6 +243,7 @@ PRODUCT_COLUMNS = [
     ('date_created',    str,   'stringValue'),
     ('date_modified',   str,   'stringValue'),
     ('completed',       bool,  'booleanValue'),
+    ('notes',           str,   'stringValue')
 ]
 
 """
@@ -252,6 +258,7 @@ PRODUCT_COLUMNS = [
 | date_created    | datetime         | NO   |     | CURRENT_TIMESTAMP |                |
 | date_modified   | datetime         | NO   |     | CURRENT_TIMESTAMP |                |
 | completed       | tinyint(1)       | YES  |     | 0                 |                |
+| notes           | text             | NO   |     | N/A               |                |
 +-----------------+------------------+------+-----+-------------------+----------------+
 
 +-------------+----------------+------+-----+---------+-------+
@@ -276,14 +283,16 @@ def create_product():
                     `number`,
                     `count`,
                     `expiration_date`,
-                    `completed`
+                    `completed`,
+                    `notes`
                 )
                 VALUES (
                     '{name}',
                     '{number}',
                     {count},
                     '{expiration_date}',
-                    {completed}
+                    {completed},
+                    '{notes}'
                 )
             """.format(**body)
 
@@ -375,7 +384,8 @@ def update_product(id):
                 count = {count},
                 expiration_date = '{expiration_date}',
                 completed = {completed},
-                date_modified = CURRENT_TIMESTAMP
+                date_modified = CURRENT_TIMESTAMP,
+                notes = '{notes}'
             WHERE id = {id}
             """.format(**body, id=id)
 
@@ -487,6 +497,7 @@ CASE_COLUMNS = [
     ('date_created',    str,   'stringValue'),
     ('date_modified',   str,   'stringValue'),
     ('shipped',         bool,  'booleanValue'),
+    ('notes',           str,   'stringValue')
 ]
 
 """
@@ -503,6 +514,7 @@ CASE_COLUMNS = [
 | date_created    | datetime         | NO   |     | CURRENT_TIMESTAMP |                |
 | date_modified   | datetime         | NO   |     | CURRENT_TIMESTAMP |                |
 | shipped         | tinyint(1)       | YES  |     | 0                 |                |
+| notes           | text             | NO   |     | N/A               |                |
 +-----------------+------------------+------+-----+-------------------+----------------+
 
 +-------------+----------------+------+-----+---------+-------+
@@ -536,7 +548,8 @@ def create_case():
                     `count`,
                     `number`,
                     `expiration_date`,
-                    `shipped`
+                    `shipped`,
+                    `notes`
                 )
                 VALUES (
                     '{name}',
@@ -545,7 +558,8 @@ def create_case():
                     {count},
                     '{number}',
                     '{expiration_date}',
-                    {shipped}
+                    {shipped},
+                    '{notes}'
                 )
             """.format(**body)
 
@@ -637,7 +651,8 @@ def update_case(id):
                 number = '{number}',
                 expiration_date = '{expiration_date}',
                 shipped = '{shipped}',
-                date_modified = CURRENT_TIMESTAMP
+                date_modified = CURRENT_TIMESTAMP,
+                notes = '{notes}'
             WHERE id = {id}
             """.format(**body, id=id)
 
@@ -800,6 +815,7 @@ ORDER_COLUMNS = [
     ('number',          str,   'stringValue'),
     ('date_created',    str,   'stringValue'),
     ('date_modified',   str,   'stringValue'),
+    ('notes',           str,   'stringValue')
 ]
 
 """
@@ -810,6 +826,7 @@ ORDER_COLUMNS = [
 | number        | varchar(255) | NO   |     | NULL              |                |
 | date_created  | datetime     | NO   |     | CURRENT_TIMESTAMP |                |
 | date_modified | datetime     | NO   |     | CURRENT_TIMESTAMP |                |
+| notes         | text         | NO   |     | N/A               |                |
 +---------------+--------------+------+-----+-------------------+----------------+
 
 +----------+------------------+------+-----+---------+-------+
@@ -830,10 +847,12 @@ def create_order():
         sql = """
             INSERT INTO
                 `order` (
-                    `number`
+                    `number`,
+                    `notes`
                 )
                 VALUES (
-                    '{number}'
+                    '{number}',
+                    '{notes}'
                 )
             """.format(**body)
 
@@ -919,7 +938,8 @@ def update_order(id):
         sql = """
             UPDATE `order` SET
                 number = '{number}',
-                date_modified = CURRENT_TIMESTAMP
+                date_modified = CURRENT_TIMESTAMP,
+                notes = '{notes}'
             WHERE id = {id}
             """.format(**body, id=id)
 

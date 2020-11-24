@@ -41,6 +41,9 @@ export default function UpsertProductDialog() {
   const [completed, setCompleted] = useState(
     product !== undefined ? product.completed : false,
   );
+  const [notes, setNotes] = useState(
+    product !== undefined ? product.notes : '',
+  );
 
   const canSave = name !== '' && number !== '' && expirationDate !== '';
 
@@ -58,6 +61,7 @@ export default function UpsertProductDialog() {
     count,
     expirationDate,
     completed,
+    notes,
   };
 
   const createProductAndClose = () => {
@@ -144,6 +148,17 @@ export default function UpsertProductDialog() {
                 label="Completed"
               />
 
+            </Grid>
+            <Grid item>
+              <TextField
+                autoFocus
+                margin="dense"
+                label="Notes"
+                multiline
+                rowsMax={6}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+              />
             </Grid>
           </Grid>
         </DialogContent>

@@ -24,6 +24,7 @@ const materialReducer = (state = {}, action) => {
             units: curr.units,
             dateCreated: curr.date_created,
             dateModified: curr.date_modified,
+            notes: curr.notes,
           };
           return acc;
         }, {}),
@@ -42,6 +43,7 @@ const materialReducer = (state = {}, action) => {
           units: payload.units,
           dateCreated: payload.date_created,
           dateModified: payload.date_modified,
+          notes: payload.notes,
         },
       };
 
@@ -51,6 +53,7 @@ const materialReducer = (state = {}, action) => {
       return {
         ...state,
         [payload.id]: {
+          notes: '',
           ...material,
           id: payload.id,
           dateCreated: payload.date_created,

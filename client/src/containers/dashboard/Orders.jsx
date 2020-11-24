@@ -52,6 +52,7 @@ const OrdersDashboard = () => {
               id={order.id}
               dateCreated={order.dateCreated}
               dateModified={order.dateModified}
+              notes={order.notes}
             />
           </Grid>
         ))}

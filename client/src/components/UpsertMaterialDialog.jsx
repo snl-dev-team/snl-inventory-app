@@ -44,6 +44,9 @@ export default function UpsertMaterialDialog() {
   const [units, setUnits] = useState(
     material !== undefined ? material.units : 'unit',
   );
+  const [notes, setNotes] = useState(
+    material !== undefined ? material.notes : '',
+  );
 
   const canSave = name !== '' && number !== '' && expirationDate !== '';
 
@@ -62,6 +65,7 @@ export default function UpsertMaterialDialog() {
     expirationDate,
     price,
     units,
+    notes,
   };
 
   const createMaterialAndClose = () => {
@@ -174,6 +178,17 @@ export default function UpsertMaterialDialog() {
                   ),
                 )}
               </TextField>
+            </Grid>
+            <Grid item>
+              <TextField
+                autoFocus
+                margin="dense"
+                label="Notes"
+                multiline
+                rowsMax={6}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+              />
             </Grid>
           </Grid>
         </DialogContent>

@@ -55,6 +55,7 @@ const MaterialsDashboard = () => {
               price={material.price}
               units={material.units}
               id={material.id}
+              notes={material.notes}
             />
           </Grid>
         ))}

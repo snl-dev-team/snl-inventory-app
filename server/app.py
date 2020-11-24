@@ -486,22 +486,17 @@ def product_use_material(id):
     try:
         body = app.current_request.json_body
 
-        product_use_material_count = """
-            (SELECT IFNULL(
-                (SELECT `count` 
-                FROM `product_uses_material` 
-                WHERE `product_id`={id} AND `material_id`={material_id}),
-                0))
-        """
-
         update_material_sql = """
             UPDATE `material` SET `count` = CASE
-                WHEN {count} > {product_use_material_count} AND {product_use_material_count} > 0 THEN `count` - ({count} - {product_use_material_count})
-                WHEN {count} > {product_use_material_count} AND {product_use_material_count} = 0 THEN `count` - {count}
-                WHEN {count} < {product_use_material_count} AND {product_use_material_count} > 0 THEN `count` + ({product_use_material_count} - {count})
+                WHEN {count} > (SELECT IFNULL((SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND `material_id`={material_id}), 0)) AND (SELECT IFNULL((SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND`material_id`={material_id}), 0)) > 0 THEN `count` - ({count} - (SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND`material_id`={material_id}))
+
+                WHEN {count} > (SELECT IFNULL((SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND `material_id`={material_id}), 0)) AND (SELECT IFNULL((SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND `material_id`={material_id}), 0)) = 0 THEN `count` - {count}
+
+                WHEN {count} < (SELECT IFNULL((SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND `material_id`={material_id}), 0)) AND (SELECT IFNULL((SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND `material_id`={material_id}), 0)) > 0 THEN `count` + ((SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND `material_id`={material_id}) - {count})
+
                 END
             WHERE `id`={material_id};
-            """.format(**body, id=id, product_use_material_count=product_use_material_count)
+            """.format(**body, id=id)
 
         update_product_uses_material_sql = """
             REPLACE INTO `product_uses_material` 

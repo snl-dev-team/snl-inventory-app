@@ -6,6 +6,7 @@ from chalice import Chalice, Response, CognitoUserPoolAuthorizer
 import json
 from datetime import datetime
 import logging
+from chalicelib.schema import schema
 
 app = Chalice(app_name='snl-inventory-app')
 
@@ -461,6 +462,7 @@ def delete_product(id):
             status_code=400,
         )
 
+
 @app.route('/product/{id}/material', methods=['GET'])
 def fetch_product_uses_material(id):
     columns_string = ', '.join(i[0] for i in PRODUCT_USES_MATERIAL_COLUMNS)
@@ -533,7 +535,7 @@ def product_use_material(id):
 def product_unuse_material(id):
     try:
         body = app.current_request.json_body
-        
+
         update_material_sql = """
             UPDATE `material` 
             SET `count` = `count` + (SELECT IFNULL((SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND `material_id`={material_id}), 0))
@@ -801,6 +803,7 @@ def delete_case(id):
             status_code=400,
         )
 
+
 @app.route('/case/{id}/material', methods=['GET'])
 def fetch_case_uses_material(id):
     columns_string = ', '.join(i[0] for i in CASE_USE_MATERIAL_COLUMNS)
@@ -829,6 +832,7 @@ def fetch_case_uses_material(id):
             body=json.dumps({'message': str(e)}),
             status_code=400,
         )
+
 
 @app.route('/case/{id}/material', methods=['PUT'], authorizer=authorizer)
 def case_use_material(id):
@@ -897,6 +901,7 @@ def case_unuse_material(id):
             status_code=400,
         )
 
+
 @app.route('/case/{id}/product', methods=['GET'])
 def fetch_case_uses_product(id):
     columns_string = ', '.join(i[0] for i in CASE_USE_PRODUCT_COLUMNS)
@@ -943,11 +948,12 @@ def fetch_case_uses_product(id):
             status_code=400,
         )
 
+
 @app.route('/case/{id}/product', methods=['PUT'], authorizer=authorizer)
 def case_use_product(id):
     try:
         body = app.current_request.json_body
-        
+
         update_product_sql = """
             UPDATE `product` SET `count` = CASE
                 WHEN {count} > (SELECT IFNULL((SELECT `count` FROM `case_uses_product` WHERE `case_id`={id} AND `product_id`={product_id}), 0)) AND (SELECT IFNULL((SELECT `count` FROM `case_uses_product` WHERE `case_id`={id} AND`product_id`={product_id}), 0)) > 0 THEN `count` - ({count} - (SELECT `count` FROM `case_uses_product` WHERE `case_id`={id} AND`product_id`={product_id}))
@@ -1205,6 +1211,7 @@ def delete_order(id):
             status_code=400,
         )
 
+
 @app.route('/order/{id}/case', methods=['GET'])
 def fetch_order_uses_case(id):
     columns_string = ', '.join(i[0] for i in ORDER_USE_CASE_COLUMNS)
@@ -1239,6 +1246,7 @@ def fetch_order_uses_case(id):
             body=json.dumps({'message': str(e)}),
             status_code=400,
         )
+
 
 @app.route('/order/{id}/case', methods=['PUT'], authorizer=authorizer)
 def order_use_case(id):
@@ -1307,3 +1315,10 @@ def order_unuse_case(id):
             body=json.dumps({'message': str(e)}),
             status_code=400,
         )
+
+
+@app.route('/graphql', methods=['POST'], authorizer=authorizer)
+def graphql():
+    query = json.loads(app.current_request.raw_body.decode())['query']
+    result = schema.execute(query)
+    return {'data': result.data}

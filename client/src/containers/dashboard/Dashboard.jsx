@@ -149,6 +149,9 @@ export default function Dashboard() {
   const history = useHistory();
   const dispatch = useDispatch();
 
+  const [searchString, setSearchString] = useState('');
+  const [searching, setSearching] = useState(false);
+
   const isMenuOpen = Boolean(anchorEl);
 
   const handleDrawerOpen = () => {
@@ -225,6 +228,12 @@ export default function Dashboard() {
                 input: classes.inputInput,
               }}
               inputProps={{ 'aria-label': 'search' }}
+              value={searchString}
+              onFocus={() => setSearching(true)}
+              onBlur={() => setSearching(false)}
+              onChange={(e) => {
+                setSearchString(e.target.value);
+              }}
             />
           </div>
           <IconButton
@@ -314,19 +323,39 @@ export default function Dashboard() {
         <div className={classes.toolbar} />
         <Route
           path="/materials"
-          component={MaterialsDashboard}
+          component={() => (
+            <MaterialsDashboard
+              searchString={searchString.toLowerCase()}
+              searching={searching}
+            />
+          )}
         />
         <Route
           path="/orders"
-          component={OrdersDashboard}
+          component={() => (
+            <OrdersDashboard
+              searchString={searchString.toLowerCase()}
+              searching={searching}
+            />
+          )}
         />
         <Route
           path="/cases"
-          component={CasesDashboard}
+          component={() => (
+            <CasesDashboard
+              searchString={searchString.toLowerCase()}
+              searching={searching}
+            />
+          )}
         />
         <Route
           path="/products"
-          component={ProductsDashboard}
+          component={() => (
+            <ProductsDashboard
+              searchString={searchString.toLowerCase()}
+              searching={searching}
+            />
+          )}
         />
         <Route exact path="/">
           <Redirect to="/materials" />

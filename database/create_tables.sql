@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS `material` (
     `expiration_date`       DATE DEFAULT NULL,
     `price`	                INT UNSIGNED DEFAULT NULL,
     `units`                 ENUM('unit', 'kg', 'lb', 'g', 'L', 'mL') DEFAULT 'unit',
+    `notes`                 TEXT NOT NULL,
     
     PRIMARY KEY(`id`)
 );
@@ -21,6 +22,7 @@ CREATE TABLE IF NOT EXISTS `product` (
     `date_created`          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `date_modified`         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `completed`	            BOOL DEFAULT FALSE,
+    `notes`                 TEXT NOT NULL,
     
     PRIMARY KEY(`id`)
 );
@@ -46,6 +48,7 @@ CREATE TABLE IF NOT EXISTS `case` (
     `date_created`          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `date_modified`         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `shipped`               BOOL DEFAULT FALSE,
+    `notes`                 TEXT NOT NULL,
     
     PRIMARY KEY(`id`)
 );
@@ -75,6 +78,8 @@ CREATE TABLE IF NOT EXISTS `order` (
     `number`                VARCHAR(255) NOT NULL,
     `date_created`          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `date_modified`         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `notes`                 TEXT NOT NULL,
+    `completed`	            BOOL DEFAULT FALSE,
     
     PRIMARY KEY (`id`)
 );

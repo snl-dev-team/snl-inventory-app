@@ -5,6 +5,7 @@ import AddIcon from '@material-ui/icons/Add';
 import { useDispatch, useSelector } from 'react-redux';
 import Grid from '@material-ui/core/Grid';
 import { Route, useHistory } from 'react-router';
+import PropTypes from 'prop-types';
 import { fetchMaterials } from '../../actions/material';
 import MaterialCard from '../../components/MaterialCard';
 import UpsertMaterialDialog from '../../components/UpsertMaterialDialog';
@@ -26,17 +27,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const MaterialsDashboard = () => {
+const MaterialsDashboard = ({ searchString = '', searching = false }) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const token = useSelector((state) => state.user.token);
 
   useEffect(() => {
-    dispatch(fetchMaterials(token));
-  }, [dispatch, token]);
+    if (!searching) {
+      dispatch(fetchMaterials(token));
+    }
+  }, [searching, dispatch, token]);
 
   const materials = useSelector(
-    (state) => Object.values(state.materials),
+    (state) => Object.values(state.materials)
+      .filter((material) => (material.name.toLowerCase().includes(searchString))
+      || (material.number.includes(searchString))),
     (before, after) => JSON.stringify(before) === JSON.stringify(after),
   );
 
@@ -55,6 +60,7 @@ const MaterialsDashboard = () => {
               price={material.price}
               units={material.units}
               id={material.id}
+              notes={material.notes}
             />
           </Grid>
         ))}
@@ -87,3 +93,8 @@ const MaterialsDashboard = () => {
   );
 };
 export default MaterialsDashboard;
+
+MaterialsDashboard.propTypes = {
+  searchString: PropTypes.string.isRequired,
+  searching: PropTypes.bool.isRequired,
+};

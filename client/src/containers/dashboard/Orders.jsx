@@ -1,3 +1,6 @@
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/named */
+/* eslint-disable import/no-named-as-default-member */
 import React, { useEffect } from 'react';
 import Fab from '@material-ui/core/Fab';
 import { makeStyles } from '@material-ui/core/styles';
@@ -5,8 +8,9 @@ import AddIcon from '@material-ui/icons/Add';
 import Grid from '@material-ui/core/Grid';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, Route } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import OrderCard from '../../components/OrderCard';
-import { fetchOrders, fetchOrder } from '../../actions/order';
+import { fetchOrders } from '../../actions/order';
 import UpsertOrderDialog from '../../components/UpsertOrderDialog';
 
 const useStyles = makeStyles((theme) => ({
@@ -23,19 +27,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const OrdersDashboard = () => {
+const OrdersDashboard = ({ searchString = '', searching = false }) => {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
   const token = useSelector((state) => state.user.token);
 
   useEffect(() => {
-    dispatch(fetchOrders(token));
-    dispatch(fetchOrder(5, token));
-  }, [dispatch, token]);
+    if (!searching) {
+      dispatch(fetchOrders(token));
+    }
+  }, [searching, dispatch, token]);
 
   const orders = useSelector(
-    (state) => Object.values(state.orders),
+    (state) => Object.values(state.orders)
+      .filter((order) => (order.number.toLowerCase().includes(searchString))),
     (before, after) => JSON.stringify(before) === JSON.stringify(after),
   );
 
@@ -52,6 +58,8 @@ const OrdersDashboard = () => {
               id={order.id}
               dateCreated={order.dateCreated}
               dateModified={order.dateModified}
+              notes={order.notes}
+              completed={order.completed}
             />
           </Grid>
         ))}
@@ -83,3 +91,8 @@ const OrdersDashboard = () => {
 };
 
 export default OrdersDashboard;
+
+OrdersDashboard.propTypes = {
+  searchString: PropTypes.string.isRequired,
+  searching: PropTypes.bool.isRequired,
+};

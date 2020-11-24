@@ -14,6 +14,8 @@ const orderReducer = (state = {}, action) => {
             dateCreated: curr.date_created,
             dateModified: curr.date_modified,
             cases: {},
+            notes: curr.notes,
+            completed: curr.completed,
           };
           return acc;
         }, {}),
@@ -27,6 +29,8 @@ const orderReducer = (state = {}, action) => {
           dateCreated: payload.date_created,
           dateModified: payload.date_modified,
           cases: {},
+          notes: payload.notes,
+          completed: payload.completed,
         },
       };
 
@@ -37,6 +41,8 @@ const orderReducer = (state = {}, action) => {
         ...state,
         [payload.id]: {
           cases: {},
+          notes: '',
+          completed: false,
           ...order,
           id: payload.id,
           dateCreated: payload.date_created,

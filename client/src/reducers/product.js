@@ -18,6 +18,7 @@ const productReducer = (state = {}, action) => {
             dateCreated: curr.date_created,
             dateModified: curr.date_modified,
             materials: {},
+            notes: curr.notes,
           };
           return acc;
         }, {}),
@@ -30,6 +31,7 @@ const productReducer = (state = {}, action) => {
         ...state,
         [payload.id]: {
           materials: {},
+          notes: '',
           ...product,
           id: payload.id,
           dateCreated: payload.date_created,

@@ -48,6 +48,9 @@ export default function UpsertCaseDialog() {
   const [shipped, setShipped] = useState(
     case_ !== undefined ? case_.shipped : false,
   );
+  const [notes, setNotes] = useState(
+    case_ !== undefined ? case_.notes : '',
+  );
 
   const canSave = true;
 
@@ -67,6 +70,7 @@ export default function UpsertCaseDialog() {
     number,
     expirationDate,
     shipped,
+    notes,
   };
 
   const createCaseAndClose = () => {
@@ -174,7 +178,17 @@ export default function UpsertCaseDialog() {
                 labelPlacement="start"
                 label="Shipped"
               />
-
+            </Grid>
+            <Grid item>
+              <TextField
+                autoFocus
+                margin="dense"
+                label="Notes"
+                multiline
+                rowsMax={6}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+              />
             </Grid>
           </Grid>
         </DialogContent>

@@ -31,15 +31,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ProductsDashboard = ({ searchString = '' }) => {
+const ProductsDashboard = ({ searchString = '', searching = false }) => {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
   const token = useSelector((state) => state.user.token);
 
   useEffect(() => {
-    dispatch(fetchProducts(token));
-  });
+    if (!searching) {
+      dispatch(fetchProducts(token));
+    }
+  }, [searching, dispatch, token]);
 
   const products = useSelector(
     (state) => Object.values(state.products)
@@ -99,4 +101,5 @@ export default ProductsDashboard;
 
 ProductCard.propTypes = {
   searchString: PropTypes.string.isRequired,
+  searching: PropTypes.bool.isRequired,
 };

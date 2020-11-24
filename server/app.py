@@ -815,7 +815,7 @@ ORDER_COLUMNS = [
     ('number',          str,   'stringValue'),
     ('date_created',    str,   'stringValue'),
     ('date_modified',   str,   'stringValue'),
-    ('notes',           str,   'stringValue')
+    ('notes',           str,   'stringValue'),
     ('completed',       bool,  'booleanValue')
 ]
 

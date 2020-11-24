@@ -1,5 +1,5 @@
 # pylint: disable=relative-beyond-top-level
-from graphene import Int, String, Float, Date, DateTime, Boolean, List, Mutation, Field, relay
+from graphene import Int, String, Float, Date, DateTime, Boolean, List, Mutation, Field, relay, ID
 from . import base, material
 
 
@@ -23,7 +23,11 @@ class ProductInput(base.Input):
 
 
 class Product(base.Object):
-    id = Int(required=True)
+
+    class Meta:
+        interfaces = (relay.Node,)
+
+    id = ID(required=True)
     name = String(required=True)
     number = String(required=True)
     count = Int(required=True)
@@ -36,6 +40,10 @@ class Product(base.Object):
         material.MaterialConnection, required=True)
 
     __table__ = 'product'
+
+    @classmethod
+    def get_node(cls, info, id):
+        return Product.select_where(id)
 
     @staticmethod
     def resolve_materials(parent, info):

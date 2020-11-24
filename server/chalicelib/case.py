@@ -1,5 +1,5 @@
 # pylint: disable=relative-beyond-top-level
-from graphene import Int, String, Float, Boolean, Date, DateTime, List, Mutation, Field, relay
+from graphene import Int, String, Float, Boolean, Date, DateTime, List, Mutation, Field, relay, ID
 from . import base, material, product
 
 
@@ -25,7 +25,11 @@ class CaseInput(base.InputObjectType):
 
 
 class Case(base.Object):
-    id = Int(required=True)
+
+    class Meta:
+        interfaces = (relay.Node,)
+
+    id = ID(required=True)
     name = String(required=True)
     product_name = String(required=True)
     product_count = Int(required=True)
@@ -41,6 +45,10 @@ class Case(base.Object):
     products = relay.ConnectionField(product.ProductConnection, required=True)
 
     __table__ = 'case'
+
+    @classmethod
+    def get_node(cls, info, id):
+        return Case.select_where(id)
 
     @staticmethod
     def resolve_materials(parent, info):

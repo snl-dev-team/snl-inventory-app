@@ -1,5 +1,5 @@
 # pylint: disable=relative-beyond-top-level
-from graphene import List, Field, Schema, Int, ObjectType, relay
+from graphene import List, Field, Schema, Int, ObjectType, relay, ID
 from . import material, product, case, order
 from datetime import datetime
 from datetime import date, datetime
@@ -9,16 +9,16 @@ from .database import execute_statement, process_select_response
 
 class Query(ObjectType):
     materials = relay.ConnectionField(material.MaterialConnection)
-    material = Field(material.Material, id=Int(required=True))
+    material = Field(material.Material, id=ID(required=True))
 
     products = relay.ConnectionField(product.ProductConnection)
-    product = Field(product.Product, id=Int(required=True))
+    product = Field(product.Product, id=ID(required=True))
 
     cases = relay.ConnectionField(case.CaseConnection)
-    case = Field(case.Case, id=Int(required=True))
+    case = Field(case.Case, id=ID(required=True))
 
     orders = relay.ConnectionField(order.OrderConnection)
-    order = Field(order.Order, id=Int(required=True))
+    order = Field(order.Order, id=ID(required=True))
 
     @staticmethod
     def resolve_materials(parent, info):
@@ -26,7 +26,7 @@ class Query(ObjectType):
 
     @staticmethod
     def resolve_material(parent, info, id):
-        return material.Material.select_where(id)
+        return material.Material.select_where(int(id))
 
     @staticmethod
     def resolve_products(parent, info):
@@ -34,7 +34,7 @@ class Query(ObjectType):
 
     @staticmethod
     def resolve_product(parent, info, id):
-        return product.Product.select_where(id)
+        return product.Product.select_where(int(id))
 
     @staticmethod
     def resolve_cases(parent, info):
@@ -42,7 +42,7 @@ class Query(ObjectType):
 
     @staticmethod
     def resolve_case(parent, info, id):
-        return case.Case.select_where(id)
+        return case.Case.select_where(int(id))
 
     @staticmethod
     def resolve_orders(parent, info):
@@ -50,7 +50,8 @@ class Query(ObjectType):
 
     @staticmethod
     def resolve_order(parent, info, id):
-        return order.Order.select_where(id)
+        print(id)
+        return order.Order.select_where(int(id))
 
 
 class Mutation(ObjectType):

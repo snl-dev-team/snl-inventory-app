@@ -2,6 +2,7 @@ import boto3
 import os
 import mysql.connector
 import sqlparse
+import logging
 
 rds_client = boto3.client('rds-data')
 database_secrets_arn = os.environ.get('DATABASE_SECRETS_ARN')
@@ -10,7 +11,7 @@ db_cluster_arn = os.environ.get('DATABASE_CLUSTER_ARN')
 
 
 def execute_statement(sql, sql_parameters=[]):
-    print(sqlparse.format(sql, reindent=True))
+    logging.info(sqlparse.format(sql, reindent=True))
     response = rds_client.execute_statement(
         secretArn=database_secrets_arn,
         database=database_name,

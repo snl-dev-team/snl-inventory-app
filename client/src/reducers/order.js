@@ -34,11 +34,8 @@ const orderReducer = (state = {}, action) => {
           number: payload.number,
           dateCreated: payload.date_created,
           dateModified: payload.date_modified,
-<<<<<<< HEAD
           notes: payload.notes,
-=======
           completed: payload.completed,
->>>>>>> update order reducers
         },
       };
 
@@ -48,11 +45,8 @@ const orderReducer = (state = {}, action) => {
       return {
         ...state,
         [payload.id]: {
-<<<<<<< HEAD
           notes: '',
-=======
           completed: false,
->>>>>>> update order reducers
           ...order,
           id: payload.id,
           dateCreated: payload.date_created,

@@ -1,5 +1,5 @@
 # pylint: disable=relative-beyond-top-level
-from graphene import Int, String, Float, Boolean, Date, DateTime, List, Mutation, Field, relay
+from graphene import Int, String, Float, Boolean, Date, DateTime, List, Mutation, Field, relay, ID
 from . import base, material, case
 
 
@@ -20,7 +20,11 @@ class OrderInput(base.Input):
 
 
 class Order(base.Object):
-    id = Int(required=True)
+
+    class Meta:
+        interfaces = (relay.Node,)
+
+    id = ID(required=True)
     number = String(required=True)
     date_created = DateTime(required=True)
     date_modified = DateTime(required=True)
@@ -33,6 +37,10 @@ class Order(base.Object):
     @staticmethod
     def resolve_cases(parent, info):
         return Order.select_uses(parent['id'], case.Case)
+
+    @classmethod
+    def get_node(cls, info, id):
+        return Order.select_where(id)
 
 
 class OrderConnection(base.ObjectConnection):

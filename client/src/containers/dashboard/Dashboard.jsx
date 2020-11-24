@@ -149,6 +149,8 @@ export default function Dashboard() {
   const history = useHistory();
   const dispatch = useDispatch();
 
+  const [searchString, setSearchString] = useState('');
+
   const isMenuOpen = Boolean(anchorEl);
 
   const handleDrawerOpen = () => {
@@ -225,6 +227,10 @@ export default function Dashboard() {
                 input: classes.inputInput,
               }}
               inputProps={{ 'aria-label': 'search' }}
+              value={searchString}
+              onChange={(e) => {
+                setSearchString(e.target.value);
+              }}
             />
           </div>
           <IconButton
@@ -314,19 +320,19 @@ export default function Dashboard() {
         <div className={classes.toolbar} />
         <Route
           path="/materials"
-          component={MaterialsDashboard}
+          component={() => <MaterialsDashboard searchString={searchString.toLowerCase()} />}
         />
         <Route
           path="/orders"
-          component={OrdersDashboard}
+          component={() => <OrdersDashboard searchString={searchString.toLowerCase()} />}
         />
         <Route
           path="/cases"
-          component={CasesDashboard}
+          component={() => <CasesDashboard searchString={searchString.toLowerCase()} />}
         />
         <Route
           path="/products"
-          component={ProductsDashboard}
+          component={() => <ProductsDashboard searchString={searchString.toLowerCase()} />}
         />
         <Route exact path="/">
           <Redirect to="/materials" />

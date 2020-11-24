@@ -5,6 +5,7 @@ import AddIcon from '@material-ui/icons/Add';
 import Grid from '@material-ui/core/Grid';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, useHistory } from 'react-router';
+import PropTypes from 'prop-types';
 import CaseCard from '../../components/CaseCard';
 import { fetchCases } from '../../actions/case';
 import UpsertCaseDialog from '../../components/UpsertCaseDialog';
@@ -23,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CasesDashboard = () => {
+const CasesDashboard = ({ searchString = '' }) => {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
@@ -35,7 +36,9 @@ const CasesDashboard = () => {
   }, [dispatch, token]);
 
   const cases = useSelector(
-    (state) => Object.values(state.cases),
+    (state) => Object.values(state.cases)
+      .filter((case_) => (case_.name.toLowerCase().includes(searchString))
+      || (case_.number.includes(searchString))),
     (before, after) => JSON.stringify(before) === JSON.stringify(after),
   );
 
@@ -86,3 +89,7 @@ const CasesDashboard = () => {
 };
 
 export default CasesDashboard;
+
+CasesDashboard.propTypes = {
+  searchString: PropTypes.string.isRequired,
+};

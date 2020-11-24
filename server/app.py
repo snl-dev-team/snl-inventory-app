@@ -6,7 +6,6 @@ import mysql.connector
 from chalice import Chalice, Response, CognitoUserPoolAuthorizer
 import json
 from datetime import datetime
-import logging
 from datetime import date, datetime
 
 app = Chalice(app_name='snl-inventory-app')
@@ -27,7 +26,6 @@ authorizer = CognitoUserPoolAuthorizer(
 
 
 def execute_statement(sql, sql_parameters=[]):
-    logging.log(logging.INFO, sql)
     response = rds_client.execute_statement(
         secretArn=database_secrets_arn,
         database=database_name,
@@ -40,17 +38,15 @@ def execute_statement(sql, sql_parameters=[]):
 
 def process_select_response(response, columns):
     records = response['records']
-    print(json.dumps(records, indent=2))
     data = []
     for record in records:
         data_row = {}
         for entry, column in zip(record, columns):
-            print(entry)
-            print(column)
             name, caster, entry_type = column['name'], column['caster'], column['boto3']
             value = entry.get(entry_type, None)
             data_row[name] = None if value is None else caster(value)
         data.append(data_row)
+
     return data
 
 
@@ -1407,7 +1403,6 @@ class ObjectTypeBase(graphene.ObjectType):
         columns = cls.get_columns()
         column_string = ',\n'.join(
             [f"`{cls.__name__.lower()}`.`{c['name']}`" for c in columns])
-        print(column_string)
         return column_string
 
 
@@ -1424,6 +1419,10 @@ class Material(ObjectTypeBase):
     notes = graphene.String()
 
 
+class UsedMaterial(Material):
+    count_used = graphene.Float()
+
+
 class Product(ObjectTypeBase):
     id = graphene.Int()
     name = graphene.String()
@@ -1434,14 +1433,14 @@ class Product(ObjectTypeBase):
     date_modified = graphene.DateTime()
     notes = graphene.String()
     completed = graphene.Boolean()
-    materials = graphene.List(Material)
+    materials = graphene.List(UsedMaterial)
 
     @staticmethod
     def resolve_materials(parent, info):
         sql = f"""
         SELECT
-            {Material.get_column_string()}
-            `product_uses_material`.`count` count
+            {Material.get_column_string()},
+            `product_uses_material`.`count` count_used
         FROM
             `product`,
             `product_uses_material`,
@@ -1457,7 +1456,18 @@ class Product(ObjectTypeBase):
                 {'name': 'product_id', 'value': {'longValue': parent['id']}}
             ]
         )
-        return process_select_response(res, Material.get_columns())
+        columns = Material.get_columns() + [
+            {
+                'name': 'count_used',
+                'caster': float,
+                'boto3': 'doubleValue',
+            }
+        ]
+        return process_select_response(res, columns)
+
+
+class UsedProduct(Product):
+    count_used = graphene.Int()
 
 
 class Case(ObjectTypeBase):
@@ -1465,22 +1475,22 @@ class Case(ObjectTypeBase):
     name = graphene.String()
     product_name = graphene.String()
     product_count = graphene.Int()
-    count = graphene.Float()
+    count = graphene.Int()
     number = graphene.String()
     expiration_date = graphene.Date()
     date_created = graphene.DateTime()
     date_modified = graphene.DateTime()
     shipped = graphene.Boolean()
     notes = graphene.String()
-    materials = graphene.List(Material)
-    products = graphene.List(Product)
+    materials = graphene.List(UsedMaterial)
+    products = graphene.List(UsedProduct)
 
     @staticmethod
     def resolve_materials(parent, info):
         sql = f"""
         SELECT
             {Material.get_column_string()},
-            `case_uses_material`.`count` use_count
+            `case_uses_material`.`count` count_used
         FROM
             `case`,
             `case_uses_material`,
@@ -1492,14 +1502,21 @@ class Case(ObjectTypeBase):
         parameters = [{'name': 'case_id', 'value': {
             'longValue': parent['id']}}]
         res = execute_statement(sql, sql_parameters=parameters)
-        return process_select_response(res, Material.get_columns())
+        columns = Material.get_columns() + [
+            {
+                'name': 'count_used',
+                'caster': float,
+                'boto3': 'doubleValue',
+            }
+        ]
+        return process_select_response(res, columns)
 
     @staticmethod
     def resolve_products(parent, info):
         sql = f"""
         SELECT
             {Product.get_column_string()},
-            `case_uses_product`.`count` use_count
+            `case_uses_product`.`count` count_used
         FROM
             `case`,
             `case_uses_product`,
@@ -1511,7 +1528,18 @@ class Case(ObjectTypeBase):
         parameters = [{'name': 'case_id', 'value': {
             'longValue': parent['id']}}]
         res = execute_statement(sql, sql_parameters=parameters)
-        return process_select_response(res, Product.get_columns())
+        columns = Product.get_columns() + [
+            {
+                'name': 'count_used',
+                'caster': int,
+                'boto3': 'longValue',
+            }
+        ]
+        return process_select_response(res, columns)
+
+
+class UsedCase(Case):
+    count_used = graphene.Int()
 
 
 class Order(ObjectTypeBase):
@@ -1520,26 +1548,33 @@ class Order(ObjectTypeBase):
     date_created = graphene.DateTime()
     date_modified = graphene.DateTime()
     notes = graphene.String()
-    cases = graphene.List(Case)
+    cases = graphene.List(UsedCase)
 
     @staticmethod
     def resolve_cases(parent, info):
         sql = f"""
         SELECT
             {Case.get_column_string()},
-            `order_uses_case`.`count` use_count
+            `order_uses_case`.`count` count_used
         FROM
             `order`,
             `order_uses_case`,
             `case`
         WHERE
-            `order`.id = :order_id
-            AND `order_uses_case`.order_id = :order_id;
+            `order`.`id` = :order_id
+            AND `order_uses_case`.`order_id` = :order_id;
         """
         parameters = [{'name': 'order_id', 'value': {
             'longValue': parent['id']}}]
         res = execute_statement(sql, sql_parameters=parameters)
-        return process_select_response(res, Case.get_columns())
+        columns = Case.get_columns() + [
+            {
+                'name': 'count_used',
+                'caster': int,
+                'boto3': 'longValue',
+            }
+        ]
+        return process_select_response(res, columns)
 
 
 class Query(graphene.ObjectType):
@@ -1648,7 +1683,7 @@ class CreateMaterial(graphene.Mutation):
 
     material = graphene.Field(Material)
 
-    @ staticmethod
+    @staticmethod
     def mutate(parent, info, material):
         sql = """
         INSERT INTO

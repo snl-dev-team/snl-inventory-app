@@ -18,6 +18,7 @@ export const createProduct = (product, token) => ({
         count: product.count,
         expiration_date: product.expirationDate,
         completed: product.completed ? 1 : 0,
+        notes: product.notes,
       },
       {
         headers: {

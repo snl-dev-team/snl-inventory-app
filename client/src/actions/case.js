@@ -20,6 +20,7 @@ export const createCase = (case_, token) => ({
         number: case_.number,
         expiration_date: case_.expirationDate,
         shipped: case_.shipped ? 1 : 0,
+        notes: case_.notes,
       },
       {
         headers: {

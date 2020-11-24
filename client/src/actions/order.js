@@ -14,6 +14,7 @@ export const createOrder = (order, token) => ({
       `${URL}/order`,
       {
         number: order.number,
+        notes: order.notes,
       },
       {
         headers: {

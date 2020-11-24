@@ -941,7 +941,7 @@ def update_order(id):
             UPDATE `order` SET
                 number = '{number}',
                 date_modified = CURRENT_TIMESTAMP,
-                notes = '{notes}'
+                notes = '{notes}',
                 completed = {completed}
             WHERE id = {id}
             """.format(**body, id=id)

@@ -1,4 +1,3 @@
-from chalicelib.schema import schema
 import os
 import boto3
 import sys
@@ -7,6 +6,7 @@ from chalice import Chalice, Response, CognitoUserPoolAuthorizer
 import json
 from datetime import datetime
 import logging
+from chalicelib.schema import schema
 
 app = Chalice(app_name='snl-inventory-app')
 

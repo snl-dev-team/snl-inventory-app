@@ -91,7 +91,8 @@ def create_material():
                     `count`,
                     `expiration_date`,
                     `price`,
-                    `units`
+                    `units`,
+                    `notes`
                 )
                 VALUES (
                     '{name}',
@@ -99,7 +100,8 @@ def create_material():
                     {count},
                     '{expiration_date}',
                     {price},
-                    '{units}'
+                    '{units}',
+                    '{notes}'
                 )
             """.format(**body)
 
@@ -281,14 +283,16 @@ def create_product():
                     `number`,
                     `count`,
                     `expiration_date`,
-                    `completed`
+                    `completed`,
+                    `notes`
                 )
                 VALUES (
                     '{name}',
                     '{number}',
                     {count},
                     '{expiration_date}',
-                    {completed}
+                    {completed},
+                    '{notes}'
                 )
             """.format(**body)
 
@@ -544,7 +548,8 @@ def create_case():
                     `count`,
                     `number`,
                     `expiration_date`,
-                    `shipped`
+                    `shipped`,
+                    `notes`
                 )
                 VALUES (
                     '{name}',
@@ -553,7 +558,8 @@ def create_case():
                     {count},
                     '{number}',
                     '{expiration_date}',
-                    {shipped}
+                    {shipped},
+                    '{notes}'
                 )
             """.format(**body)
 
@@ -841,10 +847,12 @@ def create_order():
         sql = """
             INSERT INTO
                 `order` (
-                    `number`
+                    `number`,
+                    `notes`
                 )
                 VALUES (
-                    '{number}'
+                    '{number}',
+                    '{notes}'
                 )
             """.format(**body)
 

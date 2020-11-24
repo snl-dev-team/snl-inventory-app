@@ -1667,7 +1667,88 @@ class Query(graphene.ObjectType):
         return rows[0] if rows else None
 
 
-class MaterialInput(graphene.InputObjectType):
+class InputObjectTypeBase(graphene.InputObjectType):
+
+    TYPE_MAP = [
+        {
+            'graphene': graphene.types.scalars.Int,
+            'caster': int,
+            'boto3': 'longValue',
+        },
+        {
+            'graphene': graphene.types.scalars.String,
+            'caster': str,
+            'boto3': 'stringValue',
+        },
+        {
+            'graphene': graphene.types.scalars.Float,
+            'caster': float,
+            'boto3': 'doubleValue',
+        },
+        {
+            'graphene': graphene.types.scalars.Boolean,
+            'caster': bool,
+            'boto3': 'booleanValue',
+        },
+        {
+            'graphene': graphene.types.datetime.Date,
+            'caster': date.fromisoformat,
+            'boto3': 'stringValue',
+        },
+        {
+            'graphene': graphene.types.datetime.DateTime,
+            'caster': datetime.fromisoformat,
+            'boto3': 'stringValue',
+        }
+    ]
+
+    def __init__(self, table_name, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.table_name = table_name
+
+    def get_sql_parameters(self):
+        parameters = []
+        types = type(self).__dict__
+        for name, value in self.__dict__.items():
+            curr_type = next(
+                (i for i in self.TYPE_MAP if isinstance(
+                    types[name], i['graphene'])),
+                None
+            )
+            if curr_type is not None:
+                parameters.append(
+                    {'name': name, 'value': {curr_type['boto3']: value}}
+                )
+
+        return parameters
+
+    @classmethod
+    def get_columns(cls):
+        columns = []
+        types = cls.__dict__
+        for name, type_ in types.items():
+            curr_type = next(
+                (i for i in cls.TYPE_MAP if isinstance(
+                    type_, i['graphene'])),
+                None
+            )
+            if curr_type is not None:
+                columns.append({
+                    'name': name,
+                    'caster': curr_type['caster'],
+                    'boto3': curr_type['boto3'],
+                })
+        return columns
+
+    @classmethod
+    def get_column_string(cls):
+        columns = cls.get_columns()
+        column_string = ',\n'.join(
+            [f"`{cls.__name__.lower()}`.`{c['name']}`" for c in columns])
+        return column_string
+
+
+class MaterialInput(InputObjectTypeBase):
     name = graphene.String(required=True)
     number = graphene.String(required=True)
     count = graphene.Float(required=True)
@@ -1675,6 +1756,9 @@ class MaterialInput(graphene.InputObjectType):
     price = graphene.Int(required=True)
     units = graphene.String(required=True)
     notes = graphene.String(required=True)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__('material', *args, **kwargs)
 
 
 class CreateMaterial(graphene.Mutation):
@@ -1685,16 +1769,10 @@ class CreateMaterial(graphene.Mutation):
 
     @staticmethod
     def mutate(parent, info, material):
-        sql = """
+        sql = f"""
         INSERT INTO
             `material` (
-                `name`,
-                `number`,
-                `count`,
-                `expiration_date`,
-                `price`,
-                `units`,
-                `notes`
+                {MaterialInput.get_column_string()}
             )
             VALUES (
                 :name,

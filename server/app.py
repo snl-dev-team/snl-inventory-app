@@ -214,13 +214,27 @@ def update_material(id):
 @app.route('/material/{id}', methods=['DELETE'], authorizer=authorizer)
 def delete_material(id):
     try:
-        sql = """
+        update_material_sql = """
             DELETE FROM
                 `material`
             WHERE id = {id}
             """.format(id=id)
 
-        execute_statement(sql)
+        update_product_uses_material_sql = """
+            DELETE FROM
+                `product_uses_material`
+            WHERE `material_id`={id}
+            """.format(id=id)
+
+        update_case_uses_material_sql = """
+            DELETE FROM
+                `case_uses_material`
+            WHERE `material_id`={id}
+            """.format(id=id)
+
+        execute_statement(update_product_uses_material_sql)
+        execute_statement(update_case_uses_material_sql)
+        execute_statement(update_material_sql)
 
         return Response(
             body=json.dumps({}),
@@ -238,12 +252,18 @@ PRODUCT_COLUMNS = [
     ('id',              int,   'longValue'),
     ('name',            str,   'stringValue'),
     ('number',          str,   'stringValue'),
-    ('count',           float, 'longValue'),
+    ('count',           int,   'longValue'),
     ('expiration_date', str,   'stringValue'),
     ('date_created',    str,   'stringValue'),
     ('date_modified',   str,   'stringValue'),
     ('completed',       bool,  'booleanValue'),
     ('notes',           str,   'stringValue')
+]
+
+PRODUCT_USES_MATERIAL_COLUMNS = [
+    ('product_id',      int,    'longValue'),
+    ('material_id',     int,    'longValue'),
+    ('count',           float,  'doubleValue')
 ]
 
 """
@@ -408,16 +428,59 @@ def update_product(id):
 @app.route('/product/{id}', methods=['DELETE'], authorizer=authorizer)
 def delete_product(id):
     try:
-        sql = """
+        update_product_sql = """
             DELETE FROM
                 `product`
             WHERE id = {id}
             """.format(id=id)
 
-        execute_statement(sql)
+        update_product_uses_material_sql = """
+            DELETE FROM
+                `product_uses_material`
+            WHERE `product_id`={id}
+            """.format(id=id)
+
+        update_case_uses_product_sql = """
+            DELETE FROM
+                `case_uses_product`
+            WHERE `product_id`={id}
+            """.format(id=id)
+
+        execute_statement(update_product_uses_material_sql)
+        execute_statement(update_case_uses_product_sql)
+        execute_statement(update_product_sql)
 
         return Response(
             body=json.dumps({}),
+            status_code=200,
+        )
+
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
+
+@app.route('/product/{id}/material', methods=['GET'])
+def fetch_product_uses_material(id):
+    columns_string = ', '.join(i[0] for i in PRODUCT_USES_MATERIAL_COLUMNS)
+    try:
+        sql = """
+            SELECT {columns}
+            FROM `product_uses_material`
+            WHERE `product_id`={id};
+        """.format(id=id, columns=columns_string)
+
+        res = execute_statement(sql)
+
+        data = process_select_response(res, PRODUCT_USES_MATERIAL_COLUMNS)
+        res_obj = {}
+
+        for r in data:
+            res_obj[r['material_id']] = r['count']
+
+        return Response(
+            body=json.dumps(res_obj),
             status_code=200,
         )
 
@@ -433,20 +496,26 @@ def product_use_material(id):
     try:
         body = app.current_request.json_body
 
-        sql = """
-            REPLACE INTO `product_uses_material` (
-                `product_id`,
-                `material_id`,
-                `count`
-            )
-            VALUES (
-                {id},
-                {material_id},
-                {count}
-            )
+        update_material_sql = """
+            UPDATE `material` SET `count` = CASE
+                WHEN {count} > (SELECT IFNULL((SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND `material_id`={material_id}), 0)) AND (SELECT IFNULL((SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND`material_id`={material_id}), 0)) > 0 THEN `count` - ({count} - (SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND`material_id`={material_id}))
+
+                WHEN {count} > (SELECT IFNULL((SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND `material_id`={material_id}), 0)) AND (SELECT IFNULL((SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND `material_id`={material_id}), 0)) = 0 THEN `count` - {count}
+
+                WHEN {count} < (SELECT IFNULL((SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND `material_id`={material_id}), 0)) AND (SELECT IFNULL((SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND `material_id`={material_id}), 0)) > 0 THEN `count` + ((SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND `material_id`={material_id}) - {count})
+
+                END
+            WHERE `id`={material_id};
             """.format(**body, id=id)
 
-        execute_statement(sql)
+        update_product_uses_material_sql = """
+            REPLACE INTO `product_uses_material` 
+                    (`product_id`,`material_id`, `count`)
+                    VALUES ({id}, {material_id}, {count});
+        """.format(**body, id=id)
+
+        execute_statement(update_material_sql)
+        execute_statement(update_product_uses_material_sql)
 
         return Response(
             body=json.dumps({}),
@@ -464,15 +533,20 @@ def product_use_material(id):
 def product_unuse_material(id):
     try:
         body = app.current_request.json_body
-        sql = """
-            DELETE FROM
-                `product_uses_material`
-            WHERE
-                `product_id` = {id},
-                `material_id` = {material_id}
-            """.format(**body, id=id)
+        
+        update_material_sql = """
+            UPDATE `material` 
+            SET `count` = `count` + (SELECT IFNULL((SELECT `count` FROM `product_uses_material` WHERE `product_id`={id} AND `material_id`={material_id}), 0))
+            WHERE `id`={material_id};
+        """.format(**body, id=id)
 
-        execute_statement(sql)
+        update_product_uses_material_sql = """
+            DELETE FROM `product_uses_material`
+            WHERE `product_id`={id} AND `material_id`={material_id};
+        """.format(**body, id=id)
+
+        execute_statement(update_material_sql)
+        execute_statement(update_product_uses_material_sql)
 
         return Response(
             body=json.dumps({}),
@@ -491,13 +565,25 @@ CASE_COLUMNS = [
     ('name',            str,   'stringValue'),
     ('product_name',    str,   'stringValue'),
     ('product_count',   int,   'longValue'),
-    ('count',           float, 'longValue'),
+    ('count',           int,   'longValue'),
     ('number',          str,   'stringValue'),
     ('expiration_date', str,   'stringValue'),
     ('date_created',    str,   'stringValue'),
     ('date_modified',   str,   'stringValue'),
     ('shipped',         bool,  'booleanValue'),
     ('notes',           str,   'stringValue')
+]
+
+CASE_USE_MATERIAL_COLUMNS = [
+    ('case_id',         int,    'longValue'),
+    ('material_id',     int,    'longValue'),
+    ('count',           float,  'doubleValue')
+]
+
+CASE_USE_PRODUCT_COLUMNS = [
+    ('case_id',         int,    'longValue'),
+    ('product_id',      int,    'longValue'),
+    ('count',           int,    'longValue')
 ]
 
 """
@@ -675,13 +761,34 @@ def update_case(id):
 @app.route('/case/{id}', methods=['DELETE'], authorizer=authorizer)
 def delete_case(id):
     try:
-        sql = """
+        update_case_sql = """
             DELETE FROM
                 `case`
             WHERE id = {id}
             """.format(id=id)
 
-        execute_statement(sql)
+        update_case_uses_material_sql = """
+            DELETE FROM
+                `case_uses_material`
+            WHERE `case_id`={id}
+            """.format(id=id)
+
+        update_case_uses_product_sql = """
+            DELETE FROM
+                `case_uses_product`
+            WHERE `case_id`={id}
+            """.format(id=id)
+
+        update_order_uses_case_sql = """
+            DELETE FROM
+                `order_uses_case`
+            WHERE `case_id`={id}
+            """.format(id=id)
+
+        execute_statement(update_case_uses_material_sql)
+        execute_statement(update_case_uses_product_sql)
+        execute_statement(update_order_uses_case_sql)
+        execute_statement(update_case_sql)
 
         return Response(
             body=json.dumps({}),
@@ -694,26 +801,60 @@ def delete_case(id):
             status_code=400,
         )
 
+@app.route('/case/{id}/material', methods=['GET'])
+def fetch_case_uses_material(id):
+    columns_string = ', '.join(i[0] for i in CASE_USE_MATERIAL_COLUMNS)
+    try:
+        sql = """
+            SELECT {columns}
+            FROM `case_uses_material`
+            WHERE `case_id`={id};
+        """.format(id=id, columns=columns_string)
+
+        res = execute_statement(sql)
+
+        data = process_select_response(res, CASE_USE_MATERIAL_COLUMNS)
+        res_obj = {}
+
+        for r in data:
+            res_obj[r['material_id']] = r['count']
+
+        return Response(
+            body=json.dumps(res_obj),
+            status_code=200,
+        )
+
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 @app.route('/case/{id}/material', methods=['PUT'], authorizer=authorizer)
 def case_use_material(id):
     try:
         body = app.current_request.json_body
 
-        sql = """
-            REPLACE INTO `case_uses_material` (
-                `case_id`,
-                `material_id`,
-                `count`
-            )
-            VALUES (
-                {id},
-                {material_id},
-                {count}
-            )
-            """.format(**body, id=id)
+        update_material_sql = """
+            UPDATE `material` SET `count` = CASE
+                WHEN {count} > (SELECT IFNULL((SELECT `count` FROM `case_uses_material` WHERE `case_id`={id} AND `material_id`={material_id}), 0)) AND (SELECT IFNULL((SELECT `count` FROM `case_uses_material` WHERE `case_id`={id} AND`material_id`={material_id}), 0)) > 0 THEN `count` - ({count} - (SELECT `count` FROM `case_uses_material` WHERE `case_id`={id} AND`material_id`={material_id}))
 
-        execute_statement(sql)
+                WHEN {count} > (SELECT IFNULL((SELECT `count` FROM `case_uses_material` WHERE `case_id`={id} AND `material_id`={material_id}), 0)) AND (SELECT IFNULL((SELECT `count` FROM `case_uses_material` WHERE `case_id`={id} AND `material_id`={material_id}), 0)) = 0 THEN `count` - {count}
+
+                WHEN {count} < (SELECT IFNULL((SELECT `count` FROM `case_uses_material` WHERE `case_id`={id} AND `material_id`={material_id}), 0)) AND (SELECT IFNULL((SELECT `count` FROM `case_uses_material` WHERE `case_id`={id} AND `material_id`={material_id}), 0)) > 0 THEN `count` + ((SELECT `count` FROM `case_uses_material` WHERE `case_id`={id} AND `material_id`={material_id}) - {count})
+
+                END
+            WHERE `id`={material_id};
+        """.format(**body, id=id)
+
+        update_case_uses_material_sql = """
+            REPLACE INTO `case_uses_material` 
+                (`case_id`,`material_id`, `count`)
+                VALUES ({id}, {material_id}, {count});
+        """.format(**body, id=id)
+
+        execute_statement(update_material_sql)
+        execute_statement(update_case_uses_material_sql)
 
         return Response(
             body=json.dumps({}),
@@ -731,15 +872,19 @@ def case_use_material(id):
 def case_unuse_material(id):
     try:
         body = app.current_request.json_body
-        sql = """
-            DELETE FROM
-                `case_uses_material`
-            WHERE
-                `case_id` = {id},
-                `material_id` = {material_id}
+        update_material_sql = """
+                UPDATE `material` 
+                SET `count` = `count` + (SELECT IFNULL((SELECT `count` FROM `case_uses_material` WHERE `case_id`={id} AND `material_id`={material_id}), 0))
+                WHERE `id`={material_id};
             """.format(**body, id=id)
 
-        execute_statement(sql)
+        update_case_uses_material_sql = """
+            DELETE FROM `case_uses_material`
+            WHERE `case_id`={id} AND `material_id`={material_id};
+        """.format(**body, id=id)
+
+        execute_statement(update_material_sql)
+        execute_statement(update_case_uses_material_sql)
 
         return Response(
             body=json.dumps({}),
@@ -752,25 +897,77 @@ def case_unuse_material(id):
             status_code=400,
         )
 
+@app.route('/case/{id}/product', methods=['GET'])
+def fetch_case_uses_product(id):
+    columns_string = ', '.join(i[0] for i in CASE_USE_PRODUCT_COLUMNS)
+    try:
+        sql = """
+            SELECT {columns}
+            FROM `case_uses_product`
+            WHERE `case_id`={id};
+        """.format(id=id, columns=columns_string)
+
+        res = execute_statement(sql)
+
+        data = process_select_response(res, CASE_USE_PRODUCT_COLUMNS)
+        res_obj = {}
+
+        for r in data:
+            res_obj[r['product_id']] = r['count']
+
+        return Response(
+            body=json.dumps(res_obj),
+            status_code=200,
+        )
+
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
+
+        data = process_select_response(res, CASE_USE_PRODUCT_COLUMNS)
+        res_obj = {}
+
+        for r in data:
+            res_obj[r['product_id']] = r['count']
+
+        return Response(
+            body=json.dumps(res_obj),
+            status_code=200,
+        )
+
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 @app.route('/case/{id}/product', methods=['PUT'], authorizer=authorizer)
 def case_use_product(id):
     try:
         body = app.current_request.json_body
-        sql = """
-            REPLACE INTO `case_uses_product` (
-                `case_id`,
-                `product_id`,
-                `count`
-            )
-            VALUES (
-                {id},
-                {product_id},
-                {count}
-            )
-            """.format(**body, id=id)
+        
+        update_product_sql = """
+            UPDATE `product` SET `count` = CASE
+                WHEN {count} > (SELECT IFNULL((SELECT `count` FROM `case_uses_product` WHERE `case_id`={id} AND `product_id`={product_id}), 0)) AND (SELECT IFNULL((SELECT `count` FROM `case_uses_product` WHERE `case_id`={id} AND`product_id`={product_id}), 0)) > 0 THEN `count` - ({count} - (SELECT `count` FROM `case_uses_product` WHERE `case_id`={id} AND`product_id`={product_id}))
 
-        execute_statement(sql)
+                WHEN {count} > (SELECT IFNULL((SELECT `count` FROM `case_uses_product` WHERE `case_id`={id} AND `product_id`={product_id}), 0)) AND (SELECT IFNULL((SELECT `count` FROM `case_uses_product` WHERE `case_id`={id} AND `product_id`={product_id}), 0)) = 0 THEN `count` - {count}
+
+                WHEN {count} < (SELECT IFNULL((SELECT `count` FROM `case_uses_product` WHERE `case_id`={id} AND `product_id`={product_id}), 0)) AND (SELECT IFNULL((SELECT `count` FROM `case_uses_product` WHERE `case_id`={id} AND `product_id`={product_id}), 0)) > 0 THEN `count` + ((SELECT `count` FROM `case_uses_product` WHERE `case_id`={id} AND `product_id`={product_id}) - {count})
+
+                END
+            WHERE `id`={product_id};
+        """.format(**body, id=id)
+
+        update_case_uses_product_sql = """
+            REPLACE INTO `case_uses_product` 
+                (`case_id`,`product_id`, `count`)
+                VALUES ({id}, {product_id}, {count});
+        """.format(**body, id=id)
+
+        execute_statement(update_product_sql)
+        execute_statement(update_case_uses_product_sql)
 
         return Response(
             body=json.dumps({}),
@@ -788,15 +985,20 @@ def case_use_product(id):
 def case_unuse_product(id):
     try:
         body = app.current_request.json_body
-        sql = """
-            DELETE FROM
-                `case_uses_product`
-            WHERE
-                `case_id` = {id},
-                `product_id` = {product_id}
-            """.format(**body, id=id)
 
-        execute_statement(sql)
+        update_product_sql = """ 
+            UPDATE `product` 
+            SET `count` = `count` + (SELECT IFNULL((SELECT `count` FROM `case_uses_product` WHERE `case_id`={id} AND `product_id`={product_id}), 0))
+            WHERE `id`={product_id};
+        """.format(**body, id=id)
+
+        update_case_uses_product_sql = """ 
+            DELETE FROM `case_uses_product`
+            WHERE `case_id`={id} AND `product_id`={product_id};
+        """.format(**body, id=id)
+
+        execute_statement(update_product_sql)
+        execute_statement(update_case_uses_product_sql)
 
         return Response(
             body=json.dumps({}),
@@ -817,6 +1019,12 @@ ORDER_COLUMNS = [
     ('date_modified',   str,   'stringValue'),
     ('notes',           str,   'stringValue'),
     ('completed',       bool,  'booleanValue')
+]
+
+ORDER_USE_CASE_COLUMNS = [
+    ('order_id',        int,    'longValue'),
+    ('case_id',         int,    'longValue'),
+    ('count',           int,    'longValue')
 ]
 
 """
@@ -965,13 +1173,26 @@ def update_order(id):
 @app.route('/order/{id}', methods=['DELETE'], authorizer=authorizer)
 def delete_order(id):
     try:
-        sql = """
+        update_order_sql = """
             DELETE FROM
                 `order`
-            WHERE id = {id}
+            WHERE id = {id};
             """.format(id=id)
 
-        execute_statement(sql)
+        update_case_sql = """
+                UPDATE `case` 
+                SET `count` = `count` + (SELECT IFNULL((SELECT `count` FROM `order_uses_case` WHERE `order_id`={id} AND `case_id`={case_id}), 0))
+                WHERE `id`={case_id};
+            """.format(id=id)
+
+        update_order_uses_case_sql = """
+                DELETE FROM `order_uses_case`
+                WHERE `order_id`={id} AND `case_id`={case_id};
+            """.format(id=id)
+
+        execute_statement(update_case_sql)
+        execute_statement(update_order_uses_case_sql)
+        execute_statement(update_order_sql)
 
         return Response(
             body=json.dumps({}),
@@ -984,26 +1205,66 @@ def delete_order(id):
             status_code=400,
         )
 
+@app.route('/order/{id}/case', methods=['GET'])
+def fetch_order_uses_case(id):
+    columns_string = ', '.join(i[0] for i in ORDER_USE_CASE_COLUMNS)
+    try:
+        sql = """
+            SELECT {columns}
+            FROM `order_uses_case`
+            WHERE `order_id`={id};
+        """.format(id=id, columns=columns_string)
+
+        res = execute_statement(sql)
+
+        data = process_select_response(res, ORDER_USE_CASE_COLUMNS)
+        res_obj = {}
+
+        for r in data:
+            res_obj[r['case_id']] = r['count']
+
+        return Response(
+            body=json.dumps(res_obj),
+            status_code=200,
+        )
+
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
+
+    except Exception as e:
+        return Response(
+            body=json.dumps({'message': str(e)}),
+            status_code=400,
+        )
 
 @app.route('/order/{id}/case', methods=['PUT'], authorizer=authorizer)
 def order_use_case(id):
     try:
         body = app.current_request.json_body
 
-        sql = """
-            REPLACE INTO `order_uses_case` (
-                `order_id`,
-                `case_id`,
-                `count`
-            )
-            VALUES (
-                {id},
-                {case_id},
-                {count}
-            )
-            """.format(**body, id=id)
+        update_case_sql = """
+            UPDATE `case` SET `count` = CASE
+                WHEN {count} > (SELECT IFNULL((SELECT `count` FROM `order_uses_case` WHERE `order_id`={id} AND `case_id`={case_id}), 0)) AND (SELECT IFNULL((SELECT `count` FROM `order_uses_case` WHERE `order_id`={id} AND`case_id`={case_id}), 0)) > 0 THEN `count` - ({count} - (SELECT `count` FROM `order_uses_case` WHERE `order_id`={id} AND`case_id`={case_id}))
 
-        execute_statement(sql)
+                WHEN {count} > (SELECT IFNULL((SELECT `count` FROM `order_uses_case` WHERE `order_id`={id} AND `case_id`={case_id}), 0)) AND (SELECT IFNULL((SELECT `count` FROM `order_uses_case` WHERE `order_id`={id} AND `case_id`={case_id}), 0)) = 0 THEN `count` - {count}
+
+                WHEN {count} < (SELECT IFNULL((SELECT `count` FROM `order_uses_case` WHERE `order_id`={id} AND `case_id`={case_id}), 0)) AND (SELECT IFNULL((SELECT `count` FROM `order_uses_case` WHERE `order_id`={id} AND `case_id`={case_id}), 0)) > 0 THEN `count` + ((SELECT `count` FROM `order_uses_case` WHERE `order_id`={id} AND `case_id`={case_id}) - {count})
+
+                END
+            WHERE `id`={case_id};
+        """.format(**body, id=id)
+
+        update_order_uses_case_sql = """
+            REPLACE INTO `order_uses_case` 
+                (`order_id`,`case_id`, `count`)
+                VALUES ({id}, {case_id}, {count});
+        """.format(**body, id=id)
+
+        execute_statement(update_case_sql)
+        execute_statement(update_order_uses_case_sql)
 
         return Response(
             body=json.dumps({}),
@@ -1021,15 +1282,20 @@ def order_use_case(id):
 def order_unuse_case(id):
     try:
         body = app.current_request.json_body
-        sql = """
-            DELETE FROM
-                `order_uses_case`
-            WHERE
-                `order_id` = {id},
-                `case_id` = {material_id}
+
+        update_case_sql = """
+                UPDATE `case` 
+                SET `count` = `count` + (SELECT IFNULL((SELECT `count` FROM `order_uses_case` WHERE `order_id`={id} AND `case_id`={case_id}), 0))
+                WHERE `id`={case_id};
             """.format(**body, id=id)
 
-        execute_statement(sql)
+        update_order_uses_case_sql = """
+                DELETE FROM `order_uses_case`
+                WHERE `order_id`={id} AND `case_id`={case_id};
+            """.format(**body, id=id)
+
+        execute_statement(update_case_sql)
+        execute_statement(update_order_uses_case_sql)
 
         return Response(
             body=json.dumps({}),

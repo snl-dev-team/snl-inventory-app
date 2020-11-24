@@ -1,17 +1,10 @@
-/* eslint-disable import/named */
-import {
-  FETCH_ORDERS,
-  FETCH_ORDER,
-  CREATE_ORDER,
-  UPDATE_ORDER,
-  DELETE_ORDER,
-} from '../actions/order';
+import * as actions from '../constants/orderActionTypes';
 
 const orderReducer = (state = {}, action) => {
   const { type, payload, meta } = action;
 
   switch (type) {
-    case `${FETCH_ORDERS}_FULFILLED`:
+    case `${actions.FETCH_ORDERS}_FULFILLED`:
       return {
         ...state,
         ...payload.reduce((acc, curr) => {
@@ -20,13 +13,14 @@ const orderReducer = (state = {}, action) => {
             number: curr.number,
             dateCreated: curr.date_created,
             dateModified: curr.date_modified,
+            cases: {},
             notes: curr.notes,
             completed: curr.completed,
           };
           return acc;
         }, {}),
       };
-    case `${FETCH_ORDER}_FULFILLED`:
+    case `${actions.FETCH_ORDER}_FULFILLED`:
       return {
         ...state,
         [payload.id]: {
@@ -34,17 +28,19 @@ const orderReducer = (state = {}, action) => {
           number: payload.number,
           dateCreated: payload.date_created,
           dateModified: payload.date_modified,
+          cases: {},
           notes: payload.notes,
           completed: payload.completed,
         },
       };
 
-    case `${CREATE_ORDER}_FULFILLED`: {
+    case `${actions.CREATE_ORDER}_FULFILLED`: {
       const { order } = meta;
 
       return {
         ...state,
         [payload.id]: {
+          cases: {},
           notes: '',
           completed: false,
           ...order,
@@ -55,12 +51,13 @@ const orderReducer = (state = {}, action) => {
       };
     }
 
-    case `${UPDATE_ORDER}_FULFILLED`: {
+    case `${actions.UPDATE_ORDER}_FULFILLED`: {
       const { order } = meta;
 
       return {
         ...state,
         [order.id]: {
+          cases: {},
           ...state[order.id],
           ...order,
           dateModified: payload.date_modified,
@@ -68,11 +65,57 @@ const orderReducer = (state = {}, action) => {
       };
     }
 
-    case `${DELETE_ORDER}_FULFILLED`: {
+    case `${actions.DELETE_ORDER}_FULFILLED`: {
       const { id } = meta;
       const deleteState = Object.assign(state);
       delete deleteState[id];
       return deleteState;
+    }
+
+    case `${actions.FETCH_ORDER_USES_CASE}_FULFILLED`: {
+      const { orderId } = meta;
+
+      return {
+        ...state,
+        [orderId]: {
+          ...state[orderId],
+          cases: {
+            ...payload.reduce((acc, curr) => {
+              acc[curr.case_id] = curr.count;
+              return acc;
+            }, {}),
+          },
+        },
+      };
+    }
+
+    case `${actions.ORDER_USE_CASE}_FULFILLED`: {
+      const { orderId, caseId, count } = meta;
+      return {
+        ...state,
+        [orderId]: {
+          ...state[orderId],
+          cases: {
+            ...state[orderId].cases,
+            [caseId]: count,
+          },
+        },
+      };
+    }
+
+    case `${actions.ORDER_UNUSE_CASE}_FULFILLED`: {
+      const { orderId, caseId } = meta;
+
+      return {
+        ...state,
+        [orderId]: {
+          ...state[orderId],
+          cases: {
+            ...state[orderId].cases,
+            [caseId]: undefined,
+          },
+        },
+      };
     }
 
     default:

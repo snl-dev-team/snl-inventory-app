@@ -1,12 +1,4 @@
-import {
-  SIGN_IN,
-  SIGN_OUT,
-  SIGN_UP,
-  CONFIRM_SIGN_UP,
-  FORGOT_PASSWORD,
-  FORGOT_PASSWORD_AND_SUBMIT,
-  RESEND_CODE,
-} from '../actions/user';
+import * as actions from '../constants/userActionTypes';
 
 const INITIAL_STATE = {
   isAuthorized: false,
@@ -20,7 +12,7 @@ const INITIAL_STATE = {
 const userReducer = (state = INITIAL_STATE, action) => {
   const { type, payload, meta } = action;
   switch (type) {
-    case `${SIGN_UP}_FULFILLED`:
+    case `${actions.SIGN_UP}_FULFILLED`:
       return {
         isAuthorized: false,
         token: null,
@@ -29,7 +21,7 @@ const userReducer = (state = INITIAL_STATE, action) => {
         info: null,
         success: null,
       };
-    case `${SIGN_UP}_REJECTED`:
+    case `${actions.SIGN_UP}_REJECTED`:
       return {
         isAuthorized: false,
         token: null,
@@ -39,7 +31,7 @@ const userReducer = (state = INITIAL_STATE, action) => {
         success: null,
       };
 
-    case `${CONFIRM_SIGN_UP}_FULFILLED`:
+    case `${actions.CONFIRM_SIGN_UP}_FULFILLED`:
       return {
         isAuthorized: false,
         token: null,
@@ -48,7 +40,7 @@ const userReducer = (state = INITIAL_STATE, action) => {
         info: null,
         success: 'Sign up successful!',
       };
-    case `${CONFIRM_SIGN_UP}_REJECTED`:
+    case `${actions.CONFIRM_SIGN_UP}_REJECTED`:
       return {
         isAuthorized: false,
         token: null,
@@ -59,7 +51,7 @@ const userReducer = (state = INITIAL_STATE, action) => {
         success: null,
       };
 
-    case `${SIGN_IN}_FULFILLED`:
+    case `${actions.SIGN_IN}_FULFILLED`:
       return {
         isAuthorized: true,
         token: payload.signInUserSession.idToken.jwtToken,
@@ -68,7 +60,7 @@ const userReducer = (state = INITIAL_STATE, action) => {
         info: null,
         success: null,
       };
-    case `${SIGN_IN}_REJECTED`:
+    case `${actions.SIGN_IN}_REJECTED`:
       return {
         isAuthorized: false,
         token: null,
@@ -78,7 +70,7 @@ const userReducer = (state = INITIAL_STATE, action) => {
         success: null,
       };
 
-    case `${FORGOT_PASSWORD}_FULFILLED`:
+    case `${actions.FORGOT_PASSWORD}_FULFILLED`:
       return {
         isAuthorized: false,
         token: null,
@@ -87,7 +79,7 @@ const userReducer = (state = INITIAL_STATE, action) => {
         info: null,
         success: null,
       };
-    case `${FORGOT_PASSWORD}_REJECTED`:
+    case `${actions.FORGOT_PASSWORD}_REJECTED`:
       return {
         isAuthorized: false,
         token: null,
@@ -97,7 +89,7 @@ const userReducer = (state = INITIAL_STATE, action) => {
         success: null,
       };
 
-    case `${FORGOT_PASSWORD_AND_SUBMIT}_FULFILLED`:
+    case `${actions.FORGOT_PASSWORD_AND_SUBMIT}_FULFILLED`:
       return {
         isAuthorized: false,
         token: null,
@@ -106,7 +98,7 @@ const userReducer = (state = INITIAL_STATE, action) => {
         info: null,
         success: 'Password has been reset!',
       };
-    case `${FORGOT_PASSWORD_AND_SUBMIT}_REJECTED`:
+    case `${actions.FORGOT_PASSWORD_AND_SUBMIT}_REJECTED`:
       return {
         isAuthorized: false,
         token: null,
@@ -116,7 +108,7 @@ const userReducer = (state = INITIAL_STATE, action) => {
         success: null,
       };
 
-    case `${RESEND_CODE}_FULFILLED`:
+    case `${actions.RESEND_CODE}_FULFILLED`:
       return {
         isAuthorized: false,
         token: null,
@@ -126,7 +118,7 @@ const userReducer = (state = INITIAL_STATE, action) => {
         success: `A new code has been sent to ${meta.email}.`,
       };
 
-    case `${RESEND_CODE}_REJECTED`:
+    case `${actions.RESEND_CODE}_REJECTED`:
       return {
         isAuthorized: false,
         token: null,

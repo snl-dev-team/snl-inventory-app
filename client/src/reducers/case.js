@@ -1,16 +1,10 @@
-import {
-  FETCH_CASES,
-  FETCH_CASE,
-  CREATE_CASE,
-  UPDATE_CASE,
-  DELETE_CASE,
-} from '../actions/case';
+import * as actions from '../constants/caseActionTypes';
 
 const caseReducer = (state = {}, action) => {
   const { type, payload, meta } = action;
 
   switch (type) {
-    case `${FETCH_CASES}_FULFILLED`:
+    case `${actions.FETCH_CASES}_FULFILLED`:
       return {
         ...state,
         ...payload.reduce((acc, curr) => {
@@ -25,15 +19,19 @@ const caseReducer = (state = {}, action) => {
             shipped: curr.shipped,
             dateCreated: curr.date_created,
             dateModified: curr.date_modified,
+            materials: {},
+            products: {},
             notes: curr.notes,
           };
           return acc;
         }, {}),
       };
-    case `${FETCH_CASE}_FULFILLED`:
+    case `${actions.FETCH_CASE}_FULFILLED`:
       return {
         ...state,
         [payload.id]: {
+          materials: {},
+          products: {},
           ...payload,
           id: payload.id,
           name: payload.name,
@@ -49,12 +47,14 @@ const caseReducer = (state = {}, action) => {
         },
       };
 
-    case `${CREATE_CASE}_FULFILLED`: {
+    case `${actions.CREATE_CASE}_FULFILLED`: {
       const { case_ } = meta;
 
       return {
         ...state,
         [payload.id]: {
+          materials: {},
+          products: {},
           notes: '',
           ...case_,
           id: payload.id,
@@ -64,12 +64,14 @@ const caseReducer = (state = {}, action) => {
       };
     }
 
-    case `${UPDATE_CASE}_FULFILLED`: {
+    case `${actions.UPDATE_CASE}_FULFILLED`: {
       const { case_ } = meta;
 
       return {
         ...state,
         [case_.id]: {
+          materials: {},
+          products: {},
           ...state[case_.id],
           ...case_,
           dateModified: payload.date_modified,
@@ -77,11 +79,105 @@ const caseReducer = (state = {}, action) => {
       };
     }
 
-    case `${DELETE_CASE}_FULFILLED`: {
+    case `${actions.DELETE_CASE}_FULFILLED`: {
       const { id } = meta;
       const deleteState = Object.assign(state);
       delete deleteState[id];
       return deleteState;
+    }
+
+    case `${actions.FETCH_CASE_USES_MATERIAL}_FULFILLED`: {
+      const { caseId } = meta;
+
+      return {
+        ...state,
+        [caseId]: {
+          ...state[caseId],
+          materials: {
+            ...payload.reduce((acc, curr) => {
+              acc[curr.material_id] = curr.count;
+              return acc;
+            }, {}),
+          },
+        },
+      };
+    }
+
+    case `${actions.CASE_USE_MATERIAL}_FULFILLED`: {
+      const { caseId, materialId, count } = meta;
+
+      return {
+        ...state,
+        [caseId]: {
+          ...state[caseId],
+          materials: {
+            ...state[caseId].materials,
+            [materialId]: count,
+          },
+        },
+      };
+    }
+
+    case `${actions.CASE_UNUSE_MATERIAL}_FULFILLED`: {
+      const { caseId, materialId } = meta;
+
+      return {
+        ...state,
+        [caseId]: {
+          ...state[caseId],
+          materials: {
+            ...state[caseId].materials,
+            [materialId]: undefined,
+          },
+        },
+      };
+    }
+
+    case `${actions.FETCH_CASE_USES_PRODUCT}_FULFILLED`: {
+      const { caseId } = meta;
+
+      return {
+        ...state,
+        [caseId]: {
+          ...state[caseId],
+          products: {
+            ...payload.reduce((acc, curr) => {
+              acc[curr.product_id] = curr.count;
+              return acc;
+            }, {}),
+          },
+        },
+      };
+    }
+
+    case `${actions.CASE_USE_PRODUCT}_FULFILLED`: {
+      const { caseId, productId, count } = meta;
+
+      return {
+        ...state,
+        [caseId]: {
+          ...state[caseId],
+          products: {
+            ...state[caseId].products,
+            [productId]: count,
+          },
+        },
+      };
+    }
+
+    case `${actions.CASE_UNUSE_PRODUCT}_FULFILLED`: {
+      const { caseId, productId } = meta;
+
+      return {
+        ...state,
+        [caseId]: {
+          ...state[caseId],
+          products: {
+            ...state[caseId].products,
+            [productId]: undefined,
+          },
+        },
+      };
     }
 
     default:

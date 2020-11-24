@@ -1,14 +1,9 @@
 import axios from 'axios';
 import { URL } from '../constants/url';
-
-export const CREATE_ORDER = 'CREATE_ORDER';
-export const FETCH_ORDERS = 'FETCH_ORDERS';
-export const FETCH_ORDER = 'FETCH_ORDER';
-export const UPDATE_ORDER = 'UPDATE_ORDER';
-export const DELETE_ORDER = 'DELETE_ORDER';
+import * as actions from '../constants/orderActionTypes';
 
 export const createOrder = (order, token) => ({
-  type: CREATE_ORDER,
+  type: actions.CREATE_ORDER,
   payload: axios
     .post(
       `${URL}/order`,
@@ -28,7 +23,7 @@ export const createOrder = (order, token) => ({
 });
 
 export const fetchOrders = (token) => ({
-  type: FETCH_ORDERS,
+  type: actions.FETCH_ORDERS,
   payload: axios
     .get(
       `${URL}/order`,
@@ -41,7 +36,7 @@ export const fetchOrders = (token) => ({
     .then((res) => res.data.data),
 });
 export const fetchOrder = (id, token) => ({
-  type: FETCH_ORDER,
+  type: actions.FETCH_ORDER,
   payload: axios
     .get(
       `${URL}/order/${id}`,
@@ -55,7 +50,7 @@ export const fetchOrder = (id, token) => ({
 });
 
 export const updateOrder = (order, token) => ({
-  type: UPDATE_ORDER,
+  type: actions.UPDATE_ORDER,
   payload: axios
     .put(
       `${URL}/order/${order.id}`,
@@ -76,7 +71,7 @@ export const updateOrder = (order, token) => ({
 });
 
 export const deleteOrder = (id, token) => ({
-  type: DELETE_ORDER,
+  type: actions.DELETE_ORDER,
   payload: axios.delete(
     `${URL}/order/${id}`,
     {
@@ -86,4 +81,51 @@ export const deleteOrder = (id, token) => ({
     },
   ),
   meta: { id },
+});
+
+export const fetchOrderUsesCase = (orderId, token) => ({
+  type: actions.FETCH_ORDER_USES_CASE,
+  payload: axios.get(
+    `${URL}/order/${orderId}/case`,
+    {
+      headers: {
+        Authorization: token,
+      },
+    },
+  ),
+  meta: { orderId },
+});
+
+export const orderUseCase = (orderId, caseId, count, token) => ({
+  type: actions.ORDER_USE_CASE,
+  payload: axios.put(
+    `${URL}/order/${orderId}/case`,
+    {
+      case_id: caseId,
+      count,
+    },
+    {
+      headers: {
+        Authorization: token,
+        'content-type': 'application/json',
+      },
+    },
+  ).then((res) => res.data),
+  meta: { orderId, caseId, count },
+});
+
+export const orderUnuseCase = (orderId, caseId, token) => ({
+  type: actions.ORDER_UNUSE_CASE,
+  payload: axios.delete(
+    `${URL}/order/${orderId}/case`,
+    {
+      case_id: caseId,
+    },
+    {
+      headers: {
+        Authorization: token,
+      },
+    },
+  ).then((res) => res.data),
+  meta: { orderId, caseId },
 });

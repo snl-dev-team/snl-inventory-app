@@ -1,15 +1,10 @@
-import {
-  FETCH_PRODUCTS,
-  CREATE_PRODUCT,
-  UPDATE_PRODUCT,
-  DELETE_PRODUCT,
-} from '../actions/product';
+import * as actions from '../constants/productActionTypes';
 
 const productReducer = (state = {}, action) => {
   const { type, payload, meta } = action;
 
   switch (type) {
-    case `${FETCH_PRODUCTS}_FULFILLED`:
+    case `${actions.FETCH_PRODUCTS}_FULFILLED`:
       return {
         ...state,
         ...payload.reduce((acc, curr) => {
@@ -22,18 +17,20 @@ const productReducer = (state = {}, action) => {
             completed: curr.completed,
             dateCreated: curr.date_created,
             dateModified: curr.date_modified,
+            materials: {},
             notes: curr.notes,
           };
           return acc;
         }, {}),
       };
 
-    case `${CREATE_PRODUCT}_FULFILLED`: {
+    case `${actions.CREATE_PRODUCT}_FULFILLED`: {
       const { product } = meta;
 
       return {
         ...state,
         [payload.id]: {
+          materials: {},
           notes: '',
           ...product,
           id: payload.id,
@@ -43,12 +40,13 @@ const productReducer = (state = {}, action) => {
       };
     }
 
-    case `${UPDATE_PRODUCT}_FULFILLED`: {
+    case `${actions.UPDATE_PRODUCT}_FULFILLED`: {
       const { product } = meta;
 
       return {
         ...state,
         [product.id]: {
+          materials: {},
           ...state[product.id],
           ...product,
           dateModified: payload.date_modified,
@@ -56,11 +54,57 @@ const productReducer = (state = {}, action) => {
       };
     }
 
-    case `${DELETE_PRODUCT}_FULFILLED`: {
+    case `${actions.DELETE_PRODUCT}_FULFILLED`: {
       const { id } = meta;
       const deleteState = Object.assign(state);
       delete deleteState[id];
       return deleteState;
+    }
+
+    case `${actions.FETCH_PRODUCT_USES_MATERIAL}_FULFILLED`: {
+      const { productId } = meta;
+
+      return {
+        ...state,
+        [productId]: {
+          ...state[productId],
+          materials: {
+            ...payload.reduce((acc, curr) => {
+              acc[curr.material_id] = curr.count;
+              return acc;
+            }, {}),
+          },
+        },
+      };
+    }
+
+    case `${actions.PRODUCT_USE_MATERIAL}_FULFILLED`: {
+      const { productId, materialId, count } = meta;
+      return {
+        ...state,
+        [productId]: {
+          ...state[productId],
+          materials: {
+            ...state[productId].materials,
+            [materialId]: count,
+          },
+        },
+      };
+    }
+
+    case `${actions.PRODUCT_UNUSE_MATERIAL}_FULFILLED`: {
+      const { productId, materialId } = meta;
+
+      return {
+        ...state,
+        [productId]: {
+          ...state[productId],
+          materials: {
+            ...state[productId].materials,
+            [materialId]: undefined,
+          },
+        },
+      };
     }
 
     default:

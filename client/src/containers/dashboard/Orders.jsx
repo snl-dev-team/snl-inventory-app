@@ -24,15 +24,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const OrdersDashboard = ({ searchString = '' }) => {
+const OrdersDashboard = ({ searchString = '', searching = false }) => {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
   const token = useSelector((state) => state.user.token);
 
   useEffect(() => {
-    dispatch(fetchOrders(token));
-  }, [dispatch, token]);
+    if (!searching) {
+      dispatch(fetchOrders(token));
+    }
+  }, [searching, dispatch, token]);
 
   const orders = useSelector(
     (state) => Object.values(state.orders)
@@ -87,4 +89,5 @@ export default OrdersDashboard;
 
 OrdersDashboard.propTypes = {
   searchString: PropTypes.string.isRequired,
+  searching: PropTypes.bool.isRequired,
 };

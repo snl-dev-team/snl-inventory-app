@@ -150,6 +150,7 @@ export default function Dashboard() {
   const dispatch = useDispatch();
 
   const [searchString, setSearchString] = useState('');
+  const [searching, setSearching] = useState(false);
 
   const isMenuOpen = Boolean(anchorEl);
 
@@ -228,6 +229,8 @@ export default function Dashboard() {
               }}
               inputProps={{ 'aria-label': 'search' }}
               value={searchString}
+              onFocus={() => setSearching(true)}
+              onBlur={() => setSearching(false)}
               onChange={(e) => {
                 setSearchString(e.target.value);
               }}
@@ -320,19 +323,39 @@ export default function Dashboard() {
         <div className={classes.toolbar} />
         <Route
           path="/materials"
-          component={() => <MaterialsDashboard searchString={searchString.toLowerCase()} />}
+          component={() => (
+            <MaterialsDashboard
+              searchString={searchString.toLowerCase()}
+              searching={searching}
+            />
+          )}
         />
         <Route
           path="/orders"
-          component={() => <OrdersDashboard searchString={searchString.toLowerCase()} />}
+          component={() => (
+            <OrdersDashboard
+              searchString={searchString.toLowerCase()}
+              searching={searching}
+            />
+          )}
         />
         <Route
           path="/cases"
-          component={() => <CasesDashboard searchString={searchString.toLowerCase()} />}
+          component={() => (
+            <CasesDashboard
+              searchString={searchString.toLowerCase()}
+              searching={searching}
+            />
+          )}
         />
         <Route
           path="/products"
-          component={() => <ProductsDashboard searchString={searchString.toLowerCase()} />}
+          component={() => (
+            <ProductsDashboard
+              searchString={searchString.toLowerCase()}
+              searching={searching}
+            />
+          )}
         />
         <Route exact path="/">
           <Redirect to="/materials" />

@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CasesDashboard = ({ searchString = '' }) => {
+const CasesDashboard = ({ searchString = '', searching = false }) => {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
@@ -32,8 +32,10 @@ const CasesDashboard = ({ searchString = '' }) => {
   const token = useSelector((state) => state.user.token);
 
   useEffect(() => {
-    dispatch(fetchCases(token));
-  }, [dispatch, token]);
+    if (!searching) {
+      dispatch(fetchCases(token));
+    }
+  }, [searching, dispatch, token]);
 
   const cases = useSelector(
     (state) => Object.values(state.cases)
@@ -91,4 +93,5 @@ export default CasesDashboard;
 
 CasesDashboard.propTypes = {
   searchString: PropTypes.string.isRequired,
+  searching: PropTypes.bool.isRequired,
 };

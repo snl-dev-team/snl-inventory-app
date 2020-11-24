@@ -27,14 +27,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const MaterialsDashboard = ({ searchString = '' }) => {
+const MaterialsDashboard = ({ searchString = '', searching = false }) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const token = useSelector((state) => state.user.token);
 
   useEffect(() => {
-    dispatch(fetchMaterials(token));
-  }, [dispatch, token]);
+    if (!searching) {
+      dispatch(fetchMaterials(token));
+    }
+  }, [searching, dispatch, token]);
 
   const materials = useSelector(
     (state) => Object.values(state.materials)
@@ -93,4 +95,5 @@ export default MaterialsDashboard;
 
 MaterialsDashboard.propTypes = {
   searchString: PropTypes.string.isRequired,
+  searching: PropTypes.bool.isRequired,
 };

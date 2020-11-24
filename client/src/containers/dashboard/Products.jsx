@@ -59,6 +59,7 @@ const ProductsDashboard = () => {
               dateCreated={product.dateCreated}
               dateModified={product.dateModified}
               completed={product.completed}
+              notes={product.notes}
             />
           </Grid>
         ))}

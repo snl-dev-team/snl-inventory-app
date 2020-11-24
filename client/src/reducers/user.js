@@ -128,7 +128,7 @@ const userReducer = (state = INITIAL_STATE, action) => {
         success: null,
       };
 
-    case SIGN_OUT:
+    case actions.SIGN_OUT:
       return INITIAL_STATE;
     default:
       return state;

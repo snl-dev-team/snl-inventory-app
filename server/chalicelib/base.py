@@ -208,8 +208,7 @@ class Update(Mutation, Table):
         UPDATE
             `{cls.__table__}`
         SET (
-            {item.get_update_string()},
-            `date_modified` = CURRENT_TIMESTAMP
+            {item.get_update_string()}
         )
         WHERE `id` = :id;
         """
@@ -250,7 +249,21 @@ class Delete(Mutation, Table):
 class Use(Mutation, Table):
     @classmethod
     def commit(user, used, user_id, used_id, count):
-        pass
+        sql = f"""
+        REPLACE INTO 
+            `{user.__table__}_uses_{used.__table__}` (
+                `{user.__table__}_id`,
+                `{used.__table__}_id`,
+                `count`
+            )
+        VALUES (
+            {user_id},
+            {used_id},
+            {count}
+        )
+        """
+
+        execute_statement(sql)
 
     @staticmethod
     def mutate(parent, info, id):
@@ -260,7 +273,15 @@ class Use(Mutation, Table):
 class Unuse(Mutation, Table):
     @classmethod
     def commit(user, used, user_id, used_id):
-        pass
+        sql = f"""
+        DELETE FROM 
+            `{user.__table__}_uses_{used.__table__}`
+        WHERE 
+            `{user.__table__}_id` = {user_id} 
+            AND `{used.__table__}_id` = {used_id};
+        """
+
+        execute_statement(sql)
 
     @staticmethod
     def mutate(parent, info, id):

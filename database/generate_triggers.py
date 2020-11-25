@@ -60,8 +60,8 @@ def create_update_table_trigger():
 
     def fill_template(table):
         return f"""
-        CREATE TRIGGER before_update_{table}
-            BEFORE UPDATE
+        CREATE TRIGGER after_update_{table}
+            AFTER UPDATE
             ON `{table}` FOR EACH ROW
         BEGIN
             UPDATE `{table}`

@@ -112,8 +112,8 @@ class Object(ObjectType, Table):
         return column_string
 
     @classmethod
-    def select_all(cls):
-        sql = f"SELECT {cls.get_column_string()} FROM `{cls.__table__}`;"
+    def select_all(cls, after, first):
+        sql = f"SELECT {cls.get_column_string()} FROM `{cls.__table__}` LIMIT {first} OFFSET {after};"
         res = execute_statement(sql)
         return process_select_response(res, cls.get_columns())
 

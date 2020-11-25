@@ -21,36 +21,35 @@ class Query(ObjectType):
     order = Field(order.Order, id=ID(required=True))
 
     @staticmethod
-    def resolve_materials(parent, info):
-        return material.Material.select_all()
+    def resolve_materials(parent, info, after='0', first=18446744073709551615):
+        return material.Material.select_all(int(after), first)
 
     @staticmethod
     def resolve_material(parent, info, id):
         return material.Material.select_where(int(id))
 
     @staticmethod
-    def resolve_products(parent, info):
-        return product.Product.select_all()
+    def resolve_products(parent, info, after='0', first=18446744073709551615):
+        return product.Product.select_all(int(after), first)
 
     @staticmethod
     def resolve_product(parent, info, id):
         return product.Product.select_where(int(id))
 
     @staticmethod
-    def resolve_cases(parent, info):
-        return case.Case.select_all()
+    def resolve_cases(parent, info, after='0', first=18446744073709551615):
+        return case.Case.select_all(int(after), first)
 
     @staticmethod
     def resolve_case(parent, info, id):
         return case.Case.select_where(int(id))
 
     @staticmethod
-    def resolve_orders(parent, info):
-        return order.Order.select_all()
+    def resolve_orders(parent, info, after='0', first=18446744073709551615):
+        return order.Order.select_all(int(after), first)
 
     @staticmethod
     def resolve_order(parent, info, id):
-        print(id)
         return order.Order.select_where(int(id))
 
 

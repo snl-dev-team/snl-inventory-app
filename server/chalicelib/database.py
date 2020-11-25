@@ -32,5 +32,4 @@ def process_select_response(response, columns):
             value = entry.get(entry_type, None)
             data_row[name] = None if value is None else deserialize(value)
         data.append(data_row)
-
     return data

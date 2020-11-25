@@ -129,7 +129,7 @@ class CaseUseMaterial(base.Use):
 
     @staticmethod
     def mutate(parent, info, case_id: int, material_id: int, count: float):
-        return {'case': CaseUseMaterial.commit(case_id, material_id, count)}
+        return {'case': CaseUseMaterial.commit(material.Material, case_id, material_id, count)}
 
 
 class CaseUnuseMaterial(base.Unuse):
@@ -144,7 +144,7 @@ class CaseUnuseMaterial(base.Unuse):
 
     @staticmethod
     def mutate(parent, info, case_id: int, material_id: int):
-        return {'case': CaseUnuseMaterial.commit(case_id, material_id)}
+        return {'case': CaseUnuseMaterial.commit(material.Material, case_id, material_id)}
 
 
 class CaseUseProduct(base.Use):
@@ -160,7 +160,7 @@ class CaseUseProduct(base.Use):
 
     @staticmethod
     def mutate(parent, info, case_id: int, product_id: int, count: int):
-        return {'case': CaseUseProduct.commit(case_id, product_id, count)}
+        return {'case': CaseUseProduct.commit(product.Product, case_id, product_id, count)}
 
 
 class CaseUnuseProduct(base.Unuse):
@@ -175,4 +175,4 @@ class CaseUnuseProduct(base.Unuse):
 
     @staticmethod
     def mutate(parent, info, case_id: int, product_id: int):
-        return {'case': CaseUnuseProduct.commit(case_id, product_id)}
+        return {'case': CaseUnuseProduct.commit(product.Product, case_id, product_id)}

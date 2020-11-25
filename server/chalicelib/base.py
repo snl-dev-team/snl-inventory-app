@@ -249,7 +249,7 @@ class Delete(Mutation, Table):
 
 class Use(Mutation, Table):
     @classmethod
-    def commit(cls, user_id, used_id, count):
+    def commit(user, used, user_id, used_id, count):
         pass
 
     @staticmethod
@@ -259,7 +259,7 @@ class Use(Mutation, Table):
 
 class Unuse(Mutation, Table):
     @classmethod
-    def commit(cls, user_id, used_id):
+    def commit(user, used, user_id, used_id):
         pass
 
     @staticmethod

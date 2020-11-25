@@ -113,7 +113,7 @@ class OrderUseCase(base.Use):
 
     @staticmethod
     def mutate(parent, info, order_id: int, case_id: int, count: int):
-        return {'order': OrderUseCase.commit(order_id, case_id, count)}
+        return {'order': OrderUseCase.commit(case.Case, order_id, case_id, count)}
 
 
 class OrderUnuseCase(base.Unuse):
@@ -128,4 +128,4 @@ class OrderUnuseCase(base.Unuse):
 
     @staticmethod
     def mutate(parent, info, order_id: int, case_id: int):
-        return {'order': OrderUnuseCase.commit(order_id, case_id)}
+        return {'order': OrderUnuseCase.commit(case.Case, order_id, case_id)}

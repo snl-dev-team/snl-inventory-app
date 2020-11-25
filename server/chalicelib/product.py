@@ -119,7 +119,7 @@ class ProductUseMaterial(base.Use):
 
     @staticmethod
     def mutate(parent, info, product_id: int, material_id: int, count: float):
-        return {'product': ProductUseMaterial.commit(product_id, material_id, count)}
+        return {'product': ProductUseMaterial.commit(material.Material, product_id, material_id, count)}
 
 
 class ProductUnuseMaterial(base.Unuse):
@@ -134,4 +134,4 @@ class ProductUnuseMaterial(base.Unuse):
 
     @staticmethod
     def mutate(parent, info, product_id: int, material_id: int):
-        return {'product': ProductUnuseMaterial.commit(product_id, material_id)}
+        return {'product': ProductUnuseMaterial.commit(material.Material, product_id, material_id)}

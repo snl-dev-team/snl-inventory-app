@@ -17,31 +17,35 @@ def create_relation_trigger():
             IN usedId INT
         )
         BEGIN
-            UPDATE `{used}`
-            SET
-                `count` = `count` - (newCount - oldCount)
-            WHERE `id` = usedId;
+            IF @disable_triggers IS NULL THEN
+                SET @disable_triggers = 1;
+                UPDATE `{used}`
+                SET
+                    `count` = `count` - (newCount - oldCount)
+                WHERE `id` = usedId;
+                SET @disable_triggers = NULL;
+            END IF;
         END//
 
         CREATE TRIGGER before_insert_{user}_uses_{used}
             BEFORE INSERT
             ON `{user}_uses_{used}` FOR EACH ROW
         BEGIN
-            CALL {user}_uses_{used}_monitor({zero}, NEW.count);
+            CALL {user}_uses_{used}_monitor({zero}, NEW.count, NEW.{used}_id);
         END//
 
         CREATE TRIGGER before_delete_{user}_uses_{used}
             BEFORE DELETE
             ON `{user}_uses_{used}` FOR EACH ROW
         BEGIN
-            CALL {user}_uses_{used}_monitor(OLD.count, {zero});
+            CALL {user}_uses_{used}_monitor(OLD.count, {zero}, OLD.{used}_id);
         END//
 
         CREATE TRIGGER before_update_{user}_uses_{used}
             BEFORE UPDATE
             ON `{user}_uses_{used}` FOR EACH ROW
         BEGIN
-            CALL {user}_uses_{used}_monitor(OLD.count, NEW.count);
+            CALL {user}_uses_{used}_monitor(OLD.count, NEW.count, NEW.{used}_id);
         END//
         """
 
@@ -61,12 +65,10 @@ def create_update_table_trigger():
     def fill_template(table):
         return f"""
         CREATE TRIGGER after_update_{table}
-            AFTER UPDATE
+            BEFORE UPDATE
             ON `{table}` FOR EACH ROW
         BEGIN
-            UPDATE `{table}`
-            SET date_modified = CURRENT_TIMESTAMP
-            WHERE  `id` = NEW.id;
+            SET NEW.date_modified = CURRENT_TIMESTAMP;
         END//
         """
 
@@ -85,8 +87,12 @@ def create_delete_table_trigger():
     def fill_template(used, users):
 
         actions = '\n'.join(f"""
-            DELETE FROM `{user}_uses_{used}`
-            WHERE `{used}_id` = OLD.id;
+            IF @disable_trigger IS NULL THEN
+                SET @disable_trigger = 1;
+                DELETE FROM `{user}_uses_{used}`
+                WHERE `{used}_id` = OLD.id;
+                SET @disable_trigger = NULL;
+            END IF;
         """ for user in users)
 
         return f"""

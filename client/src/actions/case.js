@@ -6,7 +6,7 @@ export const createCase = (case_, token) => ({
   type: actions.CREATE_CASE,
   payload: axios
     .post(
-      '/case',
+      `${URL}/case`,
       {
         name: case_.name,
         product_name: case_.productName,

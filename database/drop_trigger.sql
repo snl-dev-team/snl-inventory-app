@@ -1,0 +1,24 @@
+DROP TRIGGER after_update_case;                   
+DROP TRIGGER before_delete_case;                  
+DROP TRIGGER before_update_case_uses_material;    
+DROP TRIGGER before_delete_case_uses_material;    
+DROP TRIGGER before_update_case_uses_product;     
+DROP TRIGGER before_delete_case_uses_product;     
+DROP TRIGGER after_update_material;               
+DROP TRIGGER before_delete_material;              
+DROP TRIGGER after_update_order;                  
+DROP TRIGGER before_update_order_uses_case;       
+DROP TRIGGER before_delete_order_uses_case;       
+DROP TRIGGER after_update_product;                
+DROP TRIGGER before_delete_product;               
+DROP TRIGGER before_update_product_uses_material; 
+DROP TRIGGER before_delete_product_uses_material;
+DROP TRIGGER before_insert_case_uses_material;
+DROP TRIGGER before_insert_case_uses_product;
+DROP TRIGGER before_insert_order_uses_case;
+DROP TRIGGER before_insert_product_uses_material;
+
+DROP PROCEDURE product_uses_material_monitor;
+DROP PROCEDURE case_uses_material_monitor;
+DROP PROCEDURE case_uses_product_monitor;
+DROP PROCEDURE order_uses_case_monitor;

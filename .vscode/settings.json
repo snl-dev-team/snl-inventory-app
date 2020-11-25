@@ -9,7 +9,6 @@
   "eslint.workingDirectories": [
     "./client"
   ],
-  "python.pythonPath": "server/venv/bin/python3",
   "editor.codeActionsOnSave": {
       "source.fixAll.eslint": true
   },

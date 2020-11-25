@@ -139,8 +139,8 @@ class Object(ObjectType, Table):
             `{used.__table__}`
         WHERE
             `{user.__table__}`.`id` = :{user.__table__}_id
-            AND `{user.__table__}_uses_{used.__table__}`.`{user.__table__}_id` = :{user.__table__}_id;
-
+            AND `{user.__table__}_uses_{used.__table__}`.`{user.__table__}_id` = `{user.__table__}`.`id`
+            AND `{user.__table__}_uses_{used.__table__}`.`{used.__table__}_id` = `{used.__table__}`.`id`;
         """
         res = execute_statement(
             sql,

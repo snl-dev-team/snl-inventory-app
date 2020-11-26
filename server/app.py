@@ -50,7 +50,7 @@ def process_select_response(response, columns):
 
 
 MATERIAL_COLUMNS = [
-    ('id',              int,   'longValue'),
+    ('id',              str,   'stringValue'),
     ('name',            str,   'stringValue'),
     ('number',          str,   'stringValue'),
     ('count',           float, 'doubleValue'),
@@ -87,6 +87,7 @@ def create_material():
         sql = """
             INSERT INTO
                 `material` (
+                    `id`,
                     `name`,
                     `number`,
                     `count`,
@@ -96,6 +97,7 @@ def create_material():
                     `notes`
                 )
                 VALUES (
+                    UUID(),
                     '{name}',
                     '{number}',
                     {count},
@@ -108,6 +110,7 @@ def create_material():
 
         res = execute_statement(sql)
 
+        print(res)
         created_id = res['generatedFields'][0]['longValue']
         date_created = date_modified = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -236,7 +239,7 @@ def delete_material(id):
 
 
 PRODUCT_COLUMNS = [
-    ('id',              int,   'longValue'),
+    ('id',              str,   'stringValue'),
     ('name',            str,   'stringValue'),
     ('number',          str,   'stringValue'),
     ('count',           int,   'longValue'),
@@ -248,8 +251,8 @@ PRODUCT_COLUMNS = [
 ]
 
 PRODUCT_USES_MATERIAL_COLUMNS = [
-    ('product_id',      int,    'longValue'),
-    ('material_id',     int,    'longValue'),
+    ('product_id',      str,    'stringValue'),
+    ('material_id',     str,    'stringValue'),
     ('count',           float,  'doubleValue')
 ]
 
@@ -286,6 +289,7 @@ def create_product():
         sql = """
             INSERT INTO
                 `product` (
+                    `id`,
                     `name`,
                     `number`,
                     `count`,
@@ -294,6 +298,7 @@ def create_product():
                     `notes`
                 )
                 VALUES (
+                    UUID(),
                     '{name}',
                     '{number}',
                     {count},
@@ -305,6 +310,7 @@ def create_product():
 
         res = execute_statement(sql)
 
+        print(res)
         created_id = res['generatedFields'][0]['longValue']
         date_created = date_modified = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -515,7 +521,7 @@ def product_unuse_material(id):
 
 
 CASE_COLUMNS = [
-    ('id',              int,   'longValue'),
+    ('id',              str,   'stringValue'),
     ('name',            str,   'stringValue'),
     ('product_name',    str,   'stringValue'),
     ('product_count',   int,   'longValue'),
@@ -529,14 +535,14 @@ CASE_COLUMNS = [
 ]
 
 CASE_USE_MATERIAL_COLUMNS = [
-    ('case_id',         int,    'longValue'),
-    ('material_id',     int,    'longValue'),
+    ('case_id',         str,    'stringValue'),
+    ('material_id',     str,    'stringValue'),
     ('count',           float,  'doubleValue')
 ]
 
 CASE_USE_PRODUCT_COLUMNS = [
-    ('case_id',         int,    'longValue'),
-    ('product_id',      int,    'longValue'),
+    ('case_id',         str,    'stringValue'),
+    ('product_id',      str,    'stringValue'),
     ('count',           int,    'longValue')
 ]
 
@@ -582,6 +588,7 @@ def create_case():
         sql = """
             INSERT INTO
                 `case` (
+                    `id`,
                     `name`,
                     `product_name`,
                     `product_count`,
@@ -592,6 +599,7 @@ def create_case():
                     `notes`
                 )
                 VALUES (
+                    UUID(),
                     '{name}',
                     '{product_name}',
                     {product_count},
@@ -911,7 +919,7 @@ def case_unuse_product(id):
 
 
 ORDER_COLUMNS = [
-    ('id',              int,   'longValue'),
+    ('id',              str,   'stringValue'),
     ('number',          str,   'stringValue'),
     ('date_created',    str,   'stringValue'),
     ('date_modified',   str,   'stringValue'),
@@ -920,8 +928,8 @@ ORDER_COLUMNS = [
 ]
 
 ORDER_USE_CASE_COLUMNS = [
-    ('order_id',        int,    'longValue'),
-    ('case_id',         int,    'longValue'),
+    ('order_id',        str,    'stringValue'),
+    ('case_id',         str,    'stringValue'),
     ('count',           int,    'longValue')
 ]
 
@@ -955,10 +963,12 @@ def create_order():
         sql = """
             INSERT INTO
                 `order` (
+                    `id`,
                     `number`,
                     `notes`
                 )
                 VALUES (
+                    UUID(),
                     '{number}',
                     '{notes}'
                 )
@@ -1178,8 +1188,9 @@ def order_unuse_case(id):
 
 @app.route('/graphql', methods=['POST'])
 def graphql():
-    query = json.loads(app.current_request.raw_body.decode())['query']
-    result = schema.execute(query)
+    gql = json.loads(app.current_request.raw_body.decode())
+    variables = gql['variables'] if 'variables' in gql else None
+    result = schema.execute(gql['query'], variables=variables)
     return {'data': result.data}
 
 

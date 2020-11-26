@@ -1,18 +1,40 @@
 # pylint: disable=relative-beyond-top-level
 from graphene import Int, String, Float, Date, DateTime, Mutation, Field, relay, ID
-from .database import execute_statement
 from datetime import datetime
-from . import base
+from . import base, types
+from graphql_relay import to_global_id
+
+"""
++-----------------+-------------------------------------+------+-----+-------------------+-------+
+| Field           | Type                                | Null | Key | Default           | Extra |
++-----------------+-------------------------------------+------+-----+-------------------+-------+
+| id              | char(36)                            | NO   | PRI | NULL              |       |
+| number          | varchar(255)                        | NO   |     | NULL              |       |
+| notes           | text                                | NO   |     | NULL              |       |
+| date_created    | datetime                            | NO   |     | CURRENT_TIMESTAMP |       |
+| date_modified   | datetime                            | NO   |     | CURRENT_TIMESTAMP |       |
+| expiration_date | date                                | YES  |     | NULL              |       |
+| name            | varchar(255)                        | NO   |     | NULL              |       |
+| price           | int(10) unsigned                    | NO   |     | NULL              |       |
+| units           | enum('UNIT','KG','LB','G','L','ML') | NO   |     | UNIT              |       |
+| count           | float unsigned                      | NO   |     | NULL              |       |
++-----------------+-------------------------------------+------+-----+-------------------+-------+
+"""
 
 
-class MaterialInput(base.Input):
-    name = String(required=True)
-    number = String(required=True)
-    count = Float(required=True)
-    expiration_date = Date(required=True)
-    price = Int(required=True)
-    units = String(required=True)
-    notes = String(required=True)
+class MaterialBase(
+    types.Numberable,
+    types.Notable,
+    types.Expirable,
+    types.Namable,
+    types.Pricable,
+    types.Measurable,
+    types.ContinuousCountable
+):
+    pass
+
+
+class MaterialInput(base.Input, MaterialBase):
 
     __table__ = 'material'
 
@@ -25,28 +47,12 @@ class MaterialInput(base.Input):
         )
 
 
-class Material(base.Object):
+class Material(base.Object, MaterialBase, types.Node):
 
-    class Meta:
-        interfaces = (relay.Node,)
+    def __str__(self):
+        return 'Material'
 
-    id = ID(required=True)
-    name = String(required=True)
-    number = String(required=True)
-    count = Float(required=True)
-    expiration_date = Date(required=True)
-    date_created = DateTime(required=True)
-    date_modified = DateTime(required=True)
-    price = Int(required=True)
-    units = String(required=True)
-    notes = String(required=True)
-
-    __input__ = MaterialInput
     __table__ = 'material'
-
-    @classmethod
-    def get_node(cls, info, id):
-        return Material.select_where(id)
 
 
 class MaterialConnection(base.ObjectConnection):
@@ -81,7 +87,7 @@ class UpdateMaterial(base.Update):
     __table__ = 'material'
 
     class Arguments:
-        id = Int(required=True)
+        id = ID(required=True)
         material = MaterialInput(required=True)
 
     material = Field(Material)
@@ -96,11 +102,11 @@ class DeleteMaterial(base.Delete):
     __table__ = 'material'
 
     class Arguments:
-        id = Int(required=True)
-        material = MaterialInput(required=True)
+        id = ID(required=True)
 
     material = Field(Material)
 
     @staticmethod
     def mutate(parent, info, id):
-        return {'material': DeleteMaterial.commit(id)}
+        DeleteMaterial.commit(id)
+        return {'id': id}

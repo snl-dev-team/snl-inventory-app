@@ -1,10 +1,12 @@
 # pylint: disable=relative-beyond-top-level
-from graphene import ObjectType, InputObjectType, Mutation, Connection, Int
+from graphene import ObjectType, InputObjectType, Mutation, Connection, Int, relay
 from .constants import TYPE_MAP
 from re import findall
-from .database import execute_statement, process_select_response
 from datetime import datetime
 from inspect import getmembers, isroutine
+from .database import execute_statement, process_select_response
+import uuid
+from graphql_relay import to_global_id, from_global_id
 
 
 class Table:
@@ -69,9 +71,10 @@ class Input(InputObjectType, Table):
     def get_update_string(cls):
         columns = cls.get_columns()
         update_string = ',\n'.join(
-            f"`{i['name']} = :{i['name']}"
+            f"`{i['name']}` = :{i['name']}"
             for i in columns
         )
+
         return update_string
 
     @classmethod
@@ -80,8 +83,6 @@ class Input(InputObjectType, Table):
 
 
 class Object(ObjectType, Table):
-
-    __input__ = InputObjectType
 
     @classmethod
     def get_columns(cls):
@@ -122,7 +123,7 @@ class Object(ObjectType, Table):
         sql = f"SELECT {cls.get_column_string()} FROM `{cls.__table__}` WHERE `id` = :id;"
         res = execute_statement(
             sql,
-            sql_parameters=[{'name': 'id', 'value': {'longValue': id}}]
+            sql_parameters=[{'name': 'id', 'value': {'stringValue': id}}]
         )
         rows = process_select_response(res, cls.get_columns())
         return rows[0] if rows else None
@@ -145,7 +146,7 @@ class Object(ObjectType, Table):
         res = execute_statement(
             sql,
             sql_parameters=[
-                {'name': f'{user.__table__}_id', 'value': {'longValue': id}}
+                {'name': f'{user.__table__}_id', 'value': {'stringValue': id}}
             ]
         )
 
@@ -163,6 +164,15 @@ class Object(ObjectType, Table):
         ]
         return process_select_response(res, columns)
 
+    class Meta:
+        interfaces = (relay.Node,)
+
+    @classmethod
+    def get_node(cls, info, id):
+        node = cls.select_where(id)
+        node['id'] = to_global_id(str(cls), id)
+        return cls(**node)
+
 
 class ObjectConnection(Connection, Table):
 
@@ -179,22 +189,28 @@ class ObjectConnection(Connection, Table):
 class Create(Mutation, Table):
     @classmethod
     def commit(cls, item: Input):
+        id = str(uuid.uuid1())
         sql = f"""
         INSERT INTO
             `{cls.__table__}` (
+                `id`,
                 {item.get_column_string(
                     add_tablename=False, add_column_name=False)}
             )
             VALUES (
+                :id,
                 {item.get_value_string()}
             )
         """
-        res = execute_statement(
-            sql, sql_parameters=item.get_sql_parameters(item))
-        created_id = res['generatedFields'][0]['longValue']
-        date_created = date_modified = datetime.utcnow()
+        execute_statement(
+            sql,
+            sql_parameters=item.get_sql_parameters(item) + [
+                {'name': 'id', 'value': {'stringValue': id}}
+            ])
 
-        return item.to_output(created_id, date_created, date_modified)
+        date_created = date_modified = datetime.utcnow()
+        global_id = to_global_id(str(cls), id)
+        return item.to_output(global_id, date_created, date_modified)
 
     @staticmethod
     def mutate(parent, info, id):
@@ -203,27 +219,41 @@ class Create(Mutation, Table):
 
 class Update(Mutation, Table):
     @classmethod
-    def commit(cls, id: int, item: Input):
+    def commit(cls, id: str, item: Input):
+        _, item_id = from_global_id(id)
         sql = f"""
-        UPDATE
-            `{cls.__table__}`
-        SET (
+        UPDATE `{cls.__table__}`
+        SET 
             {item.get_update_string()}
-        )
         WHERE `id` = :id;
         """
         parameters = item.get_sql_parameters(
-            item) + [{'name': 'id', 'value': {'longValue': id}}]
+            item) + [{'name': 'id', 'value': {'stringValue': item_id}}]
 
-        res = execute_statement(
+        execute_statement(
             sql,
             sql_parameters=parameters
         )
 
-        created_id = res['generatedFields'][0]['longValue']
-        date_created = date_modified = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        sql = f"""
+        SELECT
+            `date_created`
+        FROM `{cls.__table__}`
+        WHERE id = :id;
+        """
+        parameters = [{'name': 'id', 'value': {'stringValue': item_id}}]
+        res = execute_statement(sql, sql_parameters=parameters)
 
-        return item.to_output(created_id, date_created, date_modified)
+        rows = process_select_response(res, [{
+            'name': 'date_created',
+            'serialize': lambda x: x.isoformat(),
+            'deserialize': datetime.fromisoformat,
+            'boto3': 'stringValue',
+        }])
+        date_created = rows[0]['date_created'] if rows else None
+        date_modified = datetime.utcnow()
+
+        return item.to_output(id, date_created, date_modified)
 
     @staticmethod
     def mutate(parent, info, id):
@@ -239,7 +269,7 @@ class Delete(Mutation, Table):
         WHERE id = :id;
         """
         execute_statement(sql, sql_parameters=[
-                          {'name': 'id', 'value': {'longValue': id}}])
+                          {'name': 'id', 'value': {'stringValue': id}}])
 
     @staticmethod
     def mutate(parent, info, id):

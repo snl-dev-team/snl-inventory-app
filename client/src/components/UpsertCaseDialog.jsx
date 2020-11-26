@@ -6,51 +6,36 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import Grid from '@material-ui/core/Grid';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { useHistory, useParams } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useHistory, useLocation } from 'react-router-dom';
 import Switch from '@material-ui/core/Switch';
 import { FormControlLabel } from '@material-ui/core';
-import { createCase, updateCase } from '../actions/case';
+import { useMutation } from '@apollo/client';
+import { UPDATE_CASE, CREATE_CASE } from '../graphql/cases';
 
 export default function UpsertCaseDialog() {
+  const useQueryString = () => new URLSearchParams(useLocation().search);
   const history = useHistory();
-  const dispatch = useDispatch();
-  const { id } = useParams();
-  const token = useSelector((state) => state.user.token);
+  const queryString = useQueryString();
+
+  const [createCase] = useMutation(CREATE_CASE);
+  const [updateCase] = useMutation(UPDATE_CASE);
 
   const handleClose = () => {
     history.push('/cases');
   };
 
-  const isAdd = id === undefined;
+  const [name, setName] = useState(queryString.get('name'));
+  const [productName, setProductName] = useState(queryString.get('productName'));
+  const [productCount, setProductCount] = useState(queryString.get('productCount'));
+  const [count, setCount] = useState(queryString.get('count'));
+  const [number, setNumber] = useState(queryString.get('number'));
+  const [expirationDate, setExpirationDate] = useState(queryString.get('expirationDate'));
+  const [shipped, setShipped] = useState(queryString.get('shipped') === 'true');
+  const [notes, setNotes] = useState(queryString.get('notes'));
 
-  // eslint-disable-next-line no-underscore-dangle
-  const case_ = useSelector((state) => state.cases[id]);
+  const id = queryString.get('id');
 
-  const [name, setName] = useState(
-    case_ !== undefined ? case_.name : '',
-  );
-  const [productName, setProductName] = useState(
-    case_ !== undefined ? case_.productName : '',
-  );
-  const [productCount, setProductCount] = useState(
-    case_ !== undefined ? case_.productCount : 0,
-  );
-  const [count, setCount] = useState(
-    case_ !== undefined ? case_.count : 0,
-  );
-  const [number, setNumber] = useState(
-    case_ !== undefined ? case_.number : '',
-  );
-  const [expirationDate, setExpirationDate] = useState(
-    case_ !== undefined ? case_.expirationDate : '',
-  );
-  const [shipped, setShipped] = useState(
-    case_ !== undefined ? case_.shipped : false,
-  );
-  const [notes, setNotes] = useState(
-    case_ !== undefined ? case_.notes : '',
-  );
+  const isAdd = id === null;
 
   const canSave = true;
 
@@ -61,29 +46,36 @@ export default function UpsertCaseDialog() {
     return 'Edit Case';
   };
 
-  const payload = {
-    id: parseInt(id, 10),
-    name,
-    productName,
-    productCount,
-    count,
-    number,
-    expirationDate,
-    shipped,
-    notes,
-  };
-
   const createCaseAndClose = () => {
-    dispatch(
-      createCase(payload, token),
-    );
+    createCase({
+      variables: {
+        name,
+        productName,
+        productCount,
+        count,
+        number,
+        expirationDate,
+        shipped,
+        notes,
+      },
+    });
     history.push('/cases');
   };
 
   const updateCaseAndClose = () => {
-    dispatch(
-      updateCase(payload, token),
-    );
+    updateCase({
+      variables: {
+        id,
+        name,
+        productName,
+        productCount,
+        count,
+        number,
+        expirationDate,
+        shipped,
+        notes,
+      },
+    });
     history.push('/cases');
   };
 

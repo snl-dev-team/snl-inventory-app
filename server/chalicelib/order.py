@@ -1,12 +1,30 @@
 # pylint: disable=relative-beyond-top-level
 from graphene import Int, String, Float, Boolean, Date, DateTime, List, Mutation, Field, relay, ID
-from . import base, material, case
+from . import base, material, case, types
+
+"""
++---------------+--------------+------+-----+-------------------+-------+
+| Field         | Type         | Null | Key | Default           | Extra |
++---------------+--------------+------+-----+-------------------+-------+
+| id            | char(36)     | NO   | PRI | NULL              |       |
+| number        | varchar(255) | NO   |     | NULL              |       |
+| notes         | text         | NO   |     | NULL              |       |
+| date_created  | datetime     | NO   |     | CURRENT_TIMESTAMP |       |
+| date_modified | datetime     | NO   |     | CURRENT_TIMESTAMP |       |
+| completed     | tinyint(1)   | NO   |     | 0                 |       |
++---------------+--------------+------+-----+-------------------+-------+
+"""
 
 
-class OrderInput(base.Input):
-    number = String(required=True)
-    notes = String(required=True)
-    completed = Boolean(required=True)
+class OrderBase(
+    types.Numberable,
+    types.Notable,
+    types.Completable
+):
+    pass
+
+
+class OrderInput(base.Input, OrderBase):
 
     __table__ = 'order'
 
@@ -19,28 +37,16 @@ class OrderInput(base.Input):
         )
 
 
-class Order(base.Object):
+class Order(base.Object, OrderBase, types.Node):
 
-    class Meta:
-        interfaces = (relay.Node,)
-
-    id = ID(required=True)
-    number = String(required=True)
-    date_created = DateTime(required=True)
-    date_modified = DateTime(required=True)
-    notes = String(required=True)
-    cases = relay.ConnectionField(case.CaseConnection, required=True)
-
-    __input__ = OrderInput
     __table__ = 'order'
+
+    def __str__(self):
+        return 'Order'
 
     @staticmethod
     def resolve_cases(parent, info):
         return Order.select_uses(parent['id'], case.Case)
-
-    @classmethod
-    def get_node(cls, info, id):
-        return Order.select_where(id)
 
 
 class OrderConnection(base.ObjectConnection):
@@ -75,7 +81,7 @@ class UpdateOrder(base.Update):
     __table__ = 'order'
 
     class Arguments:
-        id = Int(required=True)
+        id = ID(required=True)
         order = OrderInput(required=True)
 
     order = Field(Order)
@@ -90,14 +96,14 @@ class DeleteOrder(base.Delete):
     __table__ = 'order'
 
     class Arguments:
-        id = Int(required=True)
-        order = OrderInput(required=True)
+        id = ID(required=True)
 
-    order = Field(Order)
+    id = ID(required=True)
 
     @staticmethod
     def mutate(parent, info, id):
-        return {'order': DeleteOrder.commit(id)}
+        DeleteOrder.commit(id)
+        return {'id': id}
 
 
 class OrderUseCase(base.Use):
@@ -105,8 +111,8 @@ class OrderUseCase(base.Use):
     __table__ = 'order'
 
     class Arguments:
-        order_id = Int(required=True)
-        case_id = Int(required=True)
+        order_id = ID(required=True)
+        case_id = ID(required=True)
         count = Int(required=True)
 
     order = Field(Order)
@@ -121,8 +127,8 @@ class OrderUnuseCase(base.Unuse):
     __table__ = 'order'
 
     class Arguments:
-        order_id = Int(required=True)
-        case_id = Int(required=True)
+        order_id = ID(required=True)
+        case_id = ID(required=True)
 
     order = Field(Order)
 

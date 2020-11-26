@@ -1,14 +1,17 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Fab from '@material-ui/core/Fab';
 import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import Grid from '@material-ui/core/Grid';
-import { useDispatch, useSelector } from 'react-redux';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { Route, useHistory } from 'react-router';
 import PropTypes from 'prop-types';
-import CaseCard from '../../components/CaseCard';
-import { fetchCases } from '../../actions/case';
+import { useQuery, useMutation } from '@apollo/client';
+import lodash from 'lodash';
+import produce from 'immer';
+import InventoryCard from '../../components/InventoryCard';
 import UpsertCaseDialog from '../../components/UpsertCaseDialog';
+import { GET_CASES, DELETE_CASE } from '../../graphql/cases';
 
 const useStyles = makeStyles((theme) => ({
   margin: {
@@ -24,47 +27,65 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CasesDashboard = ({ searchString = '', searching = false }) => {
+const CasesDashboard = ({ searchString }) => {
   const classes = useStyles();
   const history = useHistory();
-  const dispatch = useDispatch();
 
-  const token = useSelector((state) => state.user.token);
+  const {
+    loading, error, data,
+  } = useQuery(GET_CASES);
 
-  useEffect(() => {
-    if (!searching) {
-      dispatch(fetchCases(token));
-    }
-  }, [searching, dispatch, token]);
+  const [deleteCase] = useMutation(DELETE_CASE);
 
-  const cases = useSelector(
-    (state) => Object.values(state.cases)
-      .filter((case_) => (case_.name.toLowerCase().includes(searchString))
-      || (case_.number.includes(searchString))),
-    (before, after) => JSON.stringify(before) === JSON.stringify(after),
-  );
+  const updateCache = (id) => (client) => {
+    const clientData = client.readQuery({
+      query: GET_CASES,
+    });
+
+    const newData = produce(clientData, (draftState) => {
+      const idx = draftState.cases.edges
+        .findIndex(({ node }) => node.id === id);
+      draftState.cases.edges.splice(idx, 1);
+    });
+
+    client.writeQuery({
+      query: GET_CASES,
+      data: newData,
+    });
+  };
+
+  if (loading || error) {
+    return <CircularProgress />;
+  }
+
+  const cases = data.cases.edges
+    .map((edge) => edge.node)
+    .filter(({ name }) => searchString === null || name.toLowerCase().includes(searchString));
+
+  const getQueryString = (object) => Object.keys(object)
+    .map((key) => `${key}=${object[key]}`)
+    .join('&');
 
   return (
-    <div>
+    <>
       <Grid container spacing={3}>
         {cases.map((case_) => (
           <Grid key={case_.id}>
-            <CaseCard
-              id={case_.id}
-              name={case_.name}
-              productName={case_.productName}
-              productCount={case_.productCount}
-              count={case_.count}
-              number={case_.number}
-              expirationDate={case_.expirationDate}
-              dateCreated={case_.dateCreated}
-              dateModified={case_.dateModified}
-              shipped={case_.shipped}
-              notes={case_.noets}
+            <InventoryCard
+              data={Object.entries(case_)
+                .filter(([name]) => !['__typename', 'id', 'name'].includes(name))
+                .map(([name, value]) => ({ name: lodash.startCase(name), value: String(value) }))}
+              title={case_.name}
+              onClickEdit={() => history.push(`/cases/edit?${getQueryString(case_)}`)}
+              onClickDelete={() => deleteCase({
+                variables: { id: case_.id },
+                update: updateCache(case_.id),
+              })}
             />
           </Grid>
         ))}
       </Grid>
+
       <Fab
         size="medium"
         color="secondary"
@@ -83,16 +104,19 @@ const CasesDashboard = ({ searchString = '', searching = false }) => {
 
       <Route
         exact
-        path="/cases/edit/:id"
+        path="/cases/edit"
         component={UpsertCaseDialog}
       />
-    </div>
+    </>
   );
 };
 
 export default CasesDashboard;
 
 CasesDashboard.propTypes = {
-  searchString: PropTypes.string.isRequired,
-  searching: PropTypes.bool.isRequired,
+  searchString: PropTypes.string,
+};
+
+CasesDashboard.defaultProps = {
+  searchString: null,
 };

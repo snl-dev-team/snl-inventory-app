@@ -1,17 +1,41 @@
 # pylint: disable=relative-beyond-top-level
-from graphene import Int, String, Float, Boolean, Date, DateTime, List, Mutation, Field, relay, ID
-from . import base, material, product
+from graphene import Int, String, Float, Boolean, Date, DateTime, List, Mutation, Field, relay, ID, ObjectType
+from . import base, material, product, types
+from graphql_relay import from_global_id
 
 
-class CaseInput(base.InputObjectType):
-    name = String(required=True)
+"""
++-----------------+------------------+------+-----+-------------------+-------+
+| Field           | Type             | Null | Key | Default           | Extra |
++-----------------+------------------+------+-----+-------------------+-------+
+| id              | char(36)         | NO   | PRI | NULL              |       |
+| number          | varchar(255)     | NO   |     | NULL              |       |
+| notes           | text             | NO   |     | NULL              |       |
+| date_created    | datetime         | NO   |     | CURRENT_TIMESTAMP |       |
+| date_modified   | datetime         | NO   |     | CURRENT_TIMESTAMP |       |
+| shipped         | tinyint(1)       | NO   |     | 0                 |       |
+| expiration_date | date             | YES  |     | NULL              |       |
+| name            | varchar(255)     | NO   |     | NULL              |       |
+| count           | int(10) unsigned | NO   |     | NULL              |       |
+| product_name    | varchar(255)     | NO   |     | NULL              |       |
+| product_count   | int(10) unsigned | NO   |     | NULL              |       |
++-----------------+------------------+------+-----+-------------------+-------+
+"""
+
+
+class CaseBase(
+    types.Numberable,
+    types.Notable,
+    types.Shippable,
+    types.Expirable,
+    types.Namable,
+    types.DiscreteCountable,
+):
     product_name = String(required=True)
     product_count = Int(required=True)
-    count = Int(required=True)
-    number = String(required=True)
-    expiration_date = Date(required=True)
-    shipped = Boolean(required=True)
-    notes = String(required=True)
+
+
+class CaseInput(base.Input, CaseBase):
 
     __table__ = 'case'
 
@@ -24,31 +48,16 @@ class CaseInput(base.InputObjectType):
         )
 
 
-class Case(base.Object):
-
-    class Meta:
-        interfaces = (relay.Node,)
-
-    id = ID(required=True)
-    name = String(required=True)
-    product_name = String(required=True)
-    product_count = Int(required=True)
-    count = Int(required=True)
-    number = String(required=True)
-    expiration_date = Date(required=True)
-    date_created = DateTime(required=True)
-    date_modified = DateTime(required=True)
-    shipped = Boolean(required=True)
-    notes = String(required=True)
-    materials = relay.ConnectionField(
-        material.MaterialConnection, required=True)
-    products = relay.ConnectionField(product.ProductConnection, required=True)
+class Case(base.Object, CaseBase, types.Node):
 
     __table__ = 'case'
 
-    @classmethod
-    def get_node(cls, info, id):
-        return Case.select_where(id)
+    def __str__(self):
+        return 'Case'
+
+    materials = relay.ConnectionField(
+        material.MaterialConnection, required=True)
+    products = relay.ConnectionField(product.ProductConnection, required=True)
 
     @staticmethod
     def resolve_materials(parent, info):
@@ -76,6 +85,9 @@ class CreateCase(base.Create):
 
     __table__ = 'case'
 
+    def __str__(self):
+        return 'Case'
+
     class Arguments:
         case = CaseInput(required=True)
 
@@ -91,7 +103,7 @@ class UpdateCase(base.Update):
     __table__ = 'case'
 
     class Arguments:
-        id = Int(required=True)
+        id = ID(required=True)
         case = CaseInput(required=True)
 
     case = Field(Case)
@@ -106,14 +118,15 @@ class DeleteCase(base.Delete):
     __table__ = 'case'
 
     class Arguments:
-        id = Int(required=True)
-        case = CaseInput(required=True)
+        id = ID(required=True)
 
-    case = Field(Case)
+    id = ID(required=True)
 
     @staticmethod
     def mutate(parent, info, id):
-        return {'case': DeleteCase.commit(id)}
+        _, local_id = from_global_id(id)
+        DeleteCase.commit(local_id)
+        return {'id': id}
 
 
 class CaseUseMaterial(base.Use):
@@ -121,8 +134,8 @@ class CaseUseMaterial(base.Use):
     __table__ = 'case'
 
     class Arguments:
-        case_id = Int(required=True)
-        material_id = Int(required=True)
+        case_id = ID(required=True)
+        material_id = ID(required=True)
         count = Float(required=True)
 
     case = Field(Case)
@@ -137,8 +150,8 @@ class CaseUnuseMaterial(base.Unuse):
     __table__ = 'case'
 
     class Arguments:
-        case_id = Int(required=True)
-        material_id = Int(required=True)
+        case_id = ID(required=True)
+        material_id = ID(required=True)
 
     case = Field(Case)
 
@@ -152,8 +165,8 @@ class CaseUseProduct(base.Use):
     __table__ = 'case'
 
     class Arguments:
-        case_id = Int(required=True)
-        product_id = Int(required=True)
+        case_id = ID(required=True)
+        product_id = ID(required=True)
         count = Float(required=True)
 
     case = Field(Case)
@@ -168,8 +181,8 @@ class CaseUnuseProduct(base.Unuse):
     __table__ = 'case'
 
     class Arguments:
-        case_id = Int(required=True)
-        product_id = Int(required=True)
+        case_id = ID(required=True)
+        product_id = ID(required=True)
 
     case = Field(Case)
 

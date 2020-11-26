@@ -48,11 +48,11 @@ export default function InventoryCard({
   const classes = useStyles();
 
   const buttons = [
-    [onClickDelete, DeleteIcon],
-    [onClickEdit, EditIcon],
-    [onClickShowMaterials, PaletteIcon],
-    [onClickShowProducts, LocalPharmacyIcon],
     [onClickShowCases, GridOnIcon],
+    [onClickShowProducts, LocalPharmacyIcon],
+    [onClickShowMaterials, PaletteIcon],
+    [onClickEdit, EditIcon],
+    [onClickDelete, DeleteIcon],
   ];
 
   return (

@@ -76,6 +76,8 @@ const CasesDashboard = ({ searchString }) => {
                 .filter(([name]) => !['__typename', 'id', 'name'].includes(name))
                 .map(([name, value]) => ({ name: lodash.startCase(name), value: String(value) }))}
               title={case_.name}
+              onClickShowMaterials={() => {}}
+              onClickShowProducts={() => {}}
               onClickEdit={() => history.push(`/cases/edit?${getQueryString(case_)}`)}
               onClickDelete={() => deleteCase({
                 variables: { id: case_.id },

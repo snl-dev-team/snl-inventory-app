@@ -1,121 +1,72 @@
 # pylint: disable=relative-beyond-top-level
-from graphene import ObjectType, InputObjectType, Mutation, Connection, Int
+from graphene import ObjectType, InputObjectType, Mutation, Connection, relay
 from .constants import TYPE_MAP
 from re import findall
-from .database import execute_statement, process_select_response
 from datetime import datetime
 from inspect import getmembers, isroutine
+from .database import execute_statement, process_select_response
+from graphql_relay import to_global_id, from_global_id
+from .types import Integer, BaseType, DateTime
 
 
 class Table:
     __table__ = None
 
 
-class Input(InputObjectType, Table):
+class Base(Table):
 
     @classmethod
-    def get_sql_parameters(cls, item: ObjectType):
-        parameters = []
-        types = {k: v for k, v in getmembers(cls, lambda m: not isroutine(m))}
-        for name, value in vars(item).items():
-            curr_type = next(
-                (i for i in TYPE_MAP if isinstance(
-                    types[name], i['graphene'])),
-                None
-            )
-            if curr_type is not None:
-                parameters.append(
-                    {'name': name, 'value': {
-                        curr_type['boto3']: curr_type['serialize'](value)}}
-                )
-
-        return parameters
+    def members(cls):
+        for name, column in getmembers(cls, lambda m: isinstance(m, BaseType)):
+            yield name, column
 
     @classmethod
-    def get_columns(cls):
-        columns = []
-        types = {k: v for k, v in getmembers(cls, lambda m: not isroutine(m))}
-        for name, type_ in types.items():
-            curr_type = next(
-                (i for i in TYPE_MAP if isinstance(
-                    type_, i['graphene'])),
-                None
-            )
-            if curr_type is not None:
-                columns.append({
-                    'name': name,
-                    'serialize': curr_type['serialize'],
-                    'deserialize': curr_type['deserialize'],
-                    'boto3': curr_type['boto3'],
-                })
-        return columns
+    def get_parameters(cls, item):
+        return [
+            {
+                'name': name,
+                'value': {column.boto3: column.serialize(value)}
+                if column.serialize(value) is not None
+                else {'isNull': True}
+            }
+            for name, column in cls.members()
+            for item_name, value in vars(item).items()
+            if name == item_name
+        ]
 
     @classmethod
     def get_column_string(cls, add_tablename: bool = True, add_column_name: bool = True):
-        columns = cls.get_columns()
-        table_name = f"`{cls.get_table_name()}`." if add_tablename else ''
-        def get_column_name(name): return f" {name}" if add_column_name else ''
-        column_string = ',\n'.join(
-            [f"{table_name}`{c['name']}`{get_column_name(c['name'])}" for c in columns])
-        return column_string
+
+        table_name = f"`{cls.__table__}`." if add_tablename else ''
+
+        def get_column_name(name):
+            return f" {name}" if add_column_name else ''
+
+        return ',\n'.join([
+            f"{table_name}`{name}`{get_column_name(name)}"
+            for name, _ in cls.members()
+        ])
 
     @classmethod
     def get_value_string(cls):
-        columns = cls.get_columns()
-        value_string = ',\n'.join(f":{i['name']}" for i in columns)
-        return value_string
+        return ',\n'.join(f":{name}" for name, _ in cls.members())
 
     @classmethod
     def get_update_string(cls):
-        columns = cls.get_columns()
-        update_string = ',\n'.join(
-            f"`{i['name']} = :{i['name']}"
-            for i in columns
-        )
-        return update_string
+        return ',\n'.join(f"`{name}` = :{name}" for name, _ in cls.members())
+
+
+class Input(InputObjectType, Base):
+    pass
+
+
+class Object(ObjectType, Base):
 
     @classmethod
-    def get_table_name(cls):
-        return findall('[A-Z][^A-Z]*', cls.__name__)[-1].lower()
-
-
-class Object(ObjectType, Table):
-
-    __input__ = InputObjectType
-
-    @classmethod
-    def get_columns(cls):
-        columns = []
-        types = {k: v for k, v in getmembers(cls, lambda m: not isroutine(m))}
-        for name, type_ in types.items():
-            curr_type = next(
-                (i for i in TYPE_MAP if isinstance(
-                    type_, i['graphene'])),
-                None
-            )
-            if curr_type is not None:
-                columns.append({
-                    'name': name,
-                    'serialize': curr_type['serialize'],
-                    'deserialize': curr_type['deserialize'],
-                    'boto3': curr_type['boto3'],
-                })
-        return columns
-
-    @classmethod
-    def get_column_string(cls, add_tablename: bool = True, add_column_name: bool = True):
-        columns = cls.get_columns()
-        table_name = f"`{cls.__table__}`." if add_tablename else ''
-        def get_column_name(name): return f" {name}" if add_column_name else ''
-        column_string = ',\n'.join(
-            [f"{table_name}`{c['name']}`{get_column_name(c['name'])}" for c in columns])
-        return column_string
-
-    @classmethod
-    def select_all(cls, after, first):
-        sql = f"SELECT {cls.get_column_string()} FROM `{cls.__table__}` LIMIT {first} OFFSET {after};"
+    def select_all(cls):
+        sql = f"SELECT {cls.get_column_string()} FROM `{cls.__table__}`;"
         res = execute_statement(sql)
-        return process_select_response(res, cls.get_columns())
+        return process_select_response(res, list(cls.members()))
 
     @classmethod
     def select_where(cls, id: int):
@@ -124,7 +75,7 @@ class Object(ObjectType, Table):
             sql,
             sql_parameters=[{'name': 'id', 'value': {'longValue': id}}]
         )
-        rows = process_select_response(res, cls.get_columns())
+        rows = process_select_response(res, list(cls.members()))
         return rows[0] if rows else None
 
     @classmethod
@@ -145,8 +96,7 @@ class Object(ObjectType, Table):
         res = execute_statement(
             sql,
             sql_parameters=[
-                {'name': f'{user.__table__}_id', 'value': {'longValue': id}}
-            ]
+                {'name': f'{user.__table__}_id', 'value': {'longValue': id}}]
         )
 
         used_columns = used.get_columns()
@@ -163,10 +113,19 @@ class Object(ObjectType, Table):
         ]
         return process_select_response(res, columns)
 
+    class Meta:
+        interfaces = (relay.Node,)
+
+    @classmethod
+    def get_node(cls, info, id):
+        node = cls.select_where(id)
+        node['id'] = to_global_id(str(cls), id)
+        return cls(**node)
+
 
 class ObjectConnection(Connection, Table):
 
-    total_count = Int()
+    total_count = Integer()
 
     @staticmethod
     def resolve_total_count(parent, info):
@@ -189,12 +148,13 @@ class Create(Mutation, Table):
                 {item.get_value_string()}
             )
         """
-        res = execute_statement(
-            sql, sql_parameters=item.get_sql_parameters(item))
+        res = execute_statement(sql, item.get_parameters(item))
         created_id = res['generatedFields'][0]['longValue']
-        date_created = date_modified = datetime.utcnow()
+        date_created = date_modified = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
 
-        return item.to_output(created_id, date_created, date_modified)
+        date_created = date_modified = datetime.utcnow()
+        global_id = to_global_id(str(cls), created_id)
+        return item.to_output(global_id, date_created, date_modified)
 
     @staticmethod
     def mutate(parent, info, id):
@@ -204,26 +164,35 @@ class Create(Mutation, Table):
 class Update(Mutation, Table):
     @classmethod
     def commit(cls, id: int, item: Input):
+        item_id = int(from_global_id(id)[1])
         sql = f"""
-        UPDATE
-            `{cls.__table__}`
-        SET (
+        UPDATE `{cls.__table__}`
+        SET 
             {item.get_update_string()}
-        )
         WHERE `id` = :id;
         """
-        parameters = item.get_sql_parameters(
-            item) + [{'name': 'id', 'value': {'longValue': id}}]
+        parameters = item.get_parameters(
+            item) + [{'name': 'id', 'value': {'longValue': item_id}}]
 
-        res = execute_statement(
+        execute_statement(
             sql,
             sql_parameters=parameters
         )
 
-        created_id = res['generatedFields'][0]['longValue']
-        date_created = date_modified = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        sql = f"""
+        SELECT
+            `date_created`
+        FROM `{cls.__table__}`
+        WHERE id = :id;
+        """
+        parameters = [{'name': 'id', 'value': {'longValue': item_id}}]
+        res = execute_statement(sql, sql_parameters=parameters)
 
-        return item.to_output(created_id, date_created, date_modified)
+        rows = process_select_response(res, [['date_created', DateTime]])
+        date_created = rows[0]['date_created'] if rows else None
+        date_modified = datetime.utcnow()
+
+        return item.to_output(id, date_created, date_modified)
 
     @staticmethod
     def mutate(parent, info, id):
@@ -239,7 +208,7 @@ class Delete(Mutation, Table):
         WHERE id = :id;
         """
         execute_statement(sql, sql_parameters=[
-                          {'name': 'id', 'value': {'longValue': id}}])
+                          {'name': 'id', 'value': {'longValue': int(id)}}])
 
     @staticmethod
     def mutate(parent, info, id):

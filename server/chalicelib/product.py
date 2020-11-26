@@ -1,15 +1,37 @@
 # pylint: disable=relative-beyond-top-level
-from graphene import Int, String, Float, Date, DateTime, Boolean, List, Mutation, Field, relay, ID
-from . import base, material
+from graphene import String, Date, DateTime, Boolean, List, Mutation, Field, relay
+from .types import Identifier, Float, Integer
+from . import base, material, types
+
+"""
++-----------------+------------------+------+-----+-------------------+-------+
+| Field           | Type             | Null | Key | Default           | Extra |
++-----------------+------------------+------+-----+-------------------+-------+
+| id              | char(36)         | NO   | PRI | NULL              |       |
+| number          | varchar(255)     | NO   |     | NULL              |       |
+| notes           | text             | NO   |     | NULL              |       |
+| date_created    | datetime         | NO   |     | CURRENT_TIMESTAMP |       |
+| date_modified   | datetime         | NO   |     | CURRENT_TIMESTAMP |       |
+| completed       | tinyint(1)       | NO   |     | 0                 |       |
+| expiration_date | date             | YES  |     | NULL              |       |
+| name            | varchar(255)     | NO   |     | NULL              |       |
+| count           | int(10) unsigned | NO   |     | NULL              |       |
++-----------------+------------------+------+-----+-------------------+-------+
+"""
 
 
-class ProductInput(base.Input):
-    name = String(required=True)
-    number = String(required=True)
-    count = Int(required=True)
-    expiration_date = Date(required=True)
-    notes = String(required=True)
-    completed = Boolean(required=True)
+class ProductBase(
+    types.Numberable,
+    types.Notable,
+    types.Completable,
+    types.Expirable,
+    types.Namable,
+    types.DiscreteCountable,
+):
+    pass
+
+
+class ProductInput(base.Input, ProductBase):
 
     __table__ = 'product'
 
@@ -22,28 +44,15 @@ class ProductInput(base.Input):
         )
 
 
-class Product(base.Object):
-
-    class Meta:
-        interfaces = (relay.Node,)
-
-    id = ID(required=True)
-    name = String(required=True)
-    number = String(required=True)
-    count = Int(required=True)
-    expiration_date = Date(required=True)
-    date_created = DateTime(required=True)
-    date_modified = DateTime(required=True)
-    notes = String(required=True)
-    completed = Boolean(required=True)
-    materials = relay.ConnectionField(
-        material.MaterialConnection, required=True)
+class Product(base.Object, ProductBase, types.Node):
 
     __table__ = 'product'
 
-    @classmethod
-    def get_node(cls, info, id):
-        return Product.select_where(id)
+    def __str__(self):
+        return 'Product'
+
+    materials = relay.ConnectionField(
+        material.MaterialConnection, required=True)
 
     @staticmethod
     def resolve_materials(parent, info):
@@ -56,7 +65,7 @@ class ProductConnection(base.ObjectConnection):
         node = Product
 
     class Edge:
-        count_used = Int()
+        count_used = Integer()
 
         @staticmethod
         def resolve_count_used(parent, info):
@@ -82,7 +91,7 @@ class UpdateProduct(base.Update):
     __table__ = 'product'
 
     class Arguments:
-        id = Int(required=True)
+        id = Identifier(required=True)
         product = ProductInput(required=True)
 
     product = Field(Product)
@@ -97,13 +106,15 @@ class DeleteProduct(base.Delete):
     __table__ = 'product'
 
     class Arguments:
-        id = Int(required=True)
+        id = Identifier(required=True)
 
     product = Field(Product)
 
     @staticmethod
     def mutate(parent, info, id):
-        return {'product': DeleteProduct.commit(id)}
+        print(id)
+        DeleteProduct.commit(id)
+        return {'id': id}
 
 
 class ProductUseMaterial(base.Use):
@@ -111,8 +122,8 @@ class ProductUseMaterial(base.Use):
     __table__ = 'product'
 
     class Arguments:
-        product_id = Int(required=True)
-        material_id = Int(required=True)
+        product_id = Identifier(required=True)
+        material_id = Identifier(required=True)
         count = Float(required=True)
 
     product = Field(Product)
@@ -127,8 +138,8 @@ class ProductUnuseMaterial(base.Unuse):
     __table__ = 'product'
 
     class Arguments:
-        product_id = Int(required=True)
-        material_id = Int(required=True)
+        product_id = Identifier(required=True)
+        material_id = Identifier(required=True)
 
     product = Field(Product)
 

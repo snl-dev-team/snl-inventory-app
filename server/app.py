@@ -87,6 +87,7 @@ def create_material():
         sql = """
             INSERT INTO
                 `material` (
+                    `id`,
                     `name`,
                     `number`,
                     `count`,
@@ -96,6 +97,7 @@ def create_material():
                     `notes`
                 )
                 VALUES (
+                    UUID(),
                     '{name}',
                     '{number}',
                     {count},
@@ -108,6 +110,7 @@ def create_material():
 
         res = execute_statement(sql)
 
+        print(res)
         created_id = res['generatedFields'][0]['longValue']
         date_created = date_modified = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -286,6 +289,7 @@ def create_product():
         sql = """
             INSERT INTO
                 `product` (
+                    `id`,
                     `name`,
                     `number`,
                     `count`,
@@ -294,6 +298,7 @@ def create_product():
                     `notes`
                 )
                 VALUES (
+                    UUID(),
                     '{name}',
                     '{number}',
                     {count},
@@ -305,6 +310,7 @@ def create_product():
 
         res = execute_statement(sql)
 
+        print(res)
         created_id = res['generatedFields'][0]['longValue']
         date_created = date_modified = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -575,166 +581,6 @@ CASE_USE_PRODUCT_COLUMNS = [
 """
 
 
-@ app.route('/case', methods=['POST'], authorizer=authorizer)
-def create_case():
-    try:
-        body = app.current_request.json_body
-        sql = """
-            INSERT INTO
-                `case` (
-                    `name`,
-                    `product_name`,
-                    `product_count`,
-                    `count`,
-                    `number`,
-                    `expiration_date`,
-                    `shipped`,
-                    `notes`
-                )
-                VALUES (
-                    '{name}',
-                    '{product_name}',
-                    {product_count},
-                    {count},
-                    '{number}',
-                    '{expiration_date}',
-                    {shipped},
-                    '{notes}'
-                )
-            """.format(**body)
-
-        res = execute_statement(sql)
-
-        created_id = res['generatedFields'][0]['longValue']
-        date_created = date_modified = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-
-        return Response(
-            body=json.dumps(
-                {
-                    'id': created_id,
-                    'date_created': date_created,
-                    'date_modified': date_modified,
-                }
-            ),
-            status_code=200,
-        )
-
-    except Exception as e:
-        return Response(
-            body=json.dumps({'message': str(e)}),
-            status_code=400,
-        )
-
-
-@app.route('/case', methods=['GET'], authorizer=authorizer)
-def fetch_cases():
-    try:
-        columns_string = ', '.join(i[0] for i in CASE_COLUMNS)
-        sql = """
-            SELECT
-                {columns}
-            FROM
-                `case`;
-            """.format(columns=columns_string)
-        res = execute_statement(sql)
-        data = process_select_response(res, CASE_COLUMNS)
-
-        return Response(
-            body=json.dumps({'data': data}),
-            status_code=200,
-        )
-
-    except Exception as e:
-        return Response(
-            body=json.dumps({'message': str(e)}),
-            status_code=400,
-        )
-
-
-@app.route('/case/{id}', methods=['GET'], authorizer=authorizer)
-def fetch_case(id):
-    try:
-        columns_string = ', '.join(i[0] for i in CASE_COLUMNS)
-        sql = """
-            SELECT
-                {columns}
-            FROM
-                `case`
-            WHERE
-                    `id` = {id};
-            """.format(columns=columns_string)
-        res = execute_statement(sql)
-        data = process_select_response(res, CASE_COLUMNS)
-
-        return Response(
-            body=json.dumps(data[0]),
-            status_code=200,
-        )
-
-    except Exception as e:
-        return Response(
-            body=json.dumps({'message': str(e)}),
-            status_code=400,
-        )
-
-
-@app.route('/case/{id}', methods=['PUT'], authorizer=authorizer)
-def update_case(id):
-    try:
-        body = app.current_request.json_body
-        sql = """
-            UPDATE `case` SET
-                name = '{name}',
-                product_name = '{product_name}',
-                product_count = {product_count},
-                count = {count},
-                number = '{number}',
-                expiration_date = '{expiration_date}',
-                shipped = '{shipped}',
-                date_modified = CURRENT_TIMESTAMP,
-                notes = '{notes}'
-            WHERE id = {id}
-            """.format(**body, id=id)
-
-        execute_statement(sql)
-
-        date_modified = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-
-        return Response(
-            body=json.dumps({'date_modified': date_modified}),
-            status_code=200,
-        )
-
-    except Exception as e:
-        return Response(
-            body=json.dumps({'message': str(e)}),
-            status_code=400,
-        )
-
-
-@app.route('/case/{id}', methods=['DELETE'], authorizer=authorizer)
-def delete_case(id):
-    try:
-        sql = """
-            DELETE FROM
-                `case`
-            WHERE id = {id}
-            """.format(id=id)
-
-        execute_statement(sql)
-
-        return Response(
-            body=json.dumps({}),
-            status_code=200,
-        )
-
-    except Exception as e:
-        return Response(
-            body=json.dumps({'message': str(e)}),
-            status_code=400,
-        )
-
-
 @app.route('/case/{id}/material', methods=['GET'])
 def fetch_case_uses_material(id):
     columns_string = ', '.join(i[0] for i in CASE_USE_MATERIAL_COLUMNS)
@@ -955,10 +801,12 @@ def create_order():
         sql = """
             INSERT INTO
                 `order` (
+                    `id`,
                     `number`,
                     `notes`
                 )
                 VALUES (
+                    UUID(),
                     '{number}',
                     '{notes}'
                 )
@@ -1178,8 +1026,9 @@ def order_unuse_case(id):
 
 @app.route('/graphql', methods=['POST'])
 def graphql():
-    query = json.loads(app.current_request.raw_body.decode())['query']
-    result = schema.execute(query)
+    gql = json.loads(app.current_request.raw_body.decode())
+    variables = gql['variables'] if 'variables' in gql else None
+    result = schema.execute(gql['query'], variables=variables)
     return {'data': result.data}
 
 

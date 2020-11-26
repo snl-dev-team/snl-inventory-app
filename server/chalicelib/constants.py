@@ -10,9 +10,9 @@ TYPE_MAP = [
     },
     {
         'graphene': graphene.types.scalars.ID,
-        'serialize': int,
-        'deserialize': int,
-        'boto3': 'longValue',
+        'serialize': str,
+        'deserialize': str,
+        'boto3': 'stringValue',
     },
     {
         'graphene': graphene.types.scalars.String,

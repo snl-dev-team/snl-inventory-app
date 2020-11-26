@@ -50,7 +50,7 @@ def process_select_response(response, columns):
 
 
 MATERIAL_COLUMNS = [
-    ('id',              str,   'stringValue'),
+    ('id',              int,   'longValue'),
     ('name',            str,   'stringValue'),
     ('number',          str,   'stringValue'),
     ('count',           float, 'doubleValue'),
@@ -239,7 +239,7 @@ def delete_material(id):
 
 
 PRODUCT_COLUMNS = [
-    ('id',              str,   'stringValue'),
+    ('id',              int,   'longValue'),
     ('name',            str,   'stringValue'),
     ('number',          str,   'stringValue'),
     ('count',           int,   'longValue'),
@@ -251,8 +251,8 @@ PRODUCT_COLUMNS = [
 ]
 
 PRODUCT_USES_MATERIAL_COLUMNS = [
-    ('product_id',      str,    'stringValue'),
-    ('material_id',     str,    'stringValue'),
+    ('product_id',      int,    'longValue'),
+    ('material_id',     int,    'longValue'),
     ('count',           float,  'doubleValue')
 ]
 
@@ -521,7 +521,7 @@ def product_unuse_material(id):
 
 
 CASE_COLUMNS = [
-    ('id',              str,   'stringValue'),
+    ('id',              int,   'longValue'),
     ('name',            str,   'stringValue'),
     ('product_name',    str,   'stringValue'),
     ('product_count',   int,   'longValue'),
@@ -535,14 +535,14 @@ CASE_COLUMNS = [
 ]
 
 CASE_USE_MATERIAL_COLUMNS = [
-    ('case_id',         str,    'stringValue'),
-    ('material_id',     str,    'stringValue'),
+    ('case_id',         int,    'longValue'),
+    ('material_id',     int,    'longValue'),
     ('count',           float,  'doubleValue')
 ]
 
 CASE_USE_PRODUCT_COLUMNS = [
-    ('case_id',         str,    'stringValue'),
-    ('product_id',      str,    'stringValue'),
+    ('case_id',         int,    'longValue'),
+    ('product_id',      int,    'longValue'),
     ('count',           int,    'longValue')
 ]
 
@@ -757,7 +757,7 @@ def case_unuse_product(id):
 
 
 ORDER_COLUMNS = [
-    ('id',              str,   'stringValue'),
+    ('id',              int,   'longValue'),
     ('number',          str,   'stringValue'),
     ('date_created',    str,   'stringValue'),
     ('date_modified',   str,   'stringValue'),
@@ -766,8 +766,8 @@ ORDER_COLUMNS = [
 ]
 
 ORDER_USE_CASE_COLUMNS = [
-    ('order_id',        str,    'stringValue'),
-    ('case_id',         str,    'stringValue'),
+    ('order_id',        int,    'longValue'),
+    ('case_id',         int,    'longValue'),
     ('count',           int,    'longValue')
 ]
 

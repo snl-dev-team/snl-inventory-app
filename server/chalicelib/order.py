@@ -1,5 +1,6 @@
 # pylint: disable=relative-beyond-top-level
-from graphene import Int, String, Float, Boolean, Date, DateTime, List, Mutation, Field, relay, ID
+from graphene import Field
+from .types import Identifier, Float, Integer
 from . import base, material, case, types
 
 """
@@ -55,7 +56,7 @@ class OrderConnection(base.ObjectConnection):
         node = Order
 
     class Edge:
-        count_used = Int()
+        count_used = Integer()
 
         @staticmethod
         def resolve_count_used(parent, info):
@@ -81,7 +82,7 @@ class UpdateOrder(base.Update):
     __table__ = 'order'
 
     class Arguments:
-        id = ID(required=True)
+        id = Identifier(required=True)
         order = OrderInput(required=True)
 
     order = Field(Order)
@@ -96,9 +97,9 @@ class DeleteOrder(base.Delete):
     __table__ = 'order'
 
     class Arguments:
-        id = ID(required=True)
+        id = Identifier(required=True)
 
-    id = ID(required=True)
+    id = Identifier(required=True)
 
     @staticmethod
     def mutate(parent, info, id):
@@ -111,9 +112,9 @@ class OrderUseCase(base.Use):
     __table__ = 'order'
 
     class Arguments:
-        order_id = ID(required=True)
-        case_id = ID(required=True)
-        count = Int(required=True)
+        order_id = Identifier(required=True)
+        case_id = Identifier(required=True)
+        count = Integer(required=True)
 
     order = Field(Order)
 
@@ -127,8 +128,8 @@ class OrderUnuseCase(base.Unuse):
     __table__ = 'order'
 
     class Arguments:
-        order_id = ID(required=True)
-        case_id = ID(required=True)
+        order_id = Identifier(required=True)
+        case_id = Identifier(required=True)
 
     order = Field(Order)
 

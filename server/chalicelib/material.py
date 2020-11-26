@@ -1,5 +1,6 @@
 # pylint: disable=relative-beyond-top-level
-from graphene import Int, String, Float, Date, DateTime, Mutation, Field, relay, ID
+from graphene import Int, String, Date, DateTime, Mutation, Field, relay
+from .types import Identifier, Float
 from datetime import datetime
 from . import base, types
 from graphql_relay import to_global_id
@@ -87,7 +88,7 @@ class UpdateMaterial(base.Update):
     __table__ = 'material'
 
     class Arguments:
-        id = ID(required=True)
+        id = Identifier(required=True)
         material = MaterialInput(required=True)
 
     material = Field(Material)
@@ -102,7 +103,7 @@ class DeleteMaterial(base.Delete):
     __table__ = 'material'
 
     class Arguments:
-        id = ID(required=True)
+        id = Identifier(required=True)
 
     material = Field(Material)
 

@@ -1,5 +1,6 @@
 # pylint: disable=relative-beyond-top-level
-from graphene import List, Field, Schema, Int, ObjectType, relay, ID, relay
+from graphene import List, Field, Schema, Int, ObjectType, relay, relay
+from .types import Identifier
 from . import material, product, case, order
 from datetime import datetime
 from datetime import date, datetime

@@ -1,7 +1,8 @@
 # pylint: disable=relative-beyond-top-level
-from graphene import Int, String, Float, Boolean, Date, DateTime, List, Mutation, Field, relay, ID, ObjectType
 from . import base, material, product, types
 from graphql_relay import from_global_id
+from .types import Identifier, Float, String, Integer
+from graphene import relay, Field
 
 
 """
@@ -32,7 +33,7 @@ class CaseBase(
     types.DiscreteCountable,
 ):
     product_name = String(required=True)
-    product_count = Int(required=True)
+    product_count = Integer(required=True)
 
 
 class CaseInput(base.Input, CaseBase):
@@ -74,7 +75,7 @@ class CaseConnection(base.ObjectConnection):
         node = Case
 
     class Edge:
-        count_used = Int()
+        count_used = Integer()
 
         @staticmethod
         def resolve_count_used(parent, info):
@@ -103,7 +104,7 @@ class UpdateCase(base.Update):
     __table__ = 'case'
 
     class Arguments:
-        id = ID(required=True)
+        id = Identifier(required=True)
         case = CaseInput(required=True)
 
     case = Field(Case)
@@ -118,9 +119,9 @@ class DeleteCase(base.Delete):
     __table__ = 'case'
 
     class Arguments:
-        id = ID(required=True)
+        id = Identifier(required=True)
 
-    id = ID(required=True)
+    id = Identifier(required=True)
 
     @staticmethod
     def mutate(parent, info, id):
@@ -134,8 +135,8 @@ class CaseUseMaterial(base.Use):
     __table__ = 'case'
 
     class Arguments:
-        case_id = ID(required=True)
-        material_id = ID(required=True)
+        case_id = Identifier(required=True)
+        material_id = Identifier(required=True)
         count = Float(required=True)
 
     case = Field(Case)
@@ -150,8 +151,8 @@ class CaseUnuseMaterial(base.Unuse):
     __table__ = 'case'
 
     class Arguments:
-        case_id = ID(required=True)
-        material_id = ID(required=True)
+        case_id = Identifier(required=True)
+        material_id = Identifier(required=True)
 
     case = Field(Case)
 
@@ -165,8 +166,8 @@ class CaseUseProduct(base.Use):
     __table__ = 'case'
 
     class Arguments:
-        case_id = ID(required=True)
-        product_id = ID(required=True)
+        case_id = Identifier(required=True)
+        product_id = Identifier(required=True)
         count = Float(required=True)
 
     case = Field(Case)
@@ -181,8 +182,8 @@ class CaseUnuseProduct(base.Unuse):
     __table__ = 'case'
 
     class Arguments:
-        case_id = ID(required=True)
-        product_id = ID(required=True)
+        case_id = Identifier(required=True)
+        product_id = Identifier(required=True)
 
     case = Field(Case)
 

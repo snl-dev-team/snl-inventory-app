@@ -1,5 +1,6 @@
 # pylint: disable=relative-beyond-top-level
-from graphene import Int, String, Float, Date, DateTime, Boolean, List, Mutation, Field, relay, ID
+from graphene import String, Date, DateTime, Boolean, List, Mutation, Field, relay
+from .types import Identifier, Float, Integer
 from . import base, material, types
 
 """
@@ -64,7 +65,7 @@ class ProductConnection(base.ObjectConnection):
         node = Product
 
     class Edge:
-        count_used = Int()
+        count_used = Integer()
 
         @staticmethod
         def resolve_count_used(parent, info):
@@ -90,7 +91,7 @@ class UpdateProduct(base.Update):
     __table__ = 'product'
 
     class Arguments:
-        id = ID(required=True)
+        id = Identifier(required=True)
         product = ProductInput(required=True)
 
     product = Field(Product)
@@ -105,7 +106,7 @@ class DeleteProduct(base.Delete):
     __table__ = 'product'
 
     class Arguments:
-        id = ID(required=True)
+        id = Identifier(required=True)
 
     product = Field(Product)
 
@@ -121,8 +122,8 @@ class ProductUseMaterial(base.Use):
     __table__ = 'product'
 
     class Arguments:
-        product_id = ID(required=True)
-        material_id = ID(required=True)
+        product_id = Identifier(required=True)
+        material_id = Identifier(required=True)
         count = Float(required=True)
 
     product = Field(Product)
@@ -137,8 +138,8 @@ class ProductUnuseMaterial(base.Unuse):
     __table__ = 'product'
 
     class Arguments:
-        product_id = ID(required=True)
-        material_id = ID(required=True)
+        product_id = Identifier(required=True)
+        material_id = Identifier(required=True)
 
     product = Field(Product)
 

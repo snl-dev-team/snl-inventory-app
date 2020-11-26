@@ -16,25 +16,6 @@ import enum
 import uuid
 
 
-class GUID(TypeDecorator):
-    """Platform-independent GUID type.
-
-    Uses Postgresql's GUID type, otherwise uses
-    CHAR(32), storing as stringified hex values.
-
-    """
-    impl = CHAR
-
-    def load_dialect_impl(self, dialect):
-        return dialect.type_descriptor(CHAR(36))
-
-    def process_bind_param(self, value, dialect):
-        return str(value)
-
-    def process_result_value(self, value, dialect):
-        return value
-
-
 database_secrets_arn = os.environ.get('DATABASE_SECRETS_ARN')
 database_name = os.environ.get('DATABASE_NAME')
 database_cluster_arn = os.environ.get('DATABASE_CLUSTER_ARN')
@@ -67,10 +48,10 @@ class Units(enum.Enum):
 
 class Node:
     id = Column(
-        GUID,
+        INTEGER,
         primary_key=True,
+        autoincrement=True,
         nullable=False,
-        default=uuid.uuid4,
     )
     number = Column(
         VARCHAR(255),
@@ -205,12 +186,12 @@ class Product(
 class ProductUsesMaterial(Base, HasContinuousCount):
     __tablename__ = 'product_uses_material'
     product_id = Column(
-        GUID,
+        INTEGER,
         ForeignKey('product.id'),
         primary_key=True
     )
     material_id = Column(
-        GUID,
+        INTEGER,
         ForeignKey('material.id'),
         primary_key=True
     )
@@ -270,12 +251,12 @@ class CaseUsesMaterial(
 ):
     __tablename__ = 'case_uses_material'
     case_id = Column(
-        GUID,
+        INTEGER,
         ForeignKey('case.id'),
         primary_key=True
     )
     material_id = Column(
-        GUID,
+        INTEGER,
         ForeignKey('material.id'),
         primary_key=True
     )
@@ -296,12 +277,12 @@ class CaseUsesProduct(Base, HasDiscreteCount):
     __tablename__ = 'case_uses_product'
 
     case_id = Column(
-        GUID,
+        INTEGER,
         ForeignKey('case.id'),
         primary_key=True
     )
     product_id = Column(
-        GUID,
+        INTEGER,
         ForeignKey('product.id'),
         primary_key=True
     )
@@ -331,12 +312,12 @@ class Order(Base, Node, Completable):
 class OrderUsesCase(Base, HasDiscreteCount):
     __tablename__ = 'order_uses_case'
     order_id = Column(
-        GUID,
+        INTEGER,
         ForeignKey('order.id'),
         primary_key=True
     )
     case_id = Column(
-        GUID,
+        INTEGER,
         ForeignKey('case.id'),
         primary_key=True
     )

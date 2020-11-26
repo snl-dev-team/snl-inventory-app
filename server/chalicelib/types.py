@@ -1,6 +1,133 @@
 
-from graphene.types import ID, String, Int, Float, Boolean, Date, DateTime, Enum
+from graphene import types
 import enum
+from datetime import date, datetime
+
+
+class BaseType:
+    graphene = None
+    python = None
+    boto3 = None
+
+    @classmethod
+    def serialize(cls, v):
+        pass
+
+    @classmethod
+    def deserialize(cls, v):
+        pass
+
+
+class Identifier(types.ID):
+    graphene = types.ID
+    python = int
+    boto3 = 'longValue'
+
+    @classmethod
+    def serialize(cls, v):
+        return str(v)
+
+    @classmethod
+    def deserialize(cls, v):
+        return str(v)
+
+
+class String(types.String, BaseType):
+    graphene = types.String
+    python = str
+    boto3 = 'stringValue'
+
+    @classmethod
+    def serialize(cls, v):
+        return str(v)
+
+    @classmethod
+    def deserialize(cls, v):
+        return str(v)
+
+
+class Integer(types.Int, BaseType):
+    graphene = types.Int
+    python = int
+    boto3 = 'longValue'
+
+    @classmethod
+    def serialize(cls, v):
+        return int(v)
+
+    @classmethod
+    def deserialize(cls, v):
+        return int(v)
+
+
+class Float(types.Float, BaseType):
+    graphene = types.Float
+    python = float
+    boto3 = 'doubleValue'
+
+    @classmethod
+    def serialize(cls, v):
+        return float(v)
+
+    @classmethod
+    def deserialize(cls, v):
+        return float(v)
+
+
+class Boolean(types.Boolean, BaseType):
+    graphene = types.Boolean
+    python = bool
+    boto3 = 'booleanValue'
+
+    @classmethod
+    def serialize(cls, v):
+        return bool(v)
+
+    @classmethod
+    def deserialize(cls, v):
+        return bool(v)
+
+
+class DateTime(types.DateTime):
+    graphene = types.DateTime
+    python = datetime
+    boto3 = 'stringValue'
+
+    @classmethod
+    def serialize(cls, v):
+        return v.isoformat()
+
+    @classmethod
+    def deserialize(cls, v):
+        return datetime.fromisoformat(v)
+
+
+class Date(types.Date):
+    graphene = types.Date
+    python = date
+    boto3 = 'stringValue'
+
+    @classmethod
+    def serialize(cls, v):
+        return v.isoformat()
+
+    @classmethod
+    def deserialize(cls, v):
+        return date.fromisoformat(v)
+
+
+class Enum(types.Enum):
+    graphene = types.Enum
+    python = str
+    boto3 = 'stringValue'
+
+    @classmethod
+    def serialize(cls, v):
+        return str(v)
+
+    @classmethod
+    def deserialize(cls, v):
+        return str(v)
 
 
 class Units(enum.Enum):
@@ -13,7 +140,7 @@ class Units(enum.Enum):
 
 
 class Node:
-    id = ID(required=True)
+    id = Identifier(required=True)
     date_created = DateTime(required=True)
     date_modified = DateTime(required=True)
 
@@ -39,7 +166,7 @@ class Namable:
 
 
 class Pricable:
-    price = Int(required=True)
+    price = Integer(required=True)
 
 
 class Measurable:
@@ -47,7 +174,7 @@ class Measurable:
 
 
 class DiscreteCountable:
-    count = Int(required=True)
+    count = Integer(required=True)
 
 
 class ContinuousCountable:

@@ -10,7 +10,8 @@ import { useHistory, useLocation } from 'react-router-dom';
 import Switch from '@material-ui/core/Switch';
 import { FormControlLabel } from '@material-ui/core';
 import { useMutation } from '@apollo/client';
-import { UPDATE_CASE, CREATE_CASE } from '../graphql/cases';
+import produce from 'immer';
+import { UPDATE_CASE, CREATE_CASE, GET_CASES } from '../graphql/cases';
 
 export default function UpsertCaseDialog() {
   const useQueryString = () => new URLSearchParams(useLocation().search);
@@ -34,10 +35,35 @@ export default function UpsertCaseDialog() {
   const [notes, setNotes] = useState(queryString.get('notes'));
 
   const id = queryString.get('id');
-
   const isAdd = id === null;
-
   const canSave = true;
+
+  const variables = {
+    id,
+    name,
+    productName,
+    productCount,
+    count,
+    number,
+    expirationDate,
+    shipped,
+    notes,
+  };
+
+  const updateCache = (client, { data: { createCase: { case_ } } }) => {
+    const clientData = client.readQuery({
+      query: GET_CASES,
+    });
+
+    const newData = produce(clientData, (draftState) => {
+      draftState.cases.edges.push({ __typename: 'CaseEdge', node: case_ });
+    });
+
+    client.writeQuery({
+      query: GET_CASES,
+      data: newData,
+    });
+  };
 
   const getTitle = () => {
     if (isAdd) {
@@ -48,33 +74,15 @@ export default function UpsertCaseDialog() {
 
   const createCaseAndClose = () => {
     createCase({
-      variables: {
-        name,
-        productName,
-        productCount,
-        count,
-        number,
-        expirationDate,
-        shipped,
-        notes,
-      },
+      variables,
+      update: updateCache,
     });
     history.push('/cases');
   };
 
   const updateCaseAndClose = () => {
     updateCase({
-      variables: {
-        id,
-        name,
-        productName,
-        productCount,
-        count,
-        number,
-        expirationDate,
-        shipped,
-        notes,
-      },
+      variables,
     });
     history.push('/cases');
   };

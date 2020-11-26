@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
+import React from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import Grid from '@material-ui/core/Grid';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { useHistory, useLocation } from 'react-router-dom';
-import Switch from '@material-ui/core/Switch';
-import { FormControlLabel } from '@material-ui/core';
+import { Button, LinearProgress } from '@material-ui/core';
 import { useMutation } from '@apollo/client';
 import produce from 'immer';
+import { Formik, Form, Field } from 'formik';
+import Grid from '@material-ui/core/Grid';
+import { TextField, CheckboxWithLabel } from 'formik-material-ui';
+import { DatePicker } from 'formik-material-ui-pickers';
 import { UPDATE_CASE, CREATE_CASE, GET_CASES } from '../graphql/cases';
 
 export default function UpsertCaseDialog() {
@@ -25,189 +25,169 @@ export default function UpsertCaseDialog() {
     history.push('/cases');
   };
 
-  const [name, setName] = useState(queryString.get('name'));
-  const [productName, setProductName] = useState(queryString.get('productName'));
-  const [productCount, setProductCount] = useState(queryString.get('productCount'));
-  const [count, setCount] = useState(queryString.get('count'));
-  const [number, setNumber] = useState(queryString.get('number'));
-  const [expirationDate, setExpirationDate] = useState(queryString.get('expirationDate'));
-  const [shipped, setShipped] = useState(queryString.get('shipped') === 'true');
-  const [notes, setNotes] = useState(queryString.get('notes'));
-
   const id = queryString.get('id');
-  const isAdd = id === null;
-  const canSave = true;
-
-  const variables = {
-    id,
-    name,
-    productName,
-    productCount,
-    count,
-    number,
-    expirationDate,
-    shipped,
-    notes,
-  };
-
-  const updateCache = (client, { data: { createCase: { case_ } } }) => {
-    const clientData = client.readQuery({
-      query: GET_CASES,
-    });
-
-    const newData = produce(clientData, (draftState) => {
-      draftState.cases.edges.push({ __typename: 'CaseEdge', node: case_ });
-    });
-
-    client.writeQuery({
-      query: GET_CASES,
-      data: newData,
-    });
-  };
+  const isUpdate = id !== null;
 
   const getTitle = () => {
-    if (isAdd) {
+    if (isUpdate) {
       return 'Create Case';
     }
     return 'Edit Case';
   };
 
-  const createCaseAndClose = () => {
-    createCase({
-      variables,
-      update: updateCache,
-    });
-    history.push('/cases');
+  const onSubmit = (values, { setSubmitting }) => {
+    setSubmitting(true);
+    if (isUpdate) {
+      updateCase({
+        variables: { ...values, id },
+      }).then(() => {
+        setSubmitting(false);
+        history.push('/cases');
+      });
+    } else {
+      createCase({
+        variables: values,
+        update: (client, { data: { createCase: { case: case_ = {} } = {} } = {} } = {}) => {
+          const clientData = client.readQuery({
+            query: GET_CASES,
+          });
+          const newData = produce(clientData, (draftState) => {
+            draftState.cases.edges.push({ __typename: 'CaseEdge', node: case_ });
+          });
+          client.writeQuery({
+            query: GET_CASES,
+            data: newData,
+          });
+        },
+      }).then(() => {
+        setSubmitting(false);
+        history.push('/cases');
+      });
+    }
   };
 
-  const updateCaseAndClose = () => {
-    updateCase({
-      variables,
-    });
-    history.push('/cases');
+  const getQueryStringValue = (key, default_) => {
+    const value = queryString.get(key);
+    if (value === null || value === 'null') {
+      return default_;
+    }
+    if (value === 'true') {
+      return true;
+    }
+    if (value === 'false') {
+      return false;
+    }
+    if (key === 'count' || key === 'productCount') {
+      return Number(value);
+    }
+    return value;
   };
 
   return (
-    <div>
-      <Dialog
-        open
-        onClose={handleClose}
-        aria-labelledby="form-dialog-title"
+    <Dialog
+      open
+      onClose={handleClose}
+      aria-labelledby="form-dialog-title"
+    >
+      <DialogTitle id="form-dialog-title">
+        {getTitle()}
+      </DialogTitle>
+      <Formik
+        initialValues={{
+          number: getQueryStringValue('number', ''),
+          name: getQueryStringValue('name', ''),
+          count: getQueryStringValue('count', 0),
+          expirationDate: getQueryStringValue('expirationDate', null),
+          shipped: getQueryStringValue('shipped', false),
+          notes: getQueryStringValue('notes', ''),
+          productName: getQueryStringValue('productName', ''),
+          productCount: getQueryStringValue('productCount', 0),
+        }}
+        onSubmit={onSubmit}
       >
-        <DialogTitle id="form-dialog-title">
-          {getTitle()}
-        </DialogTitle>
-        <DialogContent dividers>
-          <Grid container spacing={3} justify="center">
-            <Grid item>
-              <TextField
-                autoFocus
-                margin="dense"
-                label="Case Name"
-                type="text"
-                fullWidth
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                autoFocus
-                margin="dense"
-                label="Product Name"
-                type="text"
-                fullWidth
-                value={productName}
-                onChange={(e) => setProductName(e.target.value)}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                autoFocus
-                margin="dense"
-                label="Product Count"
-                type="number"
-                fullWidth
-                value={productCount}
-                onChange={(e) => setProductCount(parseInt(e.target.value, 10))}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                margin="dense"
-                label="Lot Number"
-                type="text"
-                fullWidth
-                value={number}
-                onChange={(e) => setNumber(e.target.value)}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                margin="dense"
-                label="Count"
-                type="number"
-                fullWidth
-                value={count}
-                onChange={(e) => setCount(parseInt(e.target.value, 10))}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                margin="dense"
-                label="Expiration Date"
-                type="date"
-                fullWidth
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                value={expirationDate}
-                onChange={(e) => setExpirationDate(e.target.value)}
-              />
-            </Grid>
-            <Grid item>
-              <FormControlLabel
-                style={{ paddingTop: 25 }}
-                control={(
-                  <Switch
-                    checked={shipped}
-                    size="small"
-                    onChange={(e) => setShipped(e.target.checked)}
-                  />
-                )}
-                labelPlacement="start"
-                label="Shipped"
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                autoFocus
-                margin="dense"
-                label="Notes"
-                multiline
-                rowsMax={6}
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-              />
-            </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => history.push('/cases')}
-            color="primary"
-          >
-            Cancel
-          </Button>
-          <Button
-            disabled={!canSave}
-            onClick={isAdd ? createCaseAndClose : updateCaseAndClose}
-            color="primary"
-          >
-            {isAdd ? 'Create' : 'Save'}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
+        {({ submitForm, isSubmitting }) => (
+          <>
+            {isSubmitting && <LinearProgress />}
+            <DialogContent dividers>
+              <Form>
+                <Grid container spacing={3}>
+                  <Grid item>
+                    <Field
+                      component={TextField}
+                      type="text"
+                      label="Number"
+                      name="number"
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Field
+                      component={TextField}
+                      name="name"
+                      type="text"
+                      label="Name"
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Field
+                      component={TextField}
+                      type="number"
+                      label="Count"
+                      name="count"
+                      InputProps={{ inputProps: { min: 0 } }}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Field
+                      component={DatePicker}
+                      label="Expiration Date"
+                      name="expirationDate"
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Field
+                      component={TextField}
+                      type="text"
+                      label="Product Name"
+                      name="productName"
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Field
+                      component={TextField}
+                      type="number"
+                      label="Product Count"
+                      name="productCount"
+                      InputProps={{ inputProps: { min: 0 } }}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Field
+                      component={CheckboxWithLabel}
+                      type="checkbox"
+                      name="shipped"
+                      Label={{ label: 'Shipped' }}
+                    />
+                  </Grid>
+                </Grid>
+              </Form>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() => history.push('/cases')}
+                color="primary"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={submitForm}
+                color="primary"
+              >
+                {isUpdate ? 'Update' : 'Create'}
+              </Button>
+            </DialogActions>
+          </>
+        )}
+      </Formik>
+    </Dialog>
   );
 }

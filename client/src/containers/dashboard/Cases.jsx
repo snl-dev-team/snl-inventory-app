@@ -78,7 +78,7 @@ const CasesDashboard = ({ searchString }) => {
               title={case_.name}
               onClickShowMaterials={() => {}}
               onClickShowProducts={() => {}}
-              onClickEdit={() => history.push(`/cases/edit?${getQueryString(case_)}`)}
+              onClickEdit={() => history.push(`/cases/update?${getQueryString(case_)}`)}
               onClickDelete={() => deleteCase({
                 variables: { id: case_.id },
                 update: updateCache(case_.id),
@@ -93,20 +93,20 @@ const CasesDashboard = ({ searchString }) => {
         color="secondary"
         aria-label="add"
         className={classes.margin}
-        onClick={() => history.push('/cases/add')}
+        onClick={() => history.push('/cases/create')}
       >
         <AddIcon />
       </Fab>
 
       <Route
         exact
-        path="/cases/add"
+        path="/cases/create"
         component={UpsertCaseDialog}
       />
 
       <Route
         exact
-        path="/cases/edit"
+        path="/cases/update"
         component={UpsertCaseDialog}
       />
     </>

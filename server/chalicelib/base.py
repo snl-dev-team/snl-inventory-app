@@ -6,7 +6,7 @@ from datetime import datetime
 from inspect import getmembers, isroutine
 from .database import execute_statement, process_select_response
 from graphql_relay import to_global_id, from_global_id
-from .types import Integer, BaseType
+from .types import Integer, BaseType, DateTime
 
 
 class Table:
@@ -25,9 +25,9 @@ class Base(Table):
         return [
             {
                 'name': name,
-                'value': {
-                    column.boto3: column.serialize(value)
-                }
+                'value': {column.boto3: column.serialize(value)}
+                if column.serialize(value) is not None
+                else {'isNull': True}
             }
             for name, column in cls.members()
             for item_name, value in vars(item).items()
@@ -66,7 +66,7 @@ class Object(ObjectType, Base):
     def select_all(cls):
         sql = f"SELECT {cls.get_column_string()} FROM `{cls.__table__}`;"
         res = execute_statement(sql)
-        return process_select_response(res, cls.members())
+        return process_select_response(res, list(cls.members()))
 
     @classmethod
     def select_where(cls, id: int):
@@ -75,7 +75,7 @@ class Object(ObjectType, Base):
             sql,
             sql_parameters=[{'name': 'id', 'value': {'longValue': id}}]
         )
-        rows = process_select_response(res, cls.members())
+        rows = process_select_response(res, list(cls.members()))
         return rows[0] if rows else None
 
     @classmethod
@@ -163,8 +163,8 @@ class Create(Mutation, Table):
 
 class Update(Mutation, Table):
     @classmethod
-    def commit(cls, id: str, item: Input):
-        _, item_id = from_global_id(id)
+    def commit(cls, id: int, item: Input):
+        item_id = int(from_global_id(id)[1])
         sql = f"""
         UPDATE `{cls.__table__}`
         SET 
@@ -188,12 +188,7 @@ class Update(Mutation, Table):
         parameters = [{'name': 'id', 'value': {'longValue': item_id}}]
         res = execute_statement(sql, sql_parameters=parameters)
 
-        rows = process_select_response(res, [{
-            'name': 'date_created',
-            'serialize': lambda x: x.isoformat(),
-            'deserialize': datetime.fromisoformat,
-            'boto3': 'stringValue',
-        }])
+        rows = process_select_response(res, [['date_created', DateTime]])
         date_created = rows[0]['date_created'] if rows else None
         date_modified = datetime.utcnow()
 
@@ -213,7 +208,7 @@ class Delete(Mutation, Table):
         WHERE id = :id;
         """
         execute_statement(sql, sql_parameters=[
-                          {'name': 'id', 'value': {'longValue': id}}])
+                          {'name': 'id', 'value': {'longValue': int(id)}}])
 
     @staticmethod
     def mutate(parent, info, id):

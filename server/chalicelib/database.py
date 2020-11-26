@@ -15,8 +15,6 @@ rds_client = boto3.client('rds-data')
 def execute_statement(sql, sql_parameters=[]):
     sql = sqlparse.format(sql, reindent=True)
     logging.info(sql)
-    print(sql_parameters)
-    # print(json.dumps(sql_parameters, indent=2))
     response = rds_client.execute_statement(
         secretArn=database_secrets_arn,
         database=database_name,
@@ -27,14 +25,15 @@ def execute_statement(sql, sql_parameters=[]):
     return response
 
 
-def process_select_response(response, columns):
+def process_select_response(response, members):
     records = response['records']
     data = []
     for record in records:
         data_row = {}
-        for entry, column in zip(record, columns):
-            name, deserialize, entry_type = column['name'], column['deserialize'], column['boto3']
-            value = entry.get(entry_type, None)
-            data_row[name] = None if value is None else deserialize(value)
+        for entry, member in zip(record, members):
+            name, column = member
+            value = entry.get(column.boto3, None)
+            data_row[name] = None if value is None else column.deserialize(
+                value)
         data.append(data_row)
     return data

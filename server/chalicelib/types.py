@@ -1,5 +1,5 @@
 
-from graphene import types
+from graphene import types, relay
 import enum
 from datetime import date, datetime
 
@@ -18,7 +18,7 @@ class BaseType:
         pass
 
 
-class Identifier(types.ID):
+class Identifier(types.ID, BaseType):
     graphene = types.ID
     python = int
     boto3 = 'longValue'
@@ -88,35 +88,43 @@ class Boolean(types.Boolean, BaseType):
         return bool(v)
 
 
-class DateTime(types.DateTime):
+class DateTime(types.DateTime, BaseType):
     graphene = types.DateTime
     python = datetime
     boto3 = 'stringValue'
 
     @classmethod
     def serialize(cls, v):
+        if v is None:
+            return None
         return v.isoformat()
 
     @classmethod
     def deserialize(cls, v):
+        if v is None:
+            return None
         return datetime.fromisoformat(v)
 
 
-class Date(types.Date):
+class Date(types.Date, BaseType):
     graphene = types.Date
     python = date
     boto3 = 'stringValue'
 
     @classmethod
     def serialize(cls, v):
+        if v is None:
+            return None
         return v.isoformat()
 
     @classmethod
     def deserialize(cls, v):
+        if v is None:
+            return None
         return date.fromisoformat(v)
 
 
-class Enum(types.Enum):
+class Enum(types.Enum, BaseType):
     graphene = types.Enum
     python = str
     boto3 = 'stringValue'
@@ -154,7 +162,7 @@ class Shippable:
 
 
 class Expirable:
-    expiration_date = Date()
+    expiration_date = Date(required=False)
 
 
 class Notable:

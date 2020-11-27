@@ -111,7 +111,7 @@ export default function UpsertCaseDialog() {
             {isSubmitting && <LinearProgress />}
             <DialogContent dividers>
               <Form>
-                <Grid container spacing={3}>
+                <Grid container spacing={3} justify="center">
                   <Grid item>
                     <Field
                       component={TextField}

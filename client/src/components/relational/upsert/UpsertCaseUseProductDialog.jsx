@@ -35,7 +35,7 @@ export default function UpsertCaseUseProductDialog() {
             {isSubmitting && <LinearProgress />}
             <DialogContent dividers>
               <Form>
-                <Grid container spacing={3}>
+                <Grid container spacing={3} justify="center">
                   <Grid item>
                     <Field
                       name="name"

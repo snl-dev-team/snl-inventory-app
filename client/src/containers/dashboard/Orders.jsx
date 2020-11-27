@@ -57,7 +57,7 @@ const OrdersDashboard = ({ searchString }) => {
               .map(([name, value]) => ({ name: lodash.startCase(name), value: String(value) }))}
             title={node.number}
             onClickShowCases={() => push(`/orders/${node.id}/cases`)}
-            onClickEdit={() => push(`/orders/${node.id}/`)}
+            onClickEdit={() => push(`/orders/${node.id}/update`)}
             onClickDelete={() => deleteOrder({
               variables: { id: node.id },
               update: updateCache(node.id),

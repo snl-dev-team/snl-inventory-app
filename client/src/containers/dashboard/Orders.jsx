@@ -1,14 +1,19 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Fab from '@material-ui/core/Fab';
 import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import Grid from '@material-ui/core/Grid';
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory, Route } from 'react-router-dom';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { Route, useHistory } from 'react-router';
 import PropTypes from 'prop-types';
-import OrderCard from '../../components/OrderCard';
-import { fetchOrders } from '../../actions/order';
+import { useQuery, useMutation } from '@apollo/client';
+import lodash from 'lodash';
+import produce from 'immer';
+import {
+  GET_ORDERS, DELETE_ORDER,
+} from '../../graphql/orders';
 import UpsertOrderDialog from '../../components/UpsertOrderDialog';
+import InventoryCard from '../../components/InventoryCard';
 
 const useStyles = makeStyles((theme) => ({
   margin: {
@@ -24,39 +29,61 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const OrdersDashboard = ({ searchString = '', searching = false }) => {
+const OrdersDashboard = ({ searchString }) => {
   const classes = useStyles();
   const history = useHistory();
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.user.token);
 
-  useEffect(() => {
-    if (!searching) {
-      dispatch(fetchOrders(token));
-    }
-  }, [searching, dispatch, token]);
+  const {
+    loading, error, data,
+  } = useQuery(GET_ORDERS);
 
-  const orders = useSelector(
-    (state) => Object.values(state.orders)
-      .filter((order) => (order.number.toLowerCase().includes(searchString))),
-    (before, after) => JSON.stringify(before) === JSON.stringify(after),
-  );
+  const [deleteOrder] = useMutation(DELETE_ORDER);
 
-  useEffect(() => {
-  });
+  const updateCache = (id) => (client) => {
+    const clientData = client.readQuery({
+      query: GET_ORDERS,
+    });
+
+    const newData = produce(clientData, (draftState) => {
+      const idx = draftState.orders.edges
+        .findIndex(({ node }) => node.id === id);
+      draftState.orders.edges.splice(idx, 1);
+    });
+
+    client.writeQuery({
+      query: GET_ORDERS,
+      data: newData,
+    });
+  };
+
+  if (loading || error) {
+    return <CircularProgress />;
+  }
+
+  const orders = data.orders.edges
+    .map((edge) => edge.node)
+    .filter(({ number }) => searchString === null || number.toLowerCase().includes(searchString));
+
+  const getQueryString = (object) => Object.keys(object)
+    .map((key) => `${key}=${object[key]}`)
+    .join('&');
 
   return (
-    <div>
+    <>
       <Grid container spacing={3}>
         {orders.map((order) => (
           <Grid key={order.id}>
-            <OrderCard
-              number={order.number}
-              id={order.id}
-              dateCreated={order.dateCreated}
-              dateModified={order.dateModified}
-              notes={order.notes}
-              completed={order.completed}
+            <InventoryCard
+              data={Object.entries(order)
+                .filter(([name]) => !['__typename', 'id'].includes(name))
+                .map(([name, value]) => ({ name: lodash.startCase(name), value: String(value) }))}
+              title={order.number}
+              onClickShowCases={() => {}}
+              onClickEdit={() => history.push(`/orders/update?${getQueryString(order)}`)}
+              onClickDelete={() => deleteOrder({
+                variables: { id: order.id },
+                update: updateCache(order.id),
+              })}
             />
           </Grid>
         ))}
@@ -67,29 +94,27 @@ const OrdersDashboard = ({ searchString = '', searching = false }) => {
         color="secondary"
         aria-label="add"
         className={classes.margin}
-        onClick={() => history.push('/orders/add')}
+        onClick={() => history.push('/orders/create')}
       >
         <AddIcon />
       </Fab>
 
       <Route
         exact
-        path="/orders/add"
+        path={['/orders/create', '/orders/update']}
         component={UpsertOrderDialog}
       />
 
-      <Route
-        exact
-        path="/orders/edit/:id"
-        component={UpsertOrderDialog}
-      />
-    </div>
+    </>
   );
 };
 
 export default OrdersDashboard;
 
 OrdersDashboard.propTypes = {
-  searchString: PropTypes.string.isRequired,
-  searching: PropTypes.bool.isRequired,
+  searchString: PropTypes.string,
+};
+
+OrdersDashboard.defaultProps = {
+  searchString: null,
 };

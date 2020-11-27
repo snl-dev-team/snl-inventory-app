@@ -2,6 +2,7 @@
 from graphene import types, relay
 import enum
 from datetime import date, datetime
+import graphene
 
 
 class BaseType:
@@ -124,7 +125,7 @@ class Date(types.Date, BaseType):
         return date.fromisoformat(v)
 
 
-class Enum(types.Enum, BaseType):
+class Enum(graphene.Enum, BaseType):
     graphene = types.Enum
     python = str
     boto3 = 'stringValue'
@@ -136,15 +137,6 @@ class Enum(types.Enum, BaseType):
     @classmethod
     def deserialize(cls, v):
         return str(v)
-
-
-class Units(enum.Enum):
-    UNIT = 'UNIT'
-    KG = 'KG'
-    LB = 'LB'
-    G = 'G'
-    L = 'L'
-    ML = 'ML'
 
 
 class Node:
@@ -178,7 +170,7 @@ class Pricable:
 
 
 class Measurable:
-    units = Enum.from_enum(Units)
+    units = String(required=True)
 
 
 class DiscreteCountable:

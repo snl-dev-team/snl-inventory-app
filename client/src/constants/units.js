@@ -1,8 +1,8 @@
 export default {
-  UNIT: 'unit',
-  KG: 'kg',
-  LB: 'lb',
-  G: 'g',
+  UNIT: 'UNIT',
+  KG: 'KG',
+  LB: 'LB',
+  G: 'G',
   L: 'L',
-  mL: 'mL',
+  mL: 'ML',
 };

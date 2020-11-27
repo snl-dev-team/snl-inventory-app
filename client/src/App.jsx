@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import Amplify from 'aws-amplify';
 import GraphiQL from 'graphiql';
 import fetch from 'isomorphic-fetch';
 import Dashboard from './containers/dashboard/Dashboard';
@@ -19,14 +18,6 @@ function graphQLFetcher(graphQLParams) {
     body: JSON.stringify(graphQLParams),
   }).then((response) => response.json());
 }
-
-Amplify.configure({
-  Auth: {
-    region: process.env.REACT_APP_REGION,
-    userPoolId: process.env.REACT_APP_USER_POOL_ID,
-    userPoolWebClientId: process.env.REACT_APP_USER_POOL_WEB_CLIENT_ID,
-  },
-});
 
 const App = () => (
   <Router>

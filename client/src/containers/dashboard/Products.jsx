@@ -15,6 +15,7 @@ import {
 import UpsertProductDialog from '../../components/UpsertProductDialog';
 import InventoryCard from '../../components/InventoryCard';
 import ProductUseMaterialDialog from '../../components/ProductUseMaterialDialog';
+import UseMaterialDialog from '../../components/UseMaterialDialog';
 
 const useStyles = makeStyles((theme) => ({
   margin: {
@@ -110,6 +111,11 @@ const ProductsDashboard = ({ searchString }) => {
       <Route
         path="/products/:id/materials"
         component={ProductUseMaterialDialog}
+      />
+
+      <Route
+        path="/products/:id/materials/use"
+        component={UseMaterialDialog}
       />
 
     </>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import AppBar from '@material-ui/core/AppBar';
@@ -6,7 +6,6 @@ import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
-import Slide from '@material-ui/core/Slide';
 import { useHistory, useParams } from 'react-router';
 import { useQuery } from '@apollo/client';
 import Grid from '@material-ui/core/Grid';
@@ -26,9 +25,6 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(2),
     flex: 1,
   },
-  grid: {
-    margin: theme.spacing(3),
-  },
   fab: {
     margin: 0,
     top: 'auto',
@@ -37,27 +33,29 @@ const useStyles = makeStyles((theme) => ({
     left: 'auto',
     position: 'fixed',
   },
+  grid: {
+    padding: theme.spacing(3),
+  },
 }));
-
-// eslint-disable-next-line react/jsx-props-no-spreading
-const Transition = React.forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
 
 export default function ProductUseMaterialDialog() {
   const { id } = useParams();
   const classes = useStyles();
   const history = useHistory();
   const { data, loading } = useQuery(GET_PRODUCT_MATERIALS, { variables: { id } });
+  const [open, setOpen] = useState(true);
 
   const handleClose = () => {
-    history.push('/products');
+    setOpen(false);
+    setTimeout(() => history.push('/products'), 100);
   };
 
   return (
     <Dialog
       fullScreen
-      open
+      transitionDuration={0}
+      open={open}
       onClose={handleClose}
-      TransitionComponent={Transition}
       PaperProps={{
         style: {
           backgroundColor: '#fafafa',
@@ -79,7 +77,7 @@ export default function ProductUseMaterialDialog() {
       <CssBaseline />
       {loading && <CircularProgress />}
       {!loading && (
-      <Grid container spacing={3} className={classes.grid}>
+      <Grid container className={classes.grid}>
         {data.product.materials.edges.map(({ node, countUsed }) => (
           <Grid key={node.id}>
             <InventoryCard
@@ -88,6 +86,8 @@ export default function ProductUseMaterialDialog() {
                 .concat([['countUsed', countUsed]])
                 .map(([name, value]) => ({ name: lodash.startCase(name), value: String(value) }))}
               title={node.name}
+              onClickDelete={() => {}}
+              onClickEdit={() => {}}
             />
           </Grid>
         ))}
@@ -98,7 +98,7 @@ export default function ProductUseMaterialDialog() {
         color="secondary"
         aria-label="add"
         className={classes.fab}
-        onClick={() => history.push(`/products/${id}/materials/create`)}
+        onClick={() => history.push(`/products/${id}/materials/use`)}
       >
         <AddIcon />
       </Fab>

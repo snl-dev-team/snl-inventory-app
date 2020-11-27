@@ -93,14 +93,10 @@ export default function UseDialog({
   );
 }
 
-UseDialog.defaultProps = {
-  children: [],
-};
-
 UseDialog.propTypes = {
   onClickAdd: PropTypes.func.isRequired,
   onClickCancel: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
   loading: PropTypes.bool.isRequired,
-  children: PropTypes.arrayOf(PropTypes.node),
+  children: PropTypes.arrayOf(PropTypes.node).isRequired,
 };

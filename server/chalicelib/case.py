@@ -139,7 +139,8 @@ class CaseUseMaterial(base.Use):
         material_id = ID(required=True)
         count = Float(required=True)
 
-    case = Field(Case)
+    material = Field(material.Material, required=True)
+    count_used = Float(required=True)
 
     @staticmethod
     def mutate(parent, info, case_id: int, material_id: int, count: float):
@@ -153,7 +154,7 @@ class CaseUnuseMaterial(base.Unuse):
         case_id = ID(required=True)
         material_id = ID(required=True)
 
-    case = Field(Case)
+    material = Field(material.Material, required=True)
 
     @staticmethod
     def mutate(parent, info, case_id: int, material_id: int):
@@ -166,9 +167,10 @@ class CaseUseProduct(base.Use):
     class Arguments:
         case_id = ID(required=True)
         product_id = ID(required=True)
-        count = Float(required=True)
+        count = Integer(required=True)
 
-    case = Field(Case)
+    product = Field(product.Product, required=True)
+    count_used = Integer(required=True)
 
     @staticmethod
     def mutate(parent, info, case_id: int, product_id: int, count: int):
@@ -182,7 +184,7 @@ class CaseUnuseProduct(base.Unuse):
         case_id = ID(required=True)
         product_id = ID(required=True)
 
-    case = Field(Case)
+    product = Field(product.Product, required=True)
 
     @staticmethod
     def mutate(parent, info, case_id: int, product_id: int):

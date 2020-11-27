@@ -82,6 +82,36 @@ const GET_PRODUCT_MATERIALS = gql`
   ${MATERIAL_FRAGMENT}
 `;
 
+const PRODUCT_USE_MATERIAL = gql`
+  mutation ProductUseMaterial($productId: ID!, $materialId: ID!, $count: Float!) {
+    productUseMaterial(
+      materialId: $materialId
+      productId: $productId
+      count: $count
+    ) {
+      countUsed
+      material {
+        ...Material
+      }
+    }
+  }
+  ${MATERIAL_FRAGMENT}
+`;
+
+const PRODUCT_UNUSE_MATERIAL = gql`
+  mutation ProductUnuseMaterial($productId: ID!, $materialId: ID!) {
+    productUnuseMaterial(
+      materialId: $materialId
+      productId: $productId
+    ) {
+      material {
+        ...Material
+      }
+    }
+  }
+  ${MATERIAL_FRAGMENT}
+`;
+
 const GET_PRODUCT = gql`
   query GetProduct($id: ID!) {
     product(id: $id) {
@@ -99,4 +129,6 @@ export {
   GET_PRODUCT_MATERIALS,
   PRODUCT_FRAGMENT,
   GET_PRODUCT,
+  PRODUCT_USE_MATERIAL,
+  PRODUCT_UNUSE_MATERIAL,
 };

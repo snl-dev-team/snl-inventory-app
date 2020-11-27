@@ -90,6 +90,29 @@ const GET_ORDER = gql`
   ${ORDER_FRAGMENT}
 `;
 
+const ORDER_USE_CASE = gql`
+  mutation OrderUseCase($orderId: ID!, $caseId: ID!, $count: Integer!) {
+    orderUseCase(orderId: $orderId, caseId: $caseId, count: $count) {
+      countUsed
+      case {
+        ...Case
+      }
+    }
+  }
+  ${CASE_FRAGMENT}
+`;
+
+const ORDER_UNUSE_CASE = gql`
+  mutation OrderUnseCase($orderId: ID!, $caseId: ID!) {
+    orderUnuseCase(orderId: $orderId, caseId: $caseId) {
+      case {
+        ...Case
+      }
+    }
+  }
+  ${CASE_FRAGMENT}
+`;
+
 export {
   GET_ORDERS,
   UPDATE_ORDER,
@@ -97,4 +120,6 @@ export {
   DELETE_ORDER,
   GET_ORDER_CASES,
   GET_ORDER,
+  ORDER_USE_CASE,
+  ORDER_UNUSE_CASE,
 };

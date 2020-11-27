@@ -1,5 +1,5 @@
 # pylint: disable=relative-beyond-top-level
-from graphene import Field, ID, relay
+from graphene import Field, ID, relay, Float
 from . import base, types
 
 """
@@ -92,7 +92,7 @@ class UpdateMaterial(base.Update, TableName):
         id = ID(required=True)
         material = MaterialInput(required=True)
 
-    material = Field(Material)
+    material = Field(Material, required=True)
 
     @staticmethod
     def mutate(parent, info, id, material):

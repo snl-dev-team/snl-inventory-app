@@ -111,6 +111,66 @@ const GET_CASE = gql`
   ${CASE_FRAGMENT}
 `;
 
+const CASE_USE_MATERIAL = gql`
+  mutation CaseUseMaterial($caseId: ID!, $materialId: ID!, $count: Float!) {
+    caseUseMaterial(
+      caseId: $caseId
+      materialId: $materialId
+      count: $count
+    ) {
+      countUsed
+      material {
+        ...Material
+      }
+    }
+  }
+  ${MATERIAL_FRAGMENT}
+`;
+
+const CASE_UNUSE_MATERIAL = gql`
+  mutation CaseUnuseMaterial($caseId: ID!, $materialId: ID!) {
+    caseUnuseMaterial(
+      caseId: $caseId
+      materialId: $materialId
+    ) {
+      material {
+        ...Material
+      }
+    }
+  }
+  ${MATERIAL_FRAGMENT}
+`;
+
+const CASE_USE_PRODUCT = gql`
+  mutation CaseUseProduct($caseId: ID!, $productId: ID!, $count: Integer!) {
+    caseUseProduct(
+      caseId: $caseId
+      productId: $productId
+      count: $count
+    ) {
+      countUsed
+      product {
+        ...Product
+      }
+    }
+  }
+  ${PRODUCT_FRAGMENT}
+`;
+
+const CASE_UNUSE_PRODUCT = gql`
+  mutation CaseUseProduct($caseId: ID!, $productId: ID!) {
+    caseUnuseProduct(
+      caseId: $caseId
+      productId: $productId
+    ) {
+      product {
+        ...Product
+      }
+    }
+  }
+  ${PRODUCT_FRAGMENT}
+`;
+
 export {
   GET_CASES,
   UPDATE_CASE,
@@ -120,4 +180,8 @@ export {
   GET_CASE_PRODUCTS,
   CASE_FRAGMENT,
   GET_CASE,
+  CASE_USE_MATERIAL,
+  CASE_UNUSE_MATERIAL,
+  CASE_USE_PRODUCT,
+  CASE_UNUSE_PRODUCT,
 };

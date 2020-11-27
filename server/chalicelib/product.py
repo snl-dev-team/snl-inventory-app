@@ -85,7 +85,7 @@ class CreateProduct(base.Create, TableName):
     class Arguments:
         product = ProductInput(required=True)
 
-    product = Field(Product)
+    product = Field(Product, required=True)
 
     @staticmethod
     def mutate(parent, info, product):
@@ -99,7 +99,7 @@ class UpdateProduct(base.Update, TableName):
         id = ID(required=True)
         product = ProductInput(required=True)
 
-    product = Field(Product)
+    product = Field(Product, required=True)
 
     @staticmethod
     def mutate(parent, info, id, product):
@@ -128,7 +128,8 @@ class ProductUseMaterial(base.Use, TableName):
         material_id = ID(required=True)
         count = Float(required=True)
 
-    material = Field(Material)
+    material = Field(Material, required=True)
+    count_used = Float(required=True)
 
     @staticmethod
     def mutate(parent, info, product_id: str, material_id: str, count: float):
@@ -144,7 +145,7 @@ class ProductUnuseMaterial(base.Unuse, TableName):
         product_id = ID(required=True)
         material_id = ID(required=True)
 
-    product = Field(Product)
+    material = Field(Material, required=True)
 
     @staticmethod
     def mutate(parent, info, product_id: int, material_id: int):

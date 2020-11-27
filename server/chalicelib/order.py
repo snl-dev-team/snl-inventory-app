@@ -130,7 +130,8 @@ class OrderUseCase(base.Use):
         case_id = ID(required=True)
         count = Integer(required=True)
 
-    order = Field(Order)
+    case = Field(case.Case)
+    count_used = Integer(required=True)
 
     @staticmethod
     def mutate(parent, info, order_id: int, case_id: int, count: int):
@@ -144,7 +145,7 @@ class OrderUnuseCase(base.Unuse):
         order_id = ID(required=True)
         case_id = ID(required=True)
 
-    order = Field(Order)
+    case = Field(case.Case)
 
     @staticmethod
     def mutate(parent, info, order_id: int, case_id: int):

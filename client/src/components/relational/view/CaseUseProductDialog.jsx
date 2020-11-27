@@ -35,7 +35,7 @@ export default function CaseUseProductDialog() {
           onClickDelete={() => {}}
           onClickEdit={() => {}}
         />
-      )) : null}
+      )) : []}
     </UseDialog>
   );
 }

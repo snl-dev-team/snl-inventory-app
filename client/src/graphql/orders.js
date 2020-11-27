@@ -8,6 +8,8 @@ const ORDER_FRAGMENT = gql`
     completed
     notes
     number
+    defaultCaseCount
+    customerName
   }
 `;
 
@@ -25,9 +27,9 @@ const GET_ORDERS = gql`
 `;
 
 const CREATE_ORDER = gql`
-  mutation CreateOrder($completed: Boolean!, $notes: String!, $number: String!) {
+  mutation CreateOrder($completed: Boolean!, $notes: String!, $number: String!, $defaultCaseCount: Integer!, $customerName: String!) {
     createOrder(
-      order: {completed: $completed, notes: $notes, number:$number}
+      order: {completed: $completed, notes: $notes, number: $number, defaultCaseCount: $defaultCaseCount, customerName: $customerName}
     ) {
       order {
         ...Order
@@ -38,10 +40,10 @@ const CREATE_ORDER = gql`
 `;
 
 const UPDATE_ORDER = gql`
-  mutation UpdateOrder($id: Identifier!, $completed: Boolean!, $notes: String!, $number: String!) {
+  mutation UpdateOrder($id: Identifier!, $completed: Boolean!, $notes: String!, $number: String!, $defaultCaseCount: Integer!, $customerName: String!) {
     updateOrder(
       id: $id
-      order: {completed: $completed, notes: $notes, number: $number}
+      order: {completed: $completed, notes: $notes, number: $number, defaultCaseCount: $defaultCaseCount, customerName: $customerName}
     ) {
       order {
         ...Order

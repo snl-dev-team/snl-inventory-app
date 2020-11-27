@@ -12,6 +12,9 @@ const MATERIAL_FRAGMENT = gql`
     notes
     number
     units
+    purchaseOrderUrl
+    purchaseOrderNumber
+    certificateOfAnalysisUrl
   }
 `;
 
@@ -29,9 +32,9 @@ const GET_MATERIALS = gql`
 `;
 
 const CREATE_MATERIAL = gql`
-  mutation CreateMaterial($count: Float!, $price: Integer!, $name: String!, $expirationDate: Date, $notes: String!, $number: String!, $units: String!) {
+  mutation CreateMaterial($count: Float!, $price: Integer!, $name: String!, $expirationDate: Date, $notes: String!, $number: String!, $units: String!,  $purchaseOrderUrl: String, $purchaseOrderNumber: String,$certificateOfAnalysisUrl: String) {
     createMaterial(
-      material: {count: $count, price: $price, name: $name, expirationDate: $expirationDate, notes: $notes, number: $number, units: $units}
+      material: {count: $count, price: $price, name: $name, expirationDate: $expirationDate, notes: $notes, number: $number, units: $units, purchaseOrderUrl: $purchaseOrderUrl, purchaseOrderNumber: $purchaseOrderNumber, certificateOfAnalysisUrl: $certificateOfAnalysisUrl}
     ) {
       material {
         ...Material
@@ -42,10 +45,10 @@ const CREATE_MATERIAL = gql`
 `;
 
 const UPDATE_MATERIAL = gql`
-  mutation UpdateMaterial($id: Identifier!, $count: Float!, $price: Integer!, $name: String!, $expirationDate: Date, $notes: String!, $number: String!, $units: String!) {
+  mutation UpdateMaterial($id: Identifier!, $count: Float!, $price: Integer!, $name: String!, $expirationDate: Date, $notes: String!, $number: String!, $units: String!,  $purchaseOrderUrl: String, $purchaseOrderNumber: String,$certificateOfAnalysisUrl: String) {
     updateMaterial(
       id: $id
-      material: {count: $count, price: $price, name: $name, expirationDate: $expirationDate, notes: $notes, number: $number, units: $units}
+      material: {count: $count, price: $price, name: $name, expirationDate: $expirationDate, notes: $notes, number: $number, units: $units, purchaseOrderUrl: $purchaseOrderUrl, purchaseOrderNumber: $purchaseOrderNumber, certificateOfAnalysisUrl: $certificateOfAnalysisUrl}
     ) {
       material {
         ...Material

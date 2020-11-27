@@ -4,19 +4,20 @@ from .types import Identifier, Float, Integer
 from . import base, material, types
 
 """
-+-----------------+------------------+------+-----+-------------------+-------+
-| Field           | Type             | Null | Key | Default           | Extra |
-+-----------------+------------------+------+-----+-------------------+-------+
-| id              | char(36)         | NO   | PRI | NULL              |       |
-| number          | varchar(255)     | NO   |     | NULL              |       |
-| notes           | text             | NO   |     | NULL              |       |
-| date_created    | datetime         | NO   |     | CURRENT_TIMESTAMP |       |
-| date_modified   | datetime         | NO   |     | CURRENT_TIMESTAMP |       |
-| completed       | tinyint(1)       | NO   |     | 0                 |       |
-| expiration_date | date             | YES  |     | NULL              |       |
-| name            | varchar(255)     | NO   |     | NULL              |       |
-| count           | int(10) unsigned | NO   |     | NULL              |       |
-+-----------------+------------------+------+-----+-------------------+-------+
++------------------------+------------------+------+-----+-------------------+----------------+
+| Field                  | Type             | Null | Key | Default           | Extra          |
++------------------------+------------------+------+-----+-------------------+----------------+
+| id                     | int(11)          | NO   | PRI | NULL              | auto_increment |
+| number                 | varchar(255)     | NO   |     | NULL              |                |
+| notes                  | text             | NO   |     | NULL              |                |
+| date_created           | datetime         | NO   |     | CURRENT_TIMESTAMP |                |
+| date_modified          | datetime         | NO   |     | CURRENT_TIMESTAMP |                |
+| completed              | tinyint(1)       | NO   |     | 0                 |                |
+| expiration_date        | date             | YES  |     | NULL              |                |
+| name                   | varchar(255)     | NO   |     | NULL              |                |
+| count                  | int(10) unsigned | NO   |     | NULL              |                |
+| default_material_count | float unsigned   | NO   |     | NULL              |                |
++------------------------+------------------+------+-----+-------------------+----------------+
 """
 
 
@@ -27,6 +28,7 @@ class ProductBase(
     types.Expirable,
     types.Namable,
     types.DiscreteCountable,
+    types.UsesMaterial,
 ):
     pass
 

@@ -9,7 +9,7 @@ import { useMutation } from '@apollo/client';
 import produce from 'immer';
 import { Formik, Form, Field } from 'formik';
 import Grid from '@material-ui/core/Grid';
-import { TextField, CheckboxWithLabel } from 'formik-material-ui';
+import { TextField } from 'formik-material-ui';
 import { DatePicker } from 'formik-material-ui-pickers';
 import { UPDATE_CASE, CREATE_CASE, GET_CASES } from '../graphql/cases';
 
@@ -114,10 +114,9 @@ export default function UpsertCaseDialog() {
           name: getQueryStringValue('name', ''),
           count: getQueryStringValue('count', 0),
           expirationDate: getQueryStringValue('expirationDate', null),
-          shipped: getQueryStringValue('shipped', false),
           notes: getQueryStringValue('notes', ''),
-          productName: getQueryStringValue('productName', ''),
-          productCount: getQueryStringValue('productCount', 0),
+          defaultProductCount: getQueryStringValue('defaultProductCount', 0),
+          defaultMaterialCount: getQueryStringValue('defaultMaterialCount', 0),
         }}
         onSubmit={onSubmit}
       >
@@ -162,26 +161,19 @@ export default function UpsertCaseDialog() {
                   <Grid item>
                     <Field
                       component={TextField}
-                      type="text"
-                      label="Product Name"
-                      name="productName"
+                      type="number"
+                      label="Default Product Count"
+                      name="defaultMaterialCount"
+                      InputProps={{ inputProps: { min: 0 } }}
                     />
                   </Grid>
                   <Grid item>
                     <Field
                       component={TextField}
                       type="number"
-                      label="Product Count"
-                      name="productCount"
+                      label="Default Product Count"
+                      name="defaultProductCount"
                       InputProps={{ inputProps: { min: 0 } }}
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Field
-                      component={CheckboxWithLabel}
-                      type="checkbox"
-                      name="shipped"
-                      Label={{ label: 'Shipped' }}
                     />
                   </Grid>
                 </Grid>

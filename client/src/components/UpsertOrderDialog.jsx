@@ -93,6 +93,8 @@ export default function UpsertOrderDialog() {
           number: getQueryStringValue('number', ''),
           completed: getQueryStringValue('completed', false),
           notes: getQueryStringValue('notes', ''),
+          customerName: getQueryStringValue('customerName', ''),
+          defaultCaseCount: getQueryStringValue('defaultCaseCount', 0),
         }}
         onSubmit={onSubmit}
       >
@@ -116,6 +118,23 @@ export default function UpsertOrderDialog() {
                       name="notes"
                       type="text"
                       label="Notes"
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Field
+                      component={TextField}
+                      name="customerName"
+                      type="text"
+                      label="Customer Name"
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Field
+                      component={TextField}
+                      name="defaultCaseCount"
+                      type="number"
+                      label="Default Case Count"
+                      InputProps={{ inputProps: { min: 0 } }}
                     />
                   </Grid>
                   <Grid item>

@@ -4,23 +4,36 @@ from .types import Identifier, Float, Integer
 from . import base, material, case, types
 
 """
-+---------------+--------------+------+-----+-------------------+-------+
-| Field         | Type         | Null | Key | Default           | Extra |
-+---------------+--------------+------+-----+-------------------+-------+
-| id            | char(36)     | NO   | PRI | NULL              |       |
-| number        | varchar(255) | NO   |     | NULL              |       |
-| notes         | text         | NO   |     | NULL              |       |
-| date_created  | datetime     | NO   |     | CURRENT_TIMESTAMP |       |
-| date_modified | datetime     | NO   |     | CURRENT_TIMESTAMP |       |
-| completed     | tinyint(1)   | NO   |     | 0                 |       |
-+---------------+--------------+------+-----+-------------------+-------+
++------------------------+------------------+------+-----+-------------------+----------------+
+| Field                  | Type             | Null | Key | Default           | Extra          |
++------------------------+------------------+------+-----+-------------------+----------------+
+| id                     | int(11)          | NO   | PRI | NULL              | auto_increment |
+| number                 | varchar(255)     | NO   |     | NULL              |                |
+| notes                  | text             | NO   |     | NULL              |                |
+| date_created           | datetime         | NO   |     | CURRENT_TIMESTAMP |                |
+| date_modified          | datetime         | NO   |     | CURRENT_TIMESTAMP |                |
+| completed              | tinyint(1)       | NO   |     | 0                 |                |
+| default_material_count | int(10) unsigned | NO   |     | NULL              |                |
+| customer_name          | varchar(255)     | NO   |     | NULL              |                |
++------------------------+------------------+------+-----+-------------------+----------------+
+
++-------------------+---------+------+-----+---------+-------+
+| Field             | Type    | Null | Key | Default | Extra |
++-------------------+---------+------+-----+---------+-------+
+| order_id          | int(11) | NO   | PRI | NULL    |       |
+| case_id           | int(11) | NO   | PRI | NULL    |       |
+| count_shipped     | int(11) | NO   |     | NULL    |       |
+| count_not_shipped | int(11) | NO   |     | NULL    |       |
++-------------------+---------+------+-----+---------+-------+
 """
 
 
 class OrderBase(
     types.Numberable,
     types.Notable,
-    types.Completable
+    types.Completable,
+    types.HasCustomer,
+    types.UsesCase,
 ):
     pass
 

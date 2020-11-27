@@ -36,17 +36,27 @@ export default function UpsertProductDialog() {
   };
 
   const onSubmit = (values, { setSubmitting }) => {
+    const newValues = produce(values, (draft) => {
+      if (values.expirationDate !== null) {
+        const expirationDate = new Date(values.expirationDate);
+        const year = String(expirationDate.getUTCFullYear()).padStart(4, '0');
+        const month = String(expirationDate.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(expirationDate.getUTCDate() - 1).padStart(2, '0');
+        // eslint-disable-next-line no-param-reassign
+        draft.expirationDate = `${year}-${month}-${day}`;
+      }
+    });
     setSubmitting(true);
     if (isUpdate) {
       updateProduct({
-        variables: { ...values, id },
+        variables: { ...newValues, id },
       }).then(() => {
         setSubmitting(false);
         history.push('/products');
       });
     } else {
       createProduct({
-        variables: values,
+        variables: newValues,
         update: (client, { data: { createProduct: { product = {} } = {} } = {} } = {}) => {
           const clientData = client.readQuery({
             query: GET_PRODUCTS,
@@ -105,6 +115,7 @@ export default function UpsertProductDialog() {
           expirationDate: getQueryStringValue('expirationDate', null),
           completed: getQueryStringValue('completed', false),
           notes: getQueryStringValue('notes', ''),
+          defaultMaterialCount: getQueryStringValue('defaultMaterialCount', 0.0),
         }}
         onSubmit={onSubmit}
       >
@@ -152,6 +163,15 @@ export default function UpsertProductDialog() {
                       name="notes"
                       type="text"
                       label="Notes"
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Field
+                      component={TextField}
+                      name="defaultMaterialCount"
+                      type="number"
+                      label="Default Material Count"
+                      InputProps={{ inputProps: { min: 0 } }}
                     />
                   </Grid>
                   <Grid item>

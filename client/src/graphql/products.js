@@ -11,6 +11,7 @@ const PRODUCT_FRAGMENT = gql`
     completed
     notes
     number
+    defaultMaterialCount
   }
 `;
 
@@ -28,9 +29,9 @@ const GET_PRODUCTS = gql`
 `;
 
 const CREATE_PRODUCT = gql`
-  mutation CreateProduct($count: Integer!, $name: String!, $expirationDate: Date, $completed: Boolean!, $notes: String!, $number: String!) {
+  mutation CreateProduct($count: Integer!, $name: String!, $expirationDate: Date, $completed: Boolean!, $notes: String!, $number: String!, $defaultMaterialCount: Float!) {
     createProduct(
-      product: {count: $count, name: $name, expirationDate: $expirationDate, completed: $completed, notes: $notes, number: $number}
+      product: {count: $count, name: $name, expirationDate: $expirationDate, completed: $completed, notes: $notes, number: $number, defaultMaterialCount: $defaultMaterialCount}
     ) {
       product {
         ...Product
@@ -41,10 +42,10 @@ const CREATE_PRODUCT = gql`
 `;
 
 const UPDATE_PRODUCT = gql`
-  mutation UpdateProduct($id: Identifier!, $count: Integer!, $name: String!, $expirationDate: Date, $completed: Boolean!, $notes: String!, $number: String!) {
+  mutation UpdateProduct($id: Identifier!, $count: Integer!, $name: String!, $expirationDate: Date, $completed: Boolean!, $notes: String!, $number: String!, $defaultMaterialCount: Float!) {
     updateProduct(
       id: $id,
-      product: {count: $count, name: $name, expirationDate: $expirationDate, completed: $completed, notes: $notes, number: $number}
+      product: {count: $count, name: $name, expirationDate: $expirationDate, completed: $completed, notes: $notes, number: $number, defaultMaterialCount: $defaultMaterialCount}
     ) {
       product {
         ...Product

@@ -83,14 +83,6 @@ class Completable:
     )
 
 
-class Shippable:
-    shipped = Column(
-        BOOLEAN,
-        nullable=False,
-        server_default=expression.false(),
-    )
-
-
 class Expirable:
     expiration_date = Column(
         DATE,
@@ -124,7 +116,7 @@ class HasUnits:
 class HasDiscreteCount:
     count = Column(
         INTEGER(unsigned=True),
-        CheckConstraint('`count` >= 0'),
+        CheckConstraint('count >= 0'),
         nullable=False,
     )
 
@@ -132,8 +124,56 @@ class HasDiscreteCount:
 class HasContinuousCount:
     count = Column(
         FLOAT(unsigned=True),
-        CheckConstraint('`count` >= 0.0'),
+        CheckConstraint('count >= 0.0'),
         nullable=False,
+    )
+
+
+class UsesMaterial:
+    default_material_count = Column(
+        FLOAT(unsigned=True),
+        CheckConstraint('count >= 0.0'),
+        nullable=False,
+    )
+
+
+class UsesProduct:
+    default_product_count = Column(
+        INTEGER(unsigned=True),
+        CheckConstraint('count >= 0'),
+        nullable=False,
+    )
+
+
+class UsesCase:
+    default_case_count = Column(
+        INTEGER(unsigned=True),
+        CheckConstraint('count >= 0'),
+        nullable=False,
+    )
+
+
+class HasCustomer:
+    customer_name = Column(
+        VARCHAR(255),
+        nullable=False,
+    )
+
+
+class HasVendor:
+    purchase_order_url = Column(
+        VARCHAR(2083),
+        nullable=True,
+    )
+
+    purchase_order_number = Column(
+        VARCHAR(255),
+        nullable=True,
+    )
+
+    certificate_of_analysis_url = Column(
+        VARCHAR(2083),
+        nullable=True,
     )
 
 
@@ -144,7 +184,8 @@ class Material(
     Namable,
     HasPrice,
     HasUnits,
-    HasContinuousCount
+    HasContinuousCount,
+    HasVendor,
 ):
     __tablename__ = 'material'
 
@@ -168,6 +209,7 @@ class Product(
     Namable,
     HasDiscreteCount,
     Completable,
+    UsesMaterial,
 ):
     __tablename__ = 'product'
 
@@ -214,19 +256,10 @@ class Case(
     Namable,
     Expirable,
     HasDiscreteCount,
-    Shippable,
+    UsesMaterial,
+    UsesProduct,
 ):
     __tablename__ = 'case'
-
-    product_name = Column(
-        VARCHAR(255),
-        nullable=False,
-    )
-    product_count = Column(
-        INTEGER(unsigned=True),
-        CheckConstraint('`count` >= 0'),
-        nullable=False,
-    )
 
     case_uses_material = relationship(
         'CaseUsesMaterial',
@@ -299,7 +332,7 @@ class CaseUsesProduct(Base, HasDiscreteCount):
     )
 
 
-class Order(Base, Node, Completable):
+class Order(Base, Node, Completable, UsesCase, HasCustomer):
     __tablename__ = 'order'
 
     order_uses_case = relationship(
@@ -309,7 +342,7 @@ class Order(Base, Node, Completable):
     )
 
 
-class OrderUsesCase(Base, HasDiscreteCount):
+class OrderUsesCase(Base):
     __tablename__ = 'order_uses_case'
     order_id = Column(
         INTEGER,
@@ -320,6 +353,18 @@ class OrderUsesCase(Base, HasDiscreteCount):
         INTEGER,
         ForeignKey('case.id'),
         primary_key=True
+    )
+
+    count_shipped = Column(
+        INTEGER,
+        CheckConstraint('count_shipped >= 0'),
+        nullable=False,
+    )
+
+    count_not_shipped = Column(
+        INTEGER,
+        CheckConstraint('count_not_shipped >= 0'),
+        nullable=False,
     )
 
     order = relationship(
@@ -344,3 +389,6 @@ tables = [
     CaseUsesMaterial,
     OrderUsesCase,
 ]
+
+# for table in tables:
+#     table.__table__.create(engine)

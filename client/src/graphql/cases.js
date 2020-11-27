@@ -10,9 +10,8 @@ const CASE_FRAGMENT = gql`
     expirationDate
     name
     count
-    productName
-    productCount
-    shipped
+    defaultMaterialCount
+    defaultProductCount
   }
 `;
 
@@ -30,9 +29,9 @@ const GET_CASES = gql`
 `;
 
 const CREATE_CASE = gql`
-  mutation CreateCase($name: String!, $productName: String!, $productCount: Integer!, $count: Integer!, $number: String!, $expirationDate: Date, $shipped: Boolean!, $notes: String!) {
+  mutation CreateCase($name: String!, $count: Integer!, $number: String!, $expirationDate: Date, $notes: String!, $defaultMaterialCount: Float!, $defaultProductCount: Integer!) {
     createCase(
-      case: {name: $name, productName: $productName, productCount: $productCount, count: $count, number: $number, expirationDate: $expirationDate, shipped: $shipped, notes: $notes}
+      case: {name: $name, count: $count, number: $number, expirationDate: $expirationDate, notes: $notes, defaultMaterialCount: $defaultMaterialCount, defaultProductCount: $defaultProductCount}
     ) {
       case {
         ...Case
@@ -43,10 +42,10 @@ const CREATE_CASE = gql`
 `;
 
 const UPDATE_CASE = gql`
-  mutation UpdateCase($id: Identifier!, $name: String!, $productName: String!, $productCount: Integer!, $count: Integer!, $number: String!, $expirationDate: Date, $shipped: Boolean!, $notes: String!) {
+  mutation UpdateCase($id: Identifier!, $name: String!, $count: Integer!, $number: String!, $expirationDate: Date, $notes: String!, $defaultMaterialCount: Float!, $defaultProductCount: Integer!) {
     updateCase(
       id: $id
-      case: {name: $name, productName: $productName, productCount: $productCount, count: $count, number: $number, expirationDate: $expirationDate, shipped: $shipped, notes: $notes}
+      case: {name: $name, count: $count, number: $number, expirationDate: $expirationDate, notes: $notes, defaultMaterialCount: $defaultMaterialCount, defaultProductCount: $defaultProductCount}
     ) {
       case {
         ...Case

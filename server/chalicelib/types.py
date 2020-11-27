@@ -149,10 +149,6 @@ class Completable:
     completed = Boolean(required=True)
 
 
-class Shippable:
-    shipped = Boolean(required=True)
-
-
 class Expirable:
     expiration_date = Date(required=False)
 
@@ -183,3 +179,25 @@ class ContinuousCountable:
 
 class Numberable:
     number = String(required=True)
+
+
+class HasVendor:
+    purchase_order_url = String()
+    purchase_order_number = String()
+    certificate_of_analysis_url = String()
+
+
+class HasCustomer:
+    customer_name = String(required=True)
+
+
+class UsesMaterial:
+    default_material_count = Float(required=True)
+
+
+class UsesProduct:
+    default_product_count = Integer(required=True)
+
+
+class UsesCase:
+    default_case_count = Integer(required=True)

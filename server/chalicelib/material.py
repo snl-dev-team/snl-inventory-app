@@ -6,20 +6,23 @@ from . import base, types
 from graphql_relay import to_global_id
 
 """
-+-----------------+-------------------------------------+------+-----+-------------------+-------+
-| Field           | Type                                | Null | Key | Default           | Extra |
-+-----------------+-------------------------------------+------+-----+-------------------+-------+
-| id              | char(36)                            | NO   | PRI | NULL              |       |
-| number          | varchar(255)                        | NO   |     | NULL              |       |
-| notes           | text                                | NO   |     | NULL              |       |
-| date_created    | datetime                            | NO   |     | CURRENT_TIMESTAMP |       |
-| date_modified   | datetime                            | NO   |     | CURRENT_TIMESTAMP |       |
-| expiration_date | date                                | YES  |     | NULL              |       |
-| name            | varchar(255)                        | NO   |     | NULL              |       |
-| price           | int(10) unsigned                    | NO   |     | NULL              |       |
-| units           | enum('UNIT','KG','LB','G','L','ML') | NO   |     | UNIT              |       |
-| count           | float unsigned                      | NO   |     | NULL              |       |
-+-----------------+-------------------------------------+------+-----+-------------------+-------+
++-----------------------------+-------------------------------------+------+-----+-------------------+----------------+
+| Field                       | Type                                | Null | Key | Default           | Extra          |
++-----------------------------+-------------------------------------+------+-----+-------------------+----------------+
+| id                          | int(11)                             | NO   | PRI | NULL              | auto_increment |
+| number                      | varchar(255)                        | NO   |     | NULL              |                |
+| notes                       | text                                | NO   |     | NULL              |                |
+| date_created                | datetime                            | NO   |     | CURRENT_TIMESTAMP |                |
+| date_modified               | datetime                            | NO   |     | CURRENT_TIMESTAMP |                |
+| expiration_date             | date                                | YES  |     | NULL              |                |
+| name                        | varchar(255)                        | NO   |     | NULL              |                |
+| price                       | int(10) unsigned                    | NO   |     | NULL              |                |
+| units                       | enum('UNIT','KG','LB','G','L','ML') | NO   |     | UNIT              |                |
+| count                       | float unsigned                      | NO   |     | NULL              |                |
+| purchase_order_url          | varchar(2083)                       | YES  |     | NULL              |                |
+| purchase_order_number       | varchar(255)                        | YES  |     | NULL              |                |
+| certificate_of_analysis_url | varchar(2083)                       | YES  |     | NULL              |                |
++-----------------------------+-------------------------------------+------+-----+-------------------+----------------+
 """
 
 
@@ -30,7 +33,9 @@ class MaterialBase(
     types.Namable,
     types.Pricable,
     types.Measurable,
-    types.ContinuousCountable
+    types.ContinuousCountable,
+    types.HasVendor,
+
 ):
     pass
 

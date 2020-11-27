@@ -118,6 +118,9 @@ export default function UpsertMaterialDialog() {
           units: getQueryStringValue('units', UNITS.UNIT),
           expirationDate: getQueryStringValue('expirationDate', null),
           notes: getQueryStringValue('notes', ''),
+          purchaseOrderUrl: getQueryStringValue('purchaseOrderUrl', ''),
+          purchaseOrderNumber: getQueryStringValue('purchaseOrderNumber', ''),
+          certificateOfAnalysisUrl: getQueryStringValue('certificateOfAnalysisUrl', ''),
         }}
         onSubmit={onSubmit}
       >
@@ -175,6 +178,31 @@ export default function UpsertMaterialDialog() {
                       name="notes"
                       type="text"
                       label="Notes"
+                    />
+                  </Grid>
+
+                  <Grid item>
+                    <Field
+                      component={TextField}
+                      name="purchaseOrderUrl"
+                      type="text"
+                      label="PO URL"
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Field
+                      component={TextField}
+                      name="purchaseOrderNumber"
+                      type="text"
+                      label="PO Number"
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Field
+                      component={TextField}
+                      name="certificateOfAnalysisUrl"
+                      type="text"
+                      label="COA URL"
                     />
                   </Grid>
                   <Grid item>

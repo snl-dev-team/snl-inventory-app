@@ -1,7 +1,9 @@
 # pylint: disable=relative-beyond-top-level
-from graphene import String, Date, DateTime, Boolean, List, Mutation, Field, relay
-from .types import Identifier, Float, Integer
+from graphene import Field, relay, ID
+from .types import Float, Integer
 from . import base, material, types
+from .material import Material
+from graphql_relay import from_global_id
 
 """
 +------------------------+------------------+------+-----+-------------------+----------------+
@@ -58,7 +60,11 @@ class Product(base.Object, ProductBase, types.Node):
 
     @staticmethod
     def resolve_materials(parent, info):
-        return Product.select_uses(parent['id'], material.Material)
+        id = int(from_global_id(parent.id)[1])
+        return Product.select_uses(id, material.Material)
+
+    class Meta:
+        interfaces = (relay.Node,)
 
 
 class ProductConnection(base.ObjectConnection):
@@ -67,7 +73,7 @@ class ProductConnection(base.ObjectConnection):
         node = Product
 
     class Edge:
-        count_used = Integer()
+        count_used = Float()
 
         @staticmethod
         def resolve_count_used(parent, info):
@@ -93,7 +99,7 @@ class UpdateProduct(base.Update):
     __table__ = 'product'
 
     class Arguments:
-        id = Identifier(required=True)
+        id = ID(required=True)
         product = ProductInput(required=True)
 
     product = Field(Product)
@@ -108,9 +114,9 @@ class DeleteProduct(base.Delete):
     __table__ = 'product'
 
     class Arguments:
-        id = Identifier(required=True)
+        id = ID(required=True)
 
-    id = Identifier(required=True)
+    id = ID(required=True)
 
     @staticmethod
     def mutate(parent, info, id):
@@ -123,15 +129,17 @@ class ProductUseMaterial(base.Use):
     __table__ = 'product'
 
     class Arguments:
-        product_id = Identifier(required=True)
-        material_id = Identifier(required=True)
+        product_id = ID(required=True)
+        material_id = ID(required=True)
         count = Float(required=True)
 
-    product = Field(Product)
+    material = Field(Material)
 
     @staticmethod
     def mutate(parent, info, product_id: int, material_id: int, count: float):
-        return {'product': ProductUseMaterial.commit(material.Material, product_id, material_id, count)}
+        ProductUseMaterial.commit(
+            material.Material, product_id, material_id, count)
+        return {'material': Material.select_where(id=material_id)}
 
 
 class ProductUnuseMaterial(base.Unuse):
@@ -139,8 +147,8 @@ class ProductUnuseMaterial(base.Unuse):
     __table__ = 'product'
 
     class Arguments:
-        product_id = Identifier(required=True)
-        material_id = Identifier(required=True)
+        product_id = ID(required=True)
+        material_id = ID(required=True)
 
     product = Field(Product)
 

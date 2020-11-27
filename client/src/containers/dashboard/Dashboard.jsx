@@ -189,6 +189,8 @@ export default function Dashboard() {
     setAnchorEl(event.currentTarget);
   };
 
+  const lowerCaseSearchString = searchString.toLowerCase();
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -325,7 +327,7 @@ export default function Dashboard() {
           path="/materials"
           component={() => (
             <MaterialsDashboard
-              searchString={searchString.toLowerCase()}
+              searchString={lowerCaseSearchString}
               searching={searching}
             />
           )}
@@ -334,7 +336,7 @@ export default function Dashboard() {
           path="/orders"
           component={() => (
             <OrdersDashboard
-              searchString={searchString.toLowerCase()}
+              searchString={lowerCaseSearchString}
               searching={searching}
             />
           )}
@@ -343,7 +345,7 @@ export default function Dashboard() {
           path="/cases"
           component={() => (
             <CasesDashboard
-              searchString={searchString.toLowerCase()}
+              searchString={lowerCaseSearchString}
               searching={searching}
             />
           )}
@@ -352,7 +354,7 @@ export default function Dashboard() {
           path="/products"
           component={() => (
             <ProductsDashboard
-              searchString={searchString.toLowerCase()}
+              searchString={lowerCaseSearchString}
               searching={searching}
             />
           )}

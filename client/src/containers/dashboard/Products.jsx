@@ -14,6 +14,7 @@ import {
 } from '../../graphql/products';
 import UpsertProductDialog from '../../components/UpsertProductDialog';
 import InventoryCard from '../../components/InventoryCard';
+import ProductUseMaterialDialog from '../../components/ProductUseMaterialDialog';
 
 const useStyles = makeStyles((theme) => ({
   margin: {
@@ -79,7 +80,7 @@ const ProductsDashboard = ({ searchString }) => {
                 .filter(([name]) => !['__typename', 'id', 'name'].includes(name))
                 .map(([name, value]) => ({ name: lodash.startCase(name), value: String(value) }))}
               title={product.name}
-              onClickShowMaterials={() => {}}
+              onClickShowMaterials={() => { history.push(`/products/${product.id}/materials`); }}
               onClickEdit={() => history.push(`/products/update?${getQueryString(product)}`)}
               onClickDelete={() => deleteProduct({
                 variables: { id: product.id },
@@ -104,6 +105,11 @@ const ProductsDashboard = ({ searchString }) => {
         exact
         path={['/products/create', '/products/update']}
         component={UpsertProductDialog}
+      />
+
+      <Route
+        path="/products/:id/materials"
+        component={ProductUseMaterialDialog}
       />
 
     </>

@@ -1,11 +1,11 @@
 # pylint: disable=relative-beyond-top-level
-from graphene import ObjectType, InputObjectType, Mutation, Connection, relay
+from graphene import ObjectType, InputObjectType, Mutation, Connection, relay, ID
 from re import findall
 from datetime import datetime
 from inspect import getmembers, isroutine
 from .database import execute_statement, process_select_response
 from graphql_relay import to_global_id, from_global_id
-from .types import Integer, BaseType, DateTime
+from .types import Integer, BaseType, DateTime, Integer
 
 
 class Table:
@@ -16,7 +16,12 @@ class Base(Table):
 
     @classmethod
     def members(cls):
-        for name, column in getmembers(cls, lambda m: isinstance(m, BaseType)):
+        for name, column in getmembers(cls, lambda m: isinstance(m, BaseType) or isinstance(m, ID)):
+            if isinstance(column, ID):
+                column.python = int
+                column.boto3 = 'longValue'
+                column.serialize = lambda x: x
+                column.deserialize = lambda x: x
             yield name, column
 
     @classmethod
@@ -54,6 +59,15 @@ class Base(Table):
     def get_update_string(cls):
         return ',\n'.join(f"`{name}` = :{name}" for name, _ in cls.members())
 
+    @classmethod
+    def rows_to_global_id(cls, rows):
+        return [cls.row_to_global_id(row) for row in rows]
+
+    @classmethod
+    def row_to_global_id(cls, row):
+        row['id'] = to_global_id(str(cls), row['id'])
+        return row
+
 
 class Input(InputObjectType, Base):
     pass
@@ -65,19 +79,26 @@ class Object(ObjectType, Base):
     def select_all(cls):
         sql = f"SELECT {cls.get_column_string()} FROM `{cls.__table__}`;"
         res = execute_statement(sql)
-        return process_select_response(res, list(cls.members()))
 
-    @classmethod
-    def select_where(cls, id: int):
+        rows = process_select_response(res, list(cls.members()))
+        return cls.rows_to_global_id(rows)
+
+    @ classmethod
+    def select_where(cls, id):
+        if isinstance(id, str):
+            item_id = int(from_global_id(id)[0])
+        else:
+            item_id = id
+
         sql = f"SELECT {cls.get_column_string()} FROM `{cls.__table__}` WHERE `id` = :id;"
         res = execute_statement(
             sql,
-            sql_parameters=[{'name': 'id', 'value': {'longValue': id}}]
+            sql_parameters=[{'name': 'id', 'value': {'longValue': item_id}}]
         )
         rows = process_select_response(res, list(cls.members()))
-        return rows[0] if rows else None
+        return cls.row_to_global_id(rows[0]) if rows else None
 
-    @classmethod
+    @ classmethod
     def select_uses(user: ObjectType, id: int, used: ObjectType):
         sql = f"""
         SELECT
@@ -98,27 +119,15 @@ class Object(ObjectType, Base):
                 {'name': f'{user.__table__}_id', 'value': {'longValue': id}}]
         )
 
-        used_columns = used.get_columns()
-        count_type = next(
-            (i for i in used_columns if i['name'] == 'count'), None)
-
-        columns = used.get_columns() + [
-            {
-                'name': 'count_used',
-                'serialize': count_type['serialize'],
-                'deserialize': count_type['deserialize'],
-                'boto3': count_type['boto3'],
-            }
-        ]
-        return process_select_response(res, columns)
+        return process_select_response(res, list(used.members()) + [('count_used', used.count)])
 
     class Meta:
         interfaces = (relay.Node,)
 
-    @classmethod
+    @ classmethod
     def get_node(cls, info, id):
+        id = int(id)
         node = cls.select_where(id)
-        node['id'] = to_global_id(str(cls), id)
         return cls(**node)
 
 
@@ -126,7 +135,7 @@ class ObjectConnection(Connection, Table):
 
     total_count = Integer()
 
-    @staticmethod
+    @ staticmethod
     def resolve_total_count(parent, info):
         return 0
 
@@ -135,7 +144,7 @@ class ObjectConnection(Connection, Table):
 
 
 class Create(Mutation, Table):
-    @classmethod
+    @ classmethod
     def commit(cls, item: Input):
         sql = f"""
         INSERT INTO
@@ -155,18 +164,18 @@ class Create(Mutation, Table):
         global_id = to_global_id(str(cls), created_id)
         return item.to_output(global_id, date_created, date_modified)
 
-    @staticmethod
+    @ staticmethod
     def mutate(parent, info, id):
         pass
 
 
 class Update(Mutation, Table):
-    @classmethod
+    @ classmethod
     def commit(cls, id: int, item: Input):
         item_id = int(from_global_id(id)[1])
         sql = f"""
         UPDATE `{cls.__table__}`
-        SET 
+        SET
             {item.get_update_string()}
         WHERE `id` = :id;
         """
@@ -193,13 +202,13 @@ class Update(Mutation, Table):
 
         return item.to_output(id, date_created, date_modified)
 
-    @staticmethod
+    @ staticmethod
     def mutate(parent, info, id):
         pass
 
 
 class Delete(Mutation, Table):
-    @classmethod
+    @ classmethod
     def commit(cls, id: int):
         item_id = int(from_global_id(id)[1])
         sql = f"""
@@ -210,48 +219,50 @@ class Delete(Mutation, Table):
         execute_statement(sql, sql_parameters=[
                           {'name': 'id', 'value': {'longValue': item_id}}])
 
-    @staticmethod
+    @ staticmethod
     def mutate(parent, info, id):
         pass
 
 
 class Use(Mutation, Table):
-    @classmethod
+    @ classmethod
     def commit(user, used, user_id, used_id, count):
+        user_item_id = int(from_global_id(user_id)[1])
+        used_item_id = int(from_global_id(used_id)[1])
         sql = f"""
-        REPLACE INTO 
+        REPLACE INTO
             `{user.__table__}_uses_{used.__table__}` (
                 `{user.__table__}_id`,
                 `{used.__table__}_id`,
                 `count`
             )
         VALUES (
-            {user_id},
-            {used_id},
+            {user_item_id},
+            {used_item_id},
             {count}
         )
         """
 
         execute_statement(sql)
 
-    @staticmethod
+    @ staticmethod
     def mutate(parent, info, id):
         pass
 
 
 class Unuse(Mutation, Table):
-    @classmethod
+    @ classmethod
     def commit(user, used, user_id, used_id):
         sql = f"""
-        DELETE FROM 
+        DELETE FROM
             `{user.__table__}_uses_{used.__table__}`
-        WHERE 
-            `{user.__table__}_id` = {user_id} 
+        WHERE
+            `{user.__table__}_id` = {user_id}
             AND `{used.__table__}_id` = {used_id};
         """
 
         execute_statement(sql)
 
-    @staticmethod
+    @ staticmethod
     def mutate(parent, info, id):
         pass

@@ -42,7 +42,7 @@ const CREATE_CASE = gql`
 `;
 
 const UPDATE_CASE = gql`
-  mutation UpdateCase($id: Identifier!, $name: String!, $count: Integer!, $number: String!, $expirationDate: Date, $notes: String!, $defaultMaterialCount: Float!, $defaultProductCount: Integer!) {
+  mutation UpdateCase($id: ID!, $name: String!, $count: Integer!, $number: String!, $expirationDate: Date, $notes: String!, $defaultMaterialCount: Float!, $defaultProductCount: Integer!) {
     updateCase(
       id: $id
       case: {name: $name, count: $count, number: $number, expirationDate: $expirationDate, notes: $notes, defaultMaterialCount: $defaultMaterialCount, defaultProductCount: $defaultProductCount}
@@ -56,7 +56,7 @@ const UPDATE_CASE = gql`
 `;
 
 const DELETE_CASE = gql`
-  mutation DeleteCase($id: Identifier!) {
+  mutation DeleteCase($id: ID!) {
     deleteCase(id: $id) {
       id
     }

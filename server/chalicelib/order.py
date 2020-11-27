@@ -1,6 +1,6 @@
 # pylint: disable=relative-beyond-top-level
 from graphene import Field
-from .types import Identifier, Float, Integer
+from .types import ID, Float, Integer
 from . import base, material, case, types
 
 """
@@ -95,7 +95,7 @@ class UpdateOrder(base.Update):
     __table__ = 'order'
 
     class Arguments:
-        id = Identifier(required=True)
+        id = ID(required=True)
         order = OrderInput(required=True)
 
     order = Field(Order)
@@ -110,9 +110,9 @@ class DeleteOrder(base.Delete):
     __table__ = 'order'
 
     class Arguments:
-        id = Identifier(required=True)
+        id = ID(required=True)
 
-    id = Identifier(required=True)
+    id = ID(required=True)
 
     @staticmethod
     def mutate(parent, info, id: str):
@@ -125,8 +125,8 @@ class OrderUseCase(base.Use):
     __table__ = 'order'
 
     class Arguments:
-        order_id = Identifier(required=True)
-        case_id = Identifier(required=True)
+        order_id = ID(required=True)
+        case_id = ID(required=True)
         count = Integer(required=True)
 
     order = Field(Order)
@@ -141,8 +141,8 @@ class OrderUnuseCase(base.Unuse):
     __table__ = 'order'
 
     class Arguments:
-        order_id = Identifier(required=True)
-        case_id = Identifier(required=True)
+        order_id = ID(required=True)
+        case_id = ID(required=True)
 
     order = Field(Order)
 

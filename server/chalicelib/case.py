@@ -1,6 +1,6 @@
 # pylint: disable=relative-beyond-top-level
 from . import base, material, product, types
-from .types import Identifier, Float, String, Integer
+from .types import ID, Float, String, Integer
 from graphene import relay, Field
 
 
@@ -102,7 +102,7 @@ class UpdateCase(base.Update):
     __table__ = 'case'
 
     class Arguments:
-        id = Identifier(required=True)
+        id = ID(required=True)
         case = CaseInput(required=True)
 
     case = Field(Case)
@@ -117,9 +117,9 @@ class DeleteCase(base.Delete):
     __table__ = 'case'
 
     class Arguments:
-        id = Identifier(required=True)
+        id = ID(required=True)
 
-    id = Identifier(required=True)
+    id = ID(required=True)
 
     @staticmethod
     def mutate(parent, info, id):
@@ -132,8 +132,8 @@ class CaseUseMaterial(base.Use):
     __table__ = 'case'
 
     class Arguments:
-        case_id = Identifier(required=True)
-        material_id = Identifier(required=True)
+        case_id = ID(required=True)
+        material_id = ID(required=True)
         count = Float(required=True)
 
     case = Field(Case)
@@ -148,8 +148,8 @@ class CaseUnuseMaterial(base.Unuse):
     __table__ = 'case'
 
     class Arguments:
-        case_id = Identifier(required=True)
-        material_id = Identifier(required=True)
+        case_id = ID(required=True)
+        material_id = ID(required=True)
 
     case = Field(Case)
 
@@ -163,8 +163,8 @@ class CaseUseProduct(base.Use):
     __table__ = 'case'
 
     class Arguments:
-        case_id = Identifier(required=True)
-        product_id = Identifier(required=True)
+        case_id = ID(required=True)
+        product_id = ID(required=True)
         count = Float(required=True)
 
     case = Field(Case)
@@ -179,8 +179,8 @@ class CaseUnuseProduct(base.Unuse):
     __table__ = 'case'
 
     class Arguments:
-        case_id = Identifier(required=True)
-        product_id = Identifier(required=True)
+        case_id = ID(required=True)
+        product_id = ID(required=True)
 
     case = Field(Case)
 

@@ -40,7 +40,7 @@ const CREATE_ORDER = gql`
 `;
 
 const UPDATE_ORDER = gql`
-  mutation UpdateOrder($id: Identifier!, $completed: Boolean!, $notes: String!, $number: String!, $defaultCaseCount: Integer!, $customerName: String!) {
+  mutation UpdateOrder($id: ID!, $completed: Boolean!, $notes: String!, $number: String!, $defaultCaseCount: Integer!, $customerName: String!) {
     updateOrder(
       id: $id
       order: {completed: $completed, notes: $notes, number: $number, defaultCaseCount: $defaultCaseCount, customerName: $customerName}
@@ -54,7 +54,7 @@ const UPDATE_ORDER = gql`
 `;
 
 const DELETE_ORDER = gql`
-  mutation DeleteOrder($id: Identifier!) {
+  mutation DeleteOrder($id: ID!) {
     deleteOrder(id: $id) {
       id
     }

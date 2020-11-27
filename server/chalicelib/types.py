@@ -1,5 +1,5 @@
 
-from graphene import types, relay
+from graphene import types, relay, ID
 import enum
 from datetime import date, datetime
 import graphene
@@ -17,20 +17,6 @@ class BaseType:
     @classmethod
     def deserialize(cls, v):
         pass
-
-
-class Identifier(types.ID, BaseType):
-    graphene = types.ID
-    python = int
-    boto3 = 'longValue'
-
-    @classmethod
-    def serialize(cls, v):
-        return str(v)
-
-    @classmethod
-    def deserialize(cls, v):
-        return str(v)
 
 
 class String(types.String, BaseType):
@@ -140,7 +126,7 @@ class Enum(graphene.Enum, BaseType):
 
 
 class Node:
-    id = Identifier(required=True)
+    id = ID(required=True)
     date_created = DateTime(required=True)
     date_modified = DateTime(required=True)
 

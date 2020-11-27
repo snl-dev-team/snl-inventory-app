@@ -1,9 +1,6 @@
 # pylint: disable=relative-beyond-top-level
-from graphene import Int, String, Date, DateTime, Mutation, Field, relay
-from .types import Identifier, Float
-from datetime import datetime
+from graphene import Field, ID
 from . import base, types
-from graphql_relay import to_global_id
 
 """
 +-----------------------------+-------------------------------------+------+-----+-------------------+----------------+
@@ -67,7 +64,7 @@ class MaterialConnection(base.ObjectConnection):
         node = Material
 
     class Edge:
-        count_used = Int()
+        count_used = types.Integer()
 
         @staticmethod
         def resolve_count_used(parent, info):
@@ -93,7 +90,7 @@ class UpdateMaterial(base.Update):
     __table__ = 'material'
 
     class Arguments:
-        id = Identifier(required=True)
+        id = ID(required=True)
         material = MaterialInput(required=True)
 
     material = Field(Material)
@@ -108,9 +105,9 @@ class DeleteMaterial(base.Delete):
     __table__ = 'material'
 
     class Arguments:
-        id = Identifier(required=True)
+        id = ID(required=True)
 
-    id = Identifier(required=True)
+    id = ID(required=True)
 
     @staticmethod
     def mutate(parent, info, id):

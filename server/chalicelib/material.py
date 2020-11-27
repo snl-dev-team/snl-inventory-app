@@ -105,7 +105,7 @@ class DeleteMaterial(base.Delete):
     class Arguments:
         id = Identifier(required=True)
 
-    material = Field(Material)
+    id = Identifier(required=True)
 
     @staticmethod
     def mutate(parent, info, id):

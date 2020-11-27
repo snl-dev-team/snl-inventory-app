@@ -1,6 +1,5 @@
 # pylint: disable=relative-beyond-top-level
 from . import base, material, product, types
-from graphql_relay import from_global_id
 from .types import Identifier, Float, String, Integer
 from graphene import relay, Field
 
@@ -125,8 +124,7 @@ class DeleteCase(base.Delete):
 
     @staticmethod
     def mutate(parent, info, id):
-        _, local_id = from_global_id(id)
-        DeleteCase.commit(local_id)
+        DeleteCase.commit(id)
         return {'id': id}
 
 

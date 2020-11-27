@@ -1,14 +1,19 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Fab from '@material-ui/core/Fab';
 import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
-import { useDispatch, useSelector } from 'react-redux';
 import Grid from '@material-ui/core/Grid';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { Route, useHistory } from 'react-router';
 import PropTypes from 'prop-types';
-import { fetchProducts } from '../../actions/product';
-import ProductCard from '../../components/ProductCard';
+import { useQuery, useMutation } from '@apollo/client';
+import lodash from 'lodash';
+import produce from 'immer';
+import {
+  GET_PRODUCTS, DELETE_PRODUCT,
+} from '../../graphql/products';
 import UpsertProductDialog from '../../components/UpsertProductDialog';
+import InventoryCard from '../../components/InventoryCard';
 
 const useStyles = makeStyles((theme) => ({
   margin: {
@@ -22,84 +27,95 @@ const useStyles = makeStyles((theme) => ({
   extendedIcon: {
     marginRight: theme.spacing(1),
   },
-  root: {
-    width: '100%',
-    height: '100%',
-    maxWidth: 600,
-    backgroundColor: theme.palette.background.paper,
-    justifyContent: 'right',
-  },
 }));
 
-const ProductsDashboard = ({ searchString = '', searching = false }) => {
+const ProductsDashboard = ({ searchString }) => {
   const classes = useStyles();
   const history = useHistory();
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.user.token);
 
-  useEffect(() => {
-    if (!searching) {
-      dispatch(fetchProducts(token));
-    }
-  }, [searching, dispatch, token]);
+  const {
+    loading, error, data,
+  } = useQuery(GET_PRODUCTS);
 
-  const products = useSelector(
-    (state) => Object.values(state.products)
-      .filter((product) => (product.name.toLowerCase().includes(searchString))
-      || (product.number.includes(searchString))),
-    (before, after) => JSON.stringify(before) === JSON.stringify(after),
-  );
+  const [deleteProduct] = useMutation(DELETE_PRODUCT);
+
+  const updateCache = (id) => (client) => {
+    const clientData = client.readQuery({
+      query: GET_PRODUCTS,
+    });
+
+    const newData = produce(clientData, (draftState) => {
+      const idx = draftState.products.edges
+        .findIndex(({ node }) => node.id === id);
+      draftState.products.edges.splice(idx, 1);
+    });
+
+    client.writeQuery({
+      query: GET_PRODUCTS,
+      data: newData,
+    });
+  };
+
+  if (loading || error) {
+    return <CircularProgress />;
+  }
+
+  const products = data.products.edges
+    .map((edge) => edge.node)
+    .filter(({ name }) => searchString === null || name.toLowerCase().includes(searchString))
+    .map((node) => node);
+
+  const getQueryString = (object) => Object.keys(object)
+    .map((key) => `${key}=${object[key]}`)
+    .join('&');
 
   return (
-    <div>
+    <>
       <Grid container spacing={3}>
         {products.map((product) => (
           <Grid key={product.id}>
-            <ProductCard
-              id={product.id}
-              name={product.name}
-              number={product.number}
-              count={product.count}
-              expirationDate={product.expirationDate}
-              dateCreated={product.dateCreated}
-              dateModified={product.dateModified}
-              completed={product.completed}
-              notes={product.notes}
+            <InventoryCard
+              data={Object.entries(product)
+                .filter(([name]) => !['__typename', 'id', 'name'].includes(name))
+                .map(([name, value]) => ({ name: lodash.startCase(name), value: String(value) }))}
+              title={product.name}
+              onClickShowMaterials={() => {}}
+              onClickEdit={() => history.push(`/products/update?${getQueryString(product)}`)}
+              onClickDelete={() => deleteProduct({
+                variables: { id: product.id },
+                update: updateCache(product.id),
+              })}
             />
           </Grid>
         ))}
       </Grid>
 
-      <div>
-        <Fab
-          size="medium"
-          color="secondary"
-          aria-label="add"
-          className={classes.margin}
-          onClick={() => history.push('/products/add')}
-        >
-          <AddIcon />
-        </Fab>
-      </div>
+      <Fab
+        size="medium"
+        color="secondary"
+        aria-label="add"
+        className={classes.margin}
+        onClick={() => history.push('/products/create')}
+      >
+        <AddIcon />
+      </Fab>
 
       <Route
         exact
-        path="/products/add"
-        component={() => <UpsertProductDialog />}
+        path={['/products/create', '/products/update']}
+        component={UpsertProductDialog}
       />
 
-      <Route
-        exact
-        path="/products/edit/:id"
-        component={() => <UpsertProductDialog />}
-      />
-    </div>
+    </>
   );
 };
 
 export default ProductsDashboard;
 
-ProductCard.propTypes = {
-  searchString: PropTypes.string.isRequired,
-  searching: PropTypes.bool.isRequired,
+ProductsDashboard.propTypes = {
+  searchString: PropTypes.string,
+};
+
+ProductsDashboard.defaultProps = {
+  searchString: null,
 };

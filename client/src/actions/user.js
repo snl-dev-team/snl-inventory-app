@@ -1,8 +1,16 @@
 import { Auth } from 'aws-amplify';
-import * as actions from '../constants/userActionTypes';
+
+export const SIGN_IN = 'SIGN_IN';
+export const SIGN_OUT = 'SIGN_OUT';
+export const SIGN_UP = 'SIGN_UP';
+export const CONFIRM_SIGN_UP = 'CONFIRM_SIGN_UP';
+export const RESEND_CODE = 'RESEND_CODE';
+export const CHANGE_PASSWORD = 'CHANGE_PASSWORD';
+export const FORGOT_PASSWORD = 'FORGOT_PASSWORD';
+export const FORGOT_PASSWORD_AND_SUBMIT = 'FORGOT_PASSWORD_AND_SUBMIT';
 
 export const signIn = (email, password) => ({
-  type: actions.SIGN_IN,
+  type: SIGN_IN,
   payload: Auth.signIn({
     username: email,
     password,
@@ -11,41 +19,41 @@ export const signIn = (email, password) => ({
 });
 
 export const signOut = () => ({
-  type: actions.SIGN_OUT,
+  type: SIGN_OUT,
 });
 
 export const signUp = (email, password) => ({
-  type: actions.SIGN_UP,
+  type: SIGN_UP,
   payload: Auth.signUp({ username: email, password, attributes: { email } }),
   meta: { email },
 });
 
 export const confirmSignUp = (email, code) => ({
-  type: actions.CONFIRM_SIGN_UP,
+  type: CONFIRM_SIGN_UP,
   payload: Auth.confirmSignUp(email, code),
   meta: { email },
 });
 
 export const resendCode = (email) => ({
-  type: actions.RESEND_CODE,
+  type: RESEND_CODE,
   payload: Auth.resendSignUp(email),
   meta: { email },
 });
 
 export const changePassword = (oldPassword, newPassword) => ({
-  type: actions.CHANGE_PASSWORD,
+  type: CHANGE_PASSWORD,
   payload: Auth.currentAuthenticatedUser()
     .then((user) => Auth.changePassword(user, oldPassword, newPassword)),
 });
 
 export const forgotPassword = (email) => ({
-  type: actions.FORGOT_PASSWORD,
+  type: FORGOT_PASSWORD,
   payload: Auth.forgotPassword(email),
   meta: { email },
 });
 
 export const forgotPasswordAndSubmit = (email, code, newPassword) => ({
-  type: actions.FORGOT_PASSWORD_AND_SUBMIT,
+  type: FORGOT_PASSWORD_AND_SUBMIT,
   payload: Auth.forgotPasswordSubmit(email, code, newPassword),
   meta: { email },
 });

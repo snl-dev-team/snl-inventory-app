@@ -30,23 +30,34 @@ export default function UpsertCaseDialog() {
 
   const getTitle = () => {
     if (isUpdate) {
-      return 'Create Case';
+      return 'Update Case';
     }
-    return 'Edit Case';
+    return 'Create Case';
   };
 
   const onSubmit = (values, { setSubmitting }) => {
+    const newValues = produce(values, (draft) => {
+      if (values.expirationDate !== null) {
+        const expirationDate = new Date(values.expirationDate);
+        const year = String(expirationDate.getUTCFullYear()).padStart(4, '0');
+        const month = String(expirationDate.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(expirationDate.getUTCDate() - 1).padStart(2, '0');
+        // eslint-disable-next-line no-param-reassign
+        draft.expirationDate = `${year}-${month}-${day}`;
+      }
+    });
+
     setSubmitting(true);
     if (isUpdate) {
       updateCase({
-        variables: { ...values, id },
+        variables: { ...newValues, id },
       }).then(() => {
         setSubmitting(false);
         history.push('/cases');
       });
     } else {
       createCase({
-        variables: values,
+        variables: newValues,
         update: (client, { data: { createCase: { case: case_ = {} } = {} } = {} } = {}) => {
           const clientData = client.readQuery({
             query: GET_CASES,
@@ -79,6 +90,11 @@ export default function UpsertCaseDialog() {
     }
     if (key === 'count' || key === 'productCount') {
       return Number(value);
+    }
+    if (key === 'expirationDate') {
+      const d = new Date(value);
+      d.setDate(d.getDate() + 1);
+      return d;
     }
     return value;
   };

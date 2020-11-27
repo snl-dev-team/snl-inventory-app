@@ -1,213 +1,218 @@
-import React, { useState } from 'react';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
+import React from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import Grid from '@material-ui/core/Grid';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { useHistory, useParams } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import { createMaterial, updateMaterial } from '../actions/material';
-import UNIT_TYPES from '../constants/units';
+import { useHistory, useLocation } from 'react-router-dom';
+import { Button, LinearProgress } from '@material-ui/core';
+import { useMutation } from '@apollo/client';
+import produce from 'immer';
+import { Formik, Form, Field } from 'formik';
+import Grid from '@material-ui/core/Grid';
+import { TextField, Select } from 'formik-material-ui';
+import { DatePicker } from 'formik-material-ui-pickers';
+import MenuItem from '@material-ui/core/MenuItem';
+import UNITS from '../constants/units';
+import { UPDATE_MATERIAL, CREATE_MATERIAL, GET_MATERIALS } from '../graphql/materials';
 
 export default function UpsertMaterialDialog() {
+  const useQueryString = () => new URLSearchParams(useLocation().search);
   const history = useHistory();
-  const dispatch = useDispatch();
-  const { id } = useParams();
-  const token = useSelector((state) => state.user.token);
+  const queryString = useQueryString();
+
+  const [createMaterial] = useMutation(CREATE_MATERIAL);
+  const [updateMaterial] = useMutation(UPDATE_MATERIAL);
 
   const handleClose = () => {
     history.push('/materials');
   };
 
-  const isAdd = id === undefined;
-
-  const material = useSelector((state) => state.materials[id]);
-
-  const [name, setName] = useState(
-    material !== undefined ? material.name : '',
-  );
-  const [number, setNumber] = useState(
-    material !== undefined ? material.number : '',
-  );
-  const [count, setCount] = useState(
-    material !== undefined ? material.count : 0,
-  );
-  const [expirationDate, setExpirationDate] = useState(
-    material !== undefined ? material.expirationDate : '',
-  );
-  const [price, setPrice] = useState(
-    material !== undefined ? material.price : 0.0,
-  );
-  const [units, setUnits] = useState(
-    material !== undefined ? material.units : 'unit',
-  );
-  const [notes, setNotes] = useState(
-    material !== undefined ? material.notes : '',
-  );
-
-  const canSave = name !== '' && number !== '' && expirationDate !== '';
+  const id = queryString.get('id');
+  const isUpdate = id !== null;
 
   const getTitle = () => {
-    if (isAdd) {
-      return 'Create Material';
+    if (isUpdate) {
+      return 'Update Material';
     }
-    return 'Edit Material';
+    return 'Create Material';
   };
 
-  const payload = {
-    id: parseInt(id, 10),
-    name,
-    number,
-    count,
-    expirationDate,
-    price,
-    units,
-    notes,
+  const onSubmit = (values, { setSubmitting }) => {
+    const newValues = produce(values, (draft) => {
+      if (values.expirationDate !== null) {
+        const expirationDate = new Date(values.expirationDate);
+        const year = String(expirationDate.getUTCFullYear()).padStart(4, '0');
+        const month = String(expirationDate.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(expirationDate.getUTCDate() - 1).padStart(2, '0');
+        // eslint-disable-next-line no-param-reassign
+        draft.expirationDate = `${year}-${month}-${day}`;
+      }
+    });
+    setSubmitting(true);
+    if (isUpdate) {
+      updateMaterial({
+        variables: { ...newValues, id },
+      }).then(() => {
+        setSubmitting(false);
+        history.push('/materials');
+      });
+    } else {
+      createMaterial({
+        variables: newValues,
+        update: (client, { data: { createMaterial: { material = {} } = {} } = {} } = {}) => {
+          const clientData = client.readQuery({
+            query: GET_MATERIALS,
+          });
+          const newData = produce(clientData, (draftState) => {
+            draftState.materials.edges.push({ __typename: 'MaterialEdge', node: material });
+          });
+          client.writeQuery({
+            query: GET_MATERIALS,
+            data: newData,
+          });
+        },
+      }).then(() => {
+        setSubmitting(false);
+        history.push('/materials');
+      });
+    }
   };
 
-  const createMaterialAndClose = () => {
-    dispatch(
-      createMaterial(payload, token),
-    );
-    history.push('/materials');
-  };
-
-  const updateMaterialAndClose = () => {
-    dispatch(
-      updateMaterial(payload, token),
-    );
-    history.push('/materials');
+  const getQueryStringValue = (key, default_) => {
+    const value = queryString.get(key);
+    if (value === null || value === 'null') {
+      return default_;
+    }
+    if (value === 'true') {
+      return true;
+    }
+    if (value === 'false') {
+      return false;
+    }
+    if (key === 'count') {
+      return Number(value);
+    }
+    if (key === 'expirationDate') {
+      const d = new Date(value);
+      d.setDate(d.getDate() + 1);
+      return d;
+    }
+    return value;
   };
 
   return (
-    <div>
-      <Dialog
-        open
-        onClose={handleClose}
-        aria-labelledby="form-dialog-title"
+    <Dialog
+      open
+      onClose={handleClose}
+      aria-labelledby="form-dialog-title"
+    >
+      <DialogTitle id="form-dialog-title">
+        {getTitle()}
+      </DialogTitle>
+      <Formik
+        initialValues={{
+          name: getQueryStringValue('name', ''),
+          number: getQueryStringValue('number', ''),
+          count: getQueryStringValue('count', 0.0),
+          price: getQueryStringValue('price', 0),
+          units: getQueryStringValue('units', UNITS.UNIT),
+          expirationDate: getQueryStringValue('expirationDate', null),
+          notes: getQueryStringValue('notes', ''),
+        }}
+        onSubmit={onSubmit}
       >
-        <DialogTitle id="form-dialog-title">
-          {getTitle()}
-        </DialogTitle>
-        <DialogContent dividers>
-          <Grid container spacing={3} justify="center">
-            <Grid item>
-              <TextField
-                autoFocus
-                margin="dense"
-                id="name"
-                label="Material Name"
-                type="text"
-                fullWidth
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                margin="dense"
-                id="name"
-                label="Lot Number"
-                type="text"
-                fullWidth
-                value={number}
-                onChange={(e) => setNumber(e.target.value)}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                margin="dense"
-                id="name"
-                label="Count"
-                type="number"
-                fullWidth
-                value={count}
-                onChange={(e) => setCount(parseInt(e.target.value, 10))}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                margin="dense"
-                id="name"
-                label="Expiration Date"
-                type="date"
-                fullWidth
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                value={expirationDate}
-                onChange={(e) => setExpirationDate(e.target.value)}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                margin="dense"
-                id="name"
-                label="Price"
-                type="number"
-                fullWidth
-                value={price}
-                onChange={(e) => setPrice(parseInt(e.target.value, 10))}
-                InputProps={{
-                  startAdornment: <InputAdornment position="start">¢</InputAdornment>,
-                }}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                id="standard-select-currency-native"
-                select
-                label="Unit"
-                value={units}
-                onChange={(e) => setUnits(e.target.value)}
-                SelectProps={{
-                  native: true,
-                }}
-              >
-                {Object.values(UNIT_TYPES).map(
-                  (option) => (
-                    <option
-                      key={option}
-                      value={option}
+        {({ submitForm, isSubmitting }) => (
+          <>
+            {isSubmitting && <LinearProgress />}
+            <DialogContent dividers>
+              <Form>
+                <Grid container spacing={3}>
+                  <Grid item>
+                    <Field
+                      component={TextField}
+                      type="text"
+                      label="Name"
+                      name="name"
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Field
+                      component={TextField}
+                      type="text"
+                      label="Number"
+                      name="number"
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Field
+                      component={TextField}
+                      type="number"
+                      label="Count"
+                      name="count"
+                      InputProps={{ inputProps: { min: 0 } }}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Field
+                      component={TextField}
+                      type="number"
+                      label="Price"
+                      name="price"
+                      InputProps={{ inputProps: { min: 0 } }}
+                    />
+                  </Grid>
+
+                  <Grid item>
+                    <Field
+                      component={DatePicker}
+                      label="Expiration Date"
+                      name="expirationDate"
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Field
+                      component={TextField}
+                      name="notes"
+                      type="text"
+                      label="Notes"
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Field
+                      component={Select}
+                      name="units"
+                      label="Units"
                     >
-                      {option}
-                    </option>
-                  ),
-                )}
-              </TextField>
-            </Grid>
-            <Grid item>
-              <TextField
-                autoFocus
-                margin="dense"
-                label="Notes"
-                multiline
-                rowsMax={6}
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-              />
-            </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => history.push('/materials')}
-            color="primary"
-          >
-            Cancel
-          </Button>
-          <Button
-            disabled={!canSave}
-            onClick={isAdd ? createMaterialAndClose : updateMaterialAndClose}
-            color="primary"
-          >
-            {isAdd ? 'Create' : 'Save'}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
+                      {Object.values(UNITS).map((unit) => (
+                        <MenuItem
+                          key={unit}
+                          value={unit}
+                        >
+                          {unit}
+                        </MenuItem>
+                      ))}
+                    </Field>
+                  </Grid>
+                </Grid>
+              </Form>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() => history.push('/materials')}
+                color="primary"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={submitForm}
+                color="primary"
+              >
+                {isUpdate ? 'Update' : 'Create'}
+              </Button>
+            </DialogActions>
+          </>
+        )}
+      </Formik>
+    </Dialog>
   );
 }

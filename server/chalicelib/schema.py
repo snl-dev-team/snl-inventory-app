@@ -4,7 +4,6 @@ from .types import Identifier
 from . import material, product, case, order
 from datetime import datetime
 from datetime import date, datetime
-from .constants import TYPE_MAP
 from .database import execute_statement, process_select_response
 from graphql_relay import to_global_id
 

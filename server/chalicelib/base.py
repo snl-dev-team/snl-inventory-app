@@ -1,6 +1,5 @@
 # pylint: disable=relative-beyond-top-level
 from graphene import ObjectType, InputObjectType, Mutation, Connection, relay
-from .constants import TYPE_MAP
 from re import findall
 from datetime import datetime
 from inspect import getmembers, isroutine

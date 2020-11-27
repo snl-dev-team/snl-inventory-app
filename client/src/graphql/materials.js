@@ -31,6 +31,15 @@ const GET_MATERIALS = gql`
   ${MATERIAL_FRAGMENT}
 `;
 
+const GET_MATERIAL = gql`
+  query GetMaterial($id: ID!) {
+    material(id: $id) {
+      ...Material
+    }
+  }
+  ${MATERIAL_FRAGMENT}
+`;
+
 const CREATE_MATERIAL = gql`
   mutation CreateMaterial($count: Float!, $price: Integer!, $name: String!, $expirationDate: Date, $notes: String!, $number: String!, $units: String!,  $purchaseOrderUrl: String, $purchaseOrderNumber: String,$certificateOfAnalysisUrl: String) {
     createMaterial(
@@ -67,5 +76,10 @@ const DELETE_MATERIAL = gql`
 `;
 
 export {
-  GET_MATERIALS, UPDATE_MATERIAL, CREATE_MATERIAL, DELETE_MATERIAL, MATERIAL_FRAGMENT,
+  GET_MATERIALS,
+  UPDATE_MATERIAL,
+  CREATE_MATERIAL,
+  DELETE_MATERIAL,
+  MATERIAL_FRAGMENT,
+  GET_MATERIAL,
 };

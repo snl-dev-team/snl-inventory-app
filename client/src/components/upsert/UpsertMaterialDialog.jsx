@@ -3,39 +3,33 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { useHistory, useLocation } from 'react-router-dom';
-import { Button, LinearProgress } from '@material-ui/core';
-import { useMutation } from '@apollo/client';
+import { useHistory, useParams } from 'react-router-dom';
+import { Button, CircularProgress, LinearProgress } from '@material-ui/core';
+import { useMutation, useQuery } from '@apollo/client';
 import produce from 'immer';
 import { Formik, Form, Field } from 'formik';
 import Grid from '@material-ui/core/Grid';
 import { TextField, Select } from 'formik-material-ui';
 import { DatePicker } from 'formik-material-ui-pickers';
 import MenuItem from '@material-ui/core/MenuItem';
-import UNITS from '../constants/units';
-import { UPDATE_MATERIAL, CREATE_MATERIAL, GET_MATERIALS } from '../graphql/materials';
+import UNITS from '../../constants/units';
+import {
+  UPDATE_MATERIAL, CREATE_MATERIAL, GET_MATERIALS, GET_MATERIAL,
+} from '../../graphql/materials';
 
 export default function UpsertMaterialDialog() {
-  const useQueryString = () => new URLSearchParams(useLocation().search);
-  const history = useHistory();
-  const queryString = useQueryString();
+  const { push } = useHistory();
+  const { id } = useParams();
 
   const [createMaterial] = useMutation(CREATE_MATERIAL);
   const [updateMaterial] = useMutation(UPDATE_MATERIAL);
+  const {
+    data: { material = {} } = {},
+    loading,
+  } = useQuery(GET_MATERIAL, { variables: { id } });
 
-  const handleClose = () => {
-    history.push('/materials');
-  };
-
-  const id = queryString.get('id');
-  const isUpdate = id !== null;
-
-  const getTitle = () => {
-    if (isUpdate) {
-      return 'Update Material';
-    }
-    return 'Create Material';
-  };
+  const isUpdate = id !== undefined;
+  const title = `${isUpdate ? 'Update' : 'Create'} Case`;
 
   const onSubmit = (values, { setSubmitting }) => {
     const newValues = produce(values, (draft) => {
@@ -43,7 +37,7 @@ export default function UpsertMaterialDialog() {
         const expirationDate = new Date(values.expirationDate);
         const year = String(expirationDate.getUTCFullYear()).padStart(4, '0');
         const month = String(expirationDate.getUTCMonth() + 1).padStart(2, '0');
-        const day = String(expirationDate.getUTCDate() - 1).padStart(2, '0');
+        const day = String(Math.max(expirationDate.getUTCDate() - 1, 1)).padStart(2, '0');
         // eslint-disable-next-line no-param-reassign
         draft.expirationDate = `${year}-${month}-${day}`;
       }
@@ -52,19 +46,18 @@ export default function UpsertMaterialDialog() {
     if (isUpdate) {
       updateMaterial({
         variables: { ...newValues, id },
-      }).then(() => {
-        setSubmitting(false);
-        history.push('/materials');
-      });
-    } else {
-      createMaterial({
-        variables: newValues,
-        update: (client, { data: { createMaterial: { material = {} } = {} } = {} } = {}) => {
+        update: (client, {
+          data: {
+            updateMaterial: { material: newMaterial = {} } = {},
+          } = {},
+        } = {}) => {
           const clientData = client.readQuery({
             query: GET_MATERIALS,
           });
           const newData = produce(clientData, (draftState) => {
-            draftState.materials.edges.push({ __typename: 'MaterialEdge', node: material });
+            const idx = clientData.materials.edges.findIndex(({ node }) => node.id === id);
+            // eslint-disable-next-line no-param-reassign
+            draftState.materials.edges[idx] = { __typename: 'MaterialEdge', node: newMaterial };
           });
           client.writeQuery({
             query: GET_MATERIALS,
@@ -73,54 +66,57 @@ export default function UpsertMaterialDialog() {
         },
       }).then(() => {
         setSubmitting(false);
-        history.push('/materials');
+        push('/materials');
+      });
+    } else {
+      createMaterial({
+        variables: newValues,
+        update: (client, {
+          data: {
+            createMaterial: { material: newMaterial = {} } = {},
+          } = {},
+        } = {}) => {
+          const clientData = client.readQuery({
+            query: GET_MATERIALS,
+          });
+          const newData = produce(clientData, (draftState) => {
+            draftState.materials.edges.push({ __typename: 'MaterialEdge', node: newMaterial });
+          });
+          client.writeQuery({
+            query: GET_MATERIALS,
+            data: newData,
+          });
+        },
+      }).then(() => {
+        setSubmitting(false);
+        push('/materials');
       });
     }
   };
 
-  const getQueryStringValue = (key, default_) => {
-    const value = queryString.get(key);
-    if (value === null || value === 'null') {
-      return default_;
-    }
-    if (value === 'true') {
-      return true;
-    }
-    if (value === 'false') {
-      return false;
-    }
-    if (key === 'count') {
-      return Number(value);
-    }
-    if (key === 'expirationDate') {
-      const d = new Date(value);
-      d.setDate(d.getDate() + 1);
-      return d;
-    }
-    return value;
-  };
+  if (loading) return <CircularProgress />;
 
   return (
     <Dialog
       open
-      onClose={handleClose}
+      onClose={() => push('/materials')}
       aria-labelledby="form-dialog-title"
     >
       <DialogTitle id="form-dialog-title">
-        {getTitle()}
+        {title}
       </DialogTitle>
       <Formik
         initialValues={{
-          name: getQueryStringValue('name', ''),
-          number: getQueryStringValue('number', ''),
-          count: getQueryStringValue('count', 0.0),
-          price: getQueryStringValue('price', 0),
-          units: getQueryStringValue('units', UNITS.UNIT),
-          expirationDate: getQueryStringValue('expirationDate', null),
-          notes: getQueryStringValue('notes', ''),
-          purchaseOrderUrl: getQueryStringValue('purchaseOrderUrl', ''),
-          purchaseOrderNumber: getQueryStringValue('purchaseOrderNumber', ''),
-          certificateOfAnalysisUrl: getQueryStringValue('certificateOfAnalysisUrl', ''),
+          name: material.name || '',
+          number: material.number || '',
+          count: material.count || 0.0,
+          price: material.price || 0,
+          units: material.units || UNITS.UNIT,
+          expirationDate: material.expirationDate || null,
+          notes: material.notes || '',
+          purchaseOrderUrl: material.purchaseOrderUrl || '',
+          purchaseOrderNumber: material.purchaseOrderNumber || '',
+          certificateOfAnalysisUrl: material.certificateOfAnalysisUrl || '',
         }}
         onSubmit={onSubmit}
       >
@@ -226,7 +222,7 @@ export default function UpsertMaterialDialog() {
             </DialogContent>
             <DialogActions>
               <Button
-                onClick={() => history.push('/materials')}
+                onClick={() => push('/materials')}
                 color="primary"
               >
                 Cancel

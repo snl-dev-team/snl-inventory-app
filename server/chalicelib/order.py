@@ -1,5 +1,5 @@
 # pylint: disable=relative-beyond-top-level
-from graphene import Field
+from graphene import Field, relay
 from .types import ID, Float, Integer
 from . import base, material, case, types
 
@@ -38,9 +38,12 @@ class OrderBase(
     pass
 
 
-class OrderInput(base.Input, OrderBase):
+class TableName:
+    __tablename__ = 'order'
 
-    __table__ = 'order'
+
+class OrderInput(base.Input, OrderBase, TableName):
+    __tablename__ = 'order'
 
     def to_output(self, id, date_created, date_modified):
         return Order(
@@ -51,16 +54,18 @@ class OrderInput(base.Input, OrderBase):
         )
 
 
-class Order(base.Object, OrderBase, types.Node):
+class Order(base.Object, OrderBase, types.Node, TableName):
+    __tablename__ = 'order'
 
-    __table__ = 'order'
-
-    def __str__(self):
-        return 'Order'
+    cases = relay.ConnectionField(
+        case.CaseConnection, required=True)
 
     @staticmethod
     def resolve_cases(parent, info):
-        return Order.select_uses(parent['id'], case.Case)
+        return Order.select_ships(parent.id, case.Case)
+
+    class Meta:
+        interfaces = (relay.Node,)
 
 
 class OrderConnection(base.ObjectConnection):
@@ -76,9 +81,8 @@ class OrderConnection(base.ObjectConnection):
             return parent.node['count_used'] if parent else None
 
 
-class CreateOrder(base.Create):
-
-    __table__ = 'order'
+class CreateOrder(base.Create, TableName):
+    __tablename__ = 'order'
 
     class Arguments:
         order = OrderInput(required=True)
@@ -90,9 +94,8 @@ class CreateOrder(base.Create):
         return {'order': CreateOrder.commit(order)}
 
 
-class UpdateOrder(base.Update):
-
-    __table__ = 'order'
+class UpdateOrder(base.Update, TableName):
+    __tablename__ = 'order'
 
     class Arguments:
         id = ID(required=True)
@@ -105,9 +108,8 @@ class UpdateOrder(base.Update):
         return {'order': UpdateOrder.commit(id, order)}
 
 
-class DeleteOrder(base.Delete):
-
-    __table__ = 'order'
+class DeleteOrder(base.Delete, TableName):
+    __tablename__ = 'order'
 
     class Arguments:
         id = ID(required=True)
@@ -121,8 +123,7 @@ class DeleteOrder(base.Delete):
 
 
 class OrderUseCase(base.Use):
-
-    __table__ = 'order'
+    __tablename__ = 'order'
 
     class Arguments:
         order_id = ID(required=True)
@@ -137,8 +138,7 @@ class OrderUseCase(base.Use):
 
 
 class OrderUnuseCase(base.Unuse):
-
-    __table__ = 'order'
+    __tablename__ = 'order'
 
     class Arguments:
         order_id = ID(required=True)

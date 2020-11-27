@@ -1,4 +1,6 @@
 import { gql } from '@apollo/client';
+import { PRODUCT_FRAGMENT } from './products';
+import { MATERIAL_FRAGMENT } from './materials';
 
 const CASE_FRAGMENT = gql`
   fragment Case on Case {
@@ -63,6 +65,59 @@ const DELETE_CASE = gql`
   }
 `;
 
+const GET_CASE_MATERIALS = gql`
+  query GetCaseMaterials($id: ID!) {
+    case(id: $id) {
+      id
+      name
+      materials {
+        edges {
+          countUsed
+          node {
+            ...Material
+          }
+        }
+      }
+    }
+  }
+  ${MATERIAL_FRAGMENT}
+`;
+
+const GET_CASE_PRODUCTS = gql`
+  query GetCaseProducts($id: ID!) {
+    case(id: $id) {
+      id
+      name
+      products {
+        edges {
+          countNotShipped
+          countShipped
+          node {
+            ...Product
+          }
+        }
+      }
+    }
+  }
+  ${PRODUCT_FRAGMENT}
+`;
+
+const GET_CASE = gql`
+  query GetCase($id: ID!) {
+    case(id: $id) {
+      ...Case
+    }
+  }
+  ${CASE_FRAGMENT}
+`;
+
 export {
-  GET_CASES, UPDATE_CASE, CREATE_CASE, DELETE_CASE,
+  GET_CASES,
+  UPDATE_CASE,
+  CREATE_CASE,
+  DELETE_CASE,
+  GET_CASE_MATERIALS,
+  GET_CASE_PRODUCTS,
+  CASE_FRAGMENT,
+  GET_CASE,
 };

@@ -203,20 +203,16 @@ DELIMITER //
             ON `material` FOR EACH ROW
         BEGIN
             
-            IF @disable_trigger IS NULL THEN
-                SET @disable_trigger = 1;
-                DELETE FROM `product_uses_material`
-                WHERE `material_id` = OLD.id;
-                SET @disable_trigger = NULL;
-            END IF;
+        SET @disable_trigger = 1;
+        DELETE FROM `product_uses_material`
+        WHERE `material_id` = OLD.id;
+        SET @disable_trigger = NULL;
         
 
-            IF @disable_trigger IS NULL THEN
-                SET @disable_trigger = 1;
-                DELETE FROM `case_uses_material`
-                WHERE `material_id` = OLD.id;
-                SET @disable_trigger = NULL;
-            END IF;
+        SET @disable_trigger = 1;
+        DELETE FROM `case_uses_material`
+        WHERE `material_id` = OLD.id;
+        SET @disable_trigger = NULL;
         
         END//
         
@@ -227,12 +223,10 @@ DELIMITER //
             ON `product` FOR EACH ROW
         BEGIN
             
-            IF @disable_trigger IS NULL THEN
-                SET @disable_trigger = 1;
-                DELETE FROM `case_uses_product`
-                WHERE `product_id` = OLD.id;
-                SET @disable_trigger = NULL;
-            END IF;
+        SET @disable_trigger = 1;
+        DELETE FROM `case_uses_product`
+        WHERE `product_id` = OLD.id;
+        SET @disable_trigger = NULL;
         
         END//
         
@@ -243,12 +237,10 @@ DELIMITER //
             ON `case` FOR EACH ROW
         BEGIN
             
-            IF @disable_trigger IS NULL THEN
-                SET @disable_trigger = 1;
-                DELETE FROM `order_uses_case`
-                WHERE `case_id` = OLD.id;
-                SET @disable_trigger = NULL;
-            END IF;
+        SET @disable_trigger = 1;
+        DELETE FROM `order_uses_case`
+        WHERE `case_id` = OLD.id;
+        SET @disable_trigger = NULL;
         
         END//
         DELIMITER ;

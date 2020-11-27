@@ -2,6 +2,7 @@
 from . import base, material, product, types
 from .types import ID, Float, String, Integer
 from graphene import relay, Field
+from graphql_relay import from_global_id
 
 
 """
@@ -34,9 +35,13 @@ class CaseBase(
     pass
 
 
-class CaseInput(base.Input, CaseBase):
+class TableName:
 
-    __table__ = 'case'
+    __tablename__ = 'case'
+
+
+class CaseInput(base.Input, CaseBase, TableName):
+    __tablename__ = 'case'
 
     def to_output(self, id, date_created, date_modified):
         return Case(
@@ -47,12 +52,8 @@ class CaseInput(base.Input, CaseBase):
         )
 
 
-class Case(base.Object, CaseBase, types.Node):
-
-    __table__ = 'case'
-
-    def __str__(self):
-        return 'Case'
+class Case(base.Object, CaseBase, types.Node, TableName):
+    __tablename__ = 'case'
 
     materials = relay.ConnectionField(
         material.MaterialConnection, required=True)
@@ -60,32 +61,37 @@ class Case(base.Object, CaseBase, types.Node):
 
     @staticmethod
     def resolve_materials(parent, info):
-        return Case.select_uses(parent['id'], material.Material)
+        return Case.select_uses(parent.id, material.Material)
 
     @staticmethod
     def resolve_products(parent, info):
-        return Case.select_uses(parent['id'], product.Product)
+        return Case.select_uses(parent.id, product.Product)
+
+    class Meta:
+        interfaces = (relay.Node,)
 
 
 class CaseConnection(base.ObjectConnection):
+    __tablename__ = 'case'
 
     class Meta:
         node = Case
 
     class Edge:
-        count_used = Integer()
+        count_shipped = Integer()
+        count_not_shipped = Integer()
 
         @staticmethod
-        def resolve_count_used(parent, info):
-            return parent.node['count_used'] if parent else None
+        def resolve_count_shipped(parent, info):
+            return parent.node['count_shipped'] if parent else None
+
+        @staticmethod
+        def resolve_count_not_shipped(parent, info):
+            return parent.node['count_not_shipped'] if parent else None
 
 
-class CreateCase(base.Create):
-
-    __table__ = 'case'
-
-    def __str__(self):
-        return 'Case'
+class CreateCase(base.Create, TableName):
+    __tablename__ = 'case'
 
     class Arguments:
         case = CaseInput(required=True)
@@ -97,9 +103,8 @@ class CreateCase(base.Create):
         return {'case': CreateCase.commit(case)}
 
 
-class UpdateCase(base.Update):
-
-    __table__ = 'case'
+class UpdateCase(base.Update, TableName):
+    __tablename__ = 'case'
 
     class Arguments:
         id = ID(required=True)
@@ -112,9 +117,8 @@ class UpdateCase(base.Update):
         return {'case': UpdateCase.commit(id, case)}
 
 
-class DeleteCase(base.Delete):
-
-    __table__ = 'case'
+class DeleteCase(base.Delete, TableName):
+    __tablename__ = 'case'
 
     class Arguments:
         id = ID(required=True)
@@ -128,8 +132,7 @@ class DeleteCase(base.Delete):
 
 
 class CaseUseMaterial(base.Use):
-
-    __table__ = 'case'
+    __tablename__ = 'case'
 
     class Arguments:
         case_id = ID(required=True)
@@ -144,8 +147,7 @@ class CaseUseMaterial(base.Use):
 
 
 class CaseUnuseMaterial(base.Unuse):
-
-    __table__ = 'case'
+    __tablename__ = 'case'
 
     class Arguments:
         case_id = ID(required=True)
@@ -159,8 +161,7 @@ class CaseUnuseMaterial(base.Unuse):
 
 
 class CaseUseProduct(base.Use):
-
-    __table__ = 'case'
+    __tablename__ = 'case'
 
     class Arguments:
         case_id = ID(required=True)
@@ -175,8 +176,7 @@ class CaseUseProduct(base.Use):
 
 
 class CaseUnuseProduct(base.Unuse):
-
-    __table__ = 'case'
+    __tablename__ = 'case'
 
     class Arguments:
         case_id = ID(required=True)

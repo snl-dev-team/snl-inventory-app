@@ -3,41 +3,40 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { Button, LinearProgress } from '@material-ui/core';
-import { useMutation } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import produce from 'immer';
 import { Formik, Form, Field } from 'formik';
 import Grid from '@material-ui/core/Grid';
-import { TextField, CheckboxWithLabel } from 'formik-material-ui';
+import { TextField } from 'formik-material-ui';
 import { DatePicker } from 'formik-material-ui-pickers';
-import { UPDATE_PRODUCT, CREATE_PRODUCT, GET_PRODUCTS } from '../graphql/products';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import {
+  UPDATE_CASE, CREATE_CASE, GET_CASES, GET_CASE,
+} from '../../graphql/cases';
 
-export default function UpsertProductDialog() {
-  const useQueryString = () => new URLSearchParams(useLocation().search);
+export default function UpsertCaseDialog() {
   const history = useHistory();
-  const queryString = useQueryString();
+  const { id } = useParams();
 
-  const [createProduct] = useMutation(CREATE_PRODUCT);
-  const [updateProduct] = useMutation(UPDATE_PRODUCT);
+  const [createCase] = useMutation(CREATE_CASE);
+  const [updateCase] = useMutation(UPDATE_CASE);
+  const {
+    data: { case: case_ = { } } = {},
+    loading,
+  } = useQuery(GET_CASE, { variables: { id } });
 
   const handleClose = () => {
-    history.push('/products');
+    history.push('/cases');
   };
 
-  const id = queryString.get('id');
-  const isUpdate = id !== null;
-
-  const getTitle = () => {
-    if (isUpdate) {
-      return 'Update Product';
-    }
-    return 'Create Product';
-  };
+  const isUpdate = id !== undefined;
+  const title = `${isUpdate ? 'Update' : 'Create'} Case`;
 
   const onSubmit = (values, { setSubmitting }) => {
     const newValues = produce(values, (draft) => {
-      if (values.expirationDate !== null) {
+      if (values.expirationDate) {
         const expirationDate = new Date(values.expirationDate);
         const year = String(expirationDate.getUTCFullYear()).padStart(4, '0');
         const month = String(expirationDate.getUTCMonth() + 1).padStart(2, '0');
@@ -46,57 +45,45 @@ export default function UpsertProductDialog() {
         draft.expirationDate = `${year}-${month}-${day}`;
       }
     });
+
     setSubmitting(true);
     if (isUpdate) {
-      updateProduct({
+      updateCase({
         variables: { ...newValues, id },
       }).then(() => {
         setSubmitting(false);
-        history.push('/products');
+        history.push('/cases');
       });
     } else {
-      createProduct({
+      createCase({
         variables: newValues,
-        update: (client, { data: { createProduct: { product = {} } = {} } = {} } = {}) => {
+        update: (client, {
+          data: {
+            createCase: {
+              case: newCase = {
+              },
+            } = {},
+          } = {},
+        } = {}) => {
           const clientData = client.readQuery({
-            query: GET_PRODUCTS,
+            query: GET_CASES,
           });
           const newData = produce(clientData, (draftState) => {
-            draftState.products.edges.push({ __typename: 'ProductEdge', node: product });
+            draftState.cases.edges.push({ __typename: 'CaseEdge', node: newCase });
           });
           client.writeQuery({
-            query: GET_PRODUCTS,
+            query: GET_CASES,
             data: newData,
           });
         },
       }).then(() => {
         setSubmitting(false);
-        history.push('/products');
+        history.push('/cases');
       });
     }
   };
 
-  const getQueryStringValue = (key, default_) => {
-    const value = queryString.get(key);
-    if (value === null || value === 'null') {
-      return default_;
-    }
-    if (value === 'true') {
-      return true;
-    }
-    if (value === 'false') {
-      return false;
-    }
-    if (key === 'count') {
-      return Number(value);
-    }
-    if (key === 'expirationDate') {
-      const d = new Date(value);
-      d.setDate(d.getDate() + 1);
-      return d;
-    }
-    return value;
-  };
+  if (loading) return <CircularProgress />;
 
   return (
     <Dialog
@@ -105,17 +92,17 @@ export default function UpsertProductDialog() {
       aria-labelledby="form-dialog-title"
     >
       <DialogTitle id="form-dialog-title">
-        {getTitle()}
+        {title}
       </DialogTitle>
       <Formik
         initialValues={{
-          name: getQueryStringValue('name', ''),
-          number: getQueryStringValue('number', ''),
-          count: getQueryStringValue('count', 0),
-          expirationDate: getQueryStringValue('expirationDate', null),
-          completed: getQueryStringValue('completed', false),
-          notes: getQueryStringValue('notes', ''),
-          defaultMaterialCount: getQueryStringValue('defaultMaterialCount', 0.0),
+          number: case_.number || '',
+          name: case_.name || '',
+          count: case_.count || 0,
+          expirationDate: case_.expirationDate || null,
+          notes: case_.notes || '',
+          defaultProductCount: case_.defaultProductCount || 0,
+          defaultMaterialCount: case_.defaultMaterialCount || 0,
         }}
         onSubmit={onSubmit}
       >
@@ -129,16 +116,16 @@ export default function UpsertProductDialog() {
                     <Field
                       component={TextField}
                       type="text"
-                      label="Name"
-                      name="name"
+                      label="Number"
+                      name="number"
                     />
                   </Grid>
                   <Grid item>
                     <Field
                       component={TextField}
+                      name="name"
                       type="text"
-                      label="Number"
-                      name="number"
+                      label="Name"
                     />
                   </Grid>
                   <Grid item>
@@ -160,26 +147,19 @@ export default function UpsertProductDialog() {
                   <Grid item>
                     <Field
                       component={TextField}
-                      name="notes"
-                      type="text"
-                      label="Notes"
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Field
-                      component={TextField}
-                      name="defaultMaterialCount"
                       type="number"
-                      label="Default Material Count"
+                      label="Default Product Count"
+                      name="defaultMaterialCount"
                       InputProps={{ inputProps: { min: 0 } }}
                     />
                   </Grid>
                   <Grid item>
                     <Field
-                      component={CheckboxWithLabel}
-                      type="checkbox"
-                      name="completed"
-                      Label={{ label: 'Completed' }}
+                      component={TextField}
+                      type="number"
+                      label="Default Product Count"
+                      name="defaultProductCount"
+                      InputProps={{ inputProps: { min: 0 } }}
                     />
                   </Grid>
                 </Grid>
@@ -187,7 +167,7 @@ export default function UpsertProductDialog() {
             </DialogContent>
             <DialogActions>
               <Button
-                onClick={() => history.push('/products')}
+                onClick={() => history.push('/cases')}
                 color="primary"
               >
                 Cancel

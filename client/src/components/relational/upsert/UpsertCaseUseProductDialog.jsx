@@ -10,11 +10,11 @@ import { Formik, Form, Field } from 'formik';
 import Grid from '@material-ui/core/Grid';
 import { TextField } from 'formik-material-ui';
 import { useHistory, useParams } from 'react-router';
-import FormikAutocomplete from './FormikAutoComplete';
+import FormikAutocomplete from '../FormikAutoComplete';
 
-export default function UseMaterialDialog() {
+export default function UpsertCaseUseProductDialog() {
   const options = [{ title: 'The Shawshank Redemption', year: 1994 }];
-  const history = useHistory();
+  const { goBack } = useHistory();
   const { id } = useParams();
 
   return (
@@ -22,7 +22,7 @@ export default function UseMaterialDialog() {
       open
       aria-labelledby="form-dialog-title"
     >
-      <DialogTitle id="form-dialog-title">Use Material</DialogTitle>
+      <DialogTitle id="form-dialog-title">Case Use Product</DialogTitle>
       <Formik
         initialValues={{
           name: '',
@@ -41,7 +41,7 @@ export default function UseMaterialDialog() {
                       name="name"
                       style={{ width: 300 }}
                       component={FormikAutocomplete}
-                      label="Material"
+                      label="Product"
                       getOptionLabel={(option) => (option.title ? option.title : '')}
                       getOptionSelected={(
                         option,
@@ -66,13 +66,13 @@ export default function UseMaterialDialog() {
             </DialogContent>
             <DialogActions>
               <Button
-                onClick={() => { history.push(`/products/${id}/materials`); }}
+                onClick={goBack}
                 color="primary"
               >
                 Cancel
               </Button>
               <Button
-                onClick={() => { history.push(`/products/${id}/materials`); }}
+                onClick={goBack}
                 color="primary"
               >
                 Use

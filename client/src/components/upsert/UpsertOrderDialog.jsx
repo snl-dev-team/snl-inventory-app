@@ -3,36 +3,35 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { Button, LinearProgress } from '@material-ui/core';
-import { useMutation } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import produce from 'immer';
 import { Formik, Form, Field } from 'formik';
 import Grid from '@material-ui/core/Grid';
 import { TextField, CheckboxWithLabel } from 'formik-material-ui';
-import { UPDATE_ORDER, CREATE_ORDER, GET_ORDERS } from '../graphql/orders';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import {
+  UPDATE_ORDER,
+  CREATE_ORDER,
+  GET_ORDERS,
+  GET_ORDER,
+} from '../../graphql/orders';
 
 export default function UpsertOrderDialog() {
-  const useQueryString = () => new URLSearchParams(useLocation().search);
-  const history = useHistory();
-  const queryString = useQueryString();
+  const { push } = useHistory();
+  const { id } = useParams();
 
   const [createOrder] = useMutation(CREATE_ORDER);
   const [updateOrder] = useMutation(UPDATE_ORDER);
+  const { data: { order = {} } = {}, loading } = useQuery(GET_ORDER, { variables: { id } });
 
   const handleClose = () => {
-    history.push('/orders');
+    push('/orders');
   };
 
-  const id = queryString.get('id');
-  const isUpdate = id !== null;
-
-  const getTitle = () => {
-    if (isUpdate) {
-      return 'Update Order';
-    }
-    return 'Create Order';
-  };
+  const isUpdate = id !== undefined;
+  const title = `${isUpdate ? 'Update' : 'Create'}`;
 
   const onSubmit = (values, { setSubmitting }) => {
     setSubmitting(true);
@@ -41,17 +40,24 @@ export default function UpsertOrderDialog() {
         variables: { ...values, id },
       }).then(() => {
         setSubmitting(false);
-        history.push('/orders');
+        push('/orders');
       });
     } else {
       createOrder({
         variables: values,
-        update: (client, { data: { createOrder: { order = {} } = {} } = {} } = {}) => {
+        update: (client, {
+          data: {
+            createOrder: {
+              order: newOrder = {
+              },
+            } = {},
+          } = {},
+        } = {}) => {
           const clientData = client.readQuery({
             query: GET_ORDERS,
           });
           const newData = produce(clientData, (draftState) => {
-            draftState.orders.edges.push({ __typename: 'OrderEdge', node: order });
+            draftState.orders.edges.push({ __typename: 'OrderEdge', node: newOrder });
           });
           client.writeQuery({
             query: GET_ORDERS,
@@ -60,24 +66,12 @@ export default function UpsertOrderDialog() {
         },
       }).then(() => {
         setSubmitting(false);
-        history.push('/orders');
+        push('/orders');
       });
     }
   };
 
-  const getQueryStringValue = (key, default_) => {
-    const value = queryString.get(key);
-    if (value === null || value === 'null') {
-      return default_;
-    }
-    if (value === 'true') {
-      return true;
-    }
-    if (value === 'false') {
-      return false;
-    }
-    return value;
-  };
+  if (loading) return <CircularProgress />;
 
   return (
     <Dialog
@@ -86,15 +80,15 @@ export default function UpsertOrderDialog() {
       aria-labelledby="form-dialog-title"
     >
       <DialogTitle id="form-dialog-title">
-        {getTitle()}
+        {title}
       </DialogTitle>
       <Formik
         initialValues={{
-          number: getQueryStringValue('number', ''),
-          completed: getQueryStringValue('completed', false),
-          notes: getQueryStringValue('notes', ''),
-          customerName: getQueryStringValue('customerName', ''),
-          defaultCaseCount: getQueryStringValue('defaultCaseCount', 0),
+          number: order.number || '',
+          completed: order.completed || false,
+          notes: order.notes || '',
+          customerName: order.customerName || '',
+          defaultCaseCount: order.defaultCaseCount || 0,
         }}
         onSubmit={onSubmit}
       >
@@ -150,7 +144,7 @@ export default function UpsertOrderDialog() {
             </DialogContent>
             <DialogActions>
               <Button
-                onClick={() => history.push('/orders')}
+                onClick={() => push('/orders')}
                 color="primary"
               >
                 Cancel

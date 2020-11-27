@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client';
+import { CASE_FRAGMENT } from './cases';
 
 const ORDER_FRAGMENT = gql`
   fragment Order on Order {
@@ -61,6 +62,39 @@ const DELETE_ORDER = gql`
   }
 `;
 
+const GET_ORDER_CASES = gql`
+  query GetOrderCases($id: ID!) {
+    order(id: $id) {
+      id
+      number
+      cases {
+        edges {
+          countShipped
+          countNotShipped
+          node {
+            ...Case
+          }
+        }
+      }
+    }
+  }
+  ${CASE_FRAGMENT}
+`;
+
+const GET_ORDER = gql`
+  query GetOrder($id: ID!) {
+    order(id: $id) {
+      ...Order
+    }
+  }
+  ${ORDER_FRAGMENT}
+`;
+
 export {
-  GET_ORDERS, UPDATE_ORDER, CREATE_ORDER, DELETE_ORDER,
+  GET_ORDERS,
+  UPDATE_ORDER,
+  CREATE_ORDER,
+  DELETE_ORDER,
+  GET_ORDER_CASES,
+  GET_ORDER,
 };

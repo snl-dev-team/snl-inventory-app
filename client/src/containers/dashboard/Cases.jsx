@@ -1,9 +1,4 @@
 import React from 'react';
-import Fab from '@material-ui/core/Fab';
-import { makeStyles } from '@material-ui/core/styles';
-import AddIcon from '@material-ui/icons/Add';
-import Grid from '@material-ui/core/Grid';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import { Route, useHistory } from 'react-router';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/client';
@@ -12,101 +7,91 @@ import produce from 'immer';
 import {
   GET_CASES, DELETE_CASE,
 } from '../../graphql/cases';
-import UpsertCaseDialog from '../../components/UpsertCaseDialog';
+import UpsertCaseDialog from '../../components/upsert/UpsertCaseDialog';
 import InventoryCard from '../../components/InventoryCard';
-
-const useStyles = makeStyles((theme) => ({
-  margin: {
-    margin: 0,
-    top: 'auto',
-    right: 20,
-    bottom: 20,
-    left: 'auto',
-    position: 'fixed',
-  },
-  extendedIcon: {
-    marginRight: theme.spacing(1),
-  },
-}));
+import CaseUseProductDialog from '../../components/relational/view/CaseUseProductDialog';
+import GenericDashboard from './Generic';
+import CaseUseMaterialDialog from '../../components/relational/view/CaseUseMaterialDialog';
+import UpsertCaseUseMaterialDialog from '../../components/relational/upsert/UpsertCaseUseMaterialDialog';
+import UpsertCaseUseProductDialog from '../../components/relational/upsert/UpsertCaseUseProductDialog';
 
 const CasesDashboard = ({ searchString }) => {
-  const classes = useStyles();
-  const history = useHistory();
+  const { push } = useHistory();
 
   const {
-    loading, error, data,
+    data: { cases: { edges = [] } = {} } = {},
+    loading, error,
   } = useQuery(GET_CASES);
-
   const [deleteCase] = useMutation(DELETE_CASE);
-
   const updateCache = (id) => (client) => {
     const clientData = client.readQuery({
       query: GET_CASES,
     });
-
     const newData = produce(clientData, (draftState) => {
       const idx = draftState.cases.edges
         .findIndex(({ node }) => node.id === id);
       draftState.cases.edges.splice(idx, 1);
     });
-
     client.writeQuery({
       query: GET_CASES,
       data: newData,
     });
   };
 
-  if (loading || error) {
-    return <CircularProgress />;
-  }
-
-  const cases = data.cases.edges
-    .map((edge) => edge.node)
-    .filter(({ name }) => searchString === null || name.toLowerCase().includes(searchString))
-    .map((node) => node);
-
-  const getQueryString = (object) => Object.keys(object)
-    .map((key) => `${key}=${object[key]}`)
-    .join('&');
+  const searchFilter = ({ name }) => searchString === null
+  || name.toLowerCase().includes(searchString);
 
   return (
     <>
-      <Grid container spacing={3}>
-        {cases.map((case_) => (
-          <Grid key={case_.id}>
-            <InventoryCard
-              data={Object.entries(case_)
-                .filter(([name]) => !['__typename', 'id', 'name'].includes(name))
-                .map(([name, value]) => ({ name: lodash.startCase(name), value: String(value) }))}
-              title={case_.name}
-              onClickShowMaterials={() => {}}
-              onClickShowProducts={() => {}}
-              onClickEdit={() => history.push(`/cases/update?${getQueryString(case_)}`)}
-              onClickDelete={() => deleteCase({
-                variables: { id: case_.id },
-                update: updateCache(case_.id),
-              })}
-            />
-          </Grid>
-        ))}
-      </Grid>
-
-      <Fab
-        size="medium"
-        color="secondary"
-        aria-label="add"
-        className={classes.margin}
-        onClick={() => history.push('/cases/create')}
+      <GenericDashboard
+        loading={loading}
+        error={error}
+        onClickAdd={() => push('/cases/create')}
       >
-        <AddIcon />
-      </Fab>
-
+        {edges.map(({ node }) => node).filter(searchFilter).map((node) => (
+          <InventoryCard
+            key={node.id}
+            data={Object.entries(node)
+              .filter(([name]) => !['__typename', 'id', 'name'].includes(name))
+              .map(([name, value]) => ({ name: lodash.startCase(name), value: String(value) }))}
+            title={node.name}
+            onClickShowMaterials={() => push(`/cases/${node.id}/materials`)}
+            onClickShowProducts={() => push(`/cases/${node.id}/products`)}
+            onClickEdit={() => push(`/cases/${node.id}/update/`)}
+            onClickDelete={() => deleteCase({
+              variables: { id: node.id },
+              update: updateCache(node.id),
+            })}
+          />
+        ))}
+      </GenericDashboard>
       <Route
         exact
-        path={['/cases/create', '/cases/update']}
+        path={['/cases/create', '/cases/:id/update']}
         component={UpsertCaseDialog}
       />
 
+      <Route
+        path="/cases/:id/products"
+        component={CaseUseProductDialog}
+      />
+
+      <Route
+        path="/cases/:id/materials"
+        component={CaseUseMaterialDialog}
+      />
+
+      <Route
+        exact
+        path="/cases/:id/products/use"
+        component={UpsertCaseUseProductDialog}
+      />
+
+      <Route
+        exact
+        path="/cases/:id/materials/use"
+        component={UpsertCaseUseMaterialDialog}
+      />
     </>
   );
 };

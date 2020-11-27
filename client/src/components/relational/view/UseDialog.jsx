@@ -6,16 +6,12 @@ import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
-import { useHistory, useParams } from 'react-router';
-import { useQuery } from '@apollo/client';
 import Grid from '@material-ui/core/Grid';
-import lodash from 'lodash';
 import { CircularProgress } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
-import { GET_PRODUCT_MATERIALS } from '../graphql/products';
-import InventoryCard from './InventoryCard';
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -38,16 +34,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProductUseMaterialDialog() {
-  const { id } = useParams();
+export default function UseDialog({
+  onClickAdd,
+  onClickCancel,
+  title,
+  loading,
+  children,
+}) {
   const classes = useStyles();
-  const history = useHistory();
-  const { data, loading } = useQuery(GET_PRODUCT_MATERIALS, { variables: { id } });
   const [open, setOpen] = useState(true);
 
   const handleClose = () => {
     setOpen(false);
-    setTimeout(() => history.push('/products'), 100);
+    setTimeout(onClickCancel, 100);
   };
 
   return (
@@ -65,9 +64,7 @@ export default function ProductUseMaterialDialog() {
       <AppBar className={classes.appBar}>
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            Product Materials:
-            {' '}
-            {id}
+            {title}
           </Typography>
           <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
             <CloseIcon />
@@ -76,32 +73,34 @@ export default function ProductUseMaterialDialog() {
       </AppBar>
       <CssBaseline />
       {loading && <CircularProgress />}
-      {!loading && (
-      <Grid container className={classes.grid}>
-        {data.product.materials.edges.map(({ node, countUsed }) => (
-          <Grid key={node.id}>
-            <InventoryCard
-              data={Object.entries(node)
-                .filter(([name]) => !['__typename', 'id', 'name'].includes(name))
-                .concat([['countUsed', countUsed]])
-                .map(([name, value]) => ({ name: lodash.startCase(name), value: String(value) }))}
-              title={node.name}
-              onClickDelete={() => {}}
-              onClickEdit={() => {}}
-            />
+      {!loading && children.map((child) => (
+        <Grid container className={classes.grid}>
+          <Grid item>
+            {child}
           </Grid>
-        ))}
-      </Grid>
-      )}
+        </Grid>
+      ))}
       <Fab
         size="medium"
         color="secondary"
         aria-label="add"
         className={classes.fab}
-        onClick={() => history.push(`/products/${id}/materials/use`)}
+        onClick={onClickAdd}
       >
         <AddIcon />
       </Fab>
     </Dialog>
   );
 }
+
+UseDialog.defaultProps = {
+  children: [],
+};
+
+UseDialog.propTypes = {
+  onClickAdd: PropTypes.func.isRequired,
+  onClickCancel: PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired,
+  loading: PropTypes.bool.isRequired,
+  children: PropTypes.arrayOf(PropTypes.node),
+};

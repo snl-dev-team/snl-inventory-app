@@ -1,9 +1,4 @@
 import React from 'react';
-import Fab from '@material-ui/core/Fab';
-import { makeStyles } from '@material-ui/core/styles';
-import AddIcon from '@material-ui/icons/Add';
-import Grid from '@material-ui/core/Grid';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import { Route, useHistory } from 'react-router';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/client';
@@ -12,29 +7,18 @@ import produce from 'immer';
 import {
   GET_ORDERS, DELETE_ORDER,
 } from '../../graphql/orders';
-import UpsertOrderDialog from '../../components/UpsertOrderDialog';
+import UpsertOrderDialog from '../../components/upsert/UpsertOrderDialog';
 import InventoryCard from '../../components/InventoryCard';
-
-const useStyles = makeStyles((theme) => ({
-  margin: {
-    margin: 0,
-    top: 'auto',
-    right: 20,
-    bottom: 20,
-    left: 'auto',
-    position: 'fixed',
-  },
-  extendedIcon: {
-    marginRight: theme.spacing(1),
-  },
-}));
+import GenericDashboard from './Generic';
+import OrderUseCaseDialog from '../../components/relational/view/OrderUseCaseDialog';
+import UpsertOrderUseCaseDialog from '../../components/relational/upsert/UpsertOrderUseCaseDialog';
 
 const OrdersDashboard = ({ searchString }) => {
-  const classes = useStyles();
-  const history = useHistory();
+  const { push } = useHistory();
 
   const {
-    loading, error, data,
+    loading,
+    data: { orders: { edges = [] } = {} } = {},
   } = useQuery(GET_ORDERS);
 
   const [deleteOrder] = useMutation(DELETE_ORDER);
@@ -56,55 +40,48 @@ const OrdersDashboard = ({ searchString }) => {
     });
   };
 
-  if (loading || error) {
-    return <CircularProgress />;
-  }
-
-  const orders = data.orders.edges
-    .map((edge) => edge.node)
-    .filter(({ number }) => searchString === null || number.toLowerCase().includes(searchString));
-
-  const getQueryString = (object) => Object.keys(object)
-    .map((key) => `${key}=${object[key]}`)
-    .join('&');
+  const searchFilter = ({ number }) => searchString === null
+  || number.toLowerCase().includes(searchString);
 
   return (
     <>
-      <Grid container spacing={3}>
-        {orders.map((order) => (
-          <Grid key={order.id}>
-            <InventoryCard
-              data={Object.entries(order)
-                .filter(([name]) => !['__typename', 'id'].includes(name))
-                .map(([name, value]) => ({ name: lodash.startCase(name), value: String(value) }))}
-              title={order.number}
-              onClickShowCases={() => {}}
-              onClickEdit={() => history.push(`/orders/update?${getQueryString(order)}`)}
-              onClickDelete={() => deleteOrder({
-                variables: { id: order.id },
-                update: updateCache(order.id),
-              })}
-            />
-          </Grid>
-        ))}
-      </Grid>
-
-      <Fab
-        size="medium"
-        color="secondary"
-        aria-label="add"
-        className={classes.margin}
-        onClick={() => history.push('/orders/create')}
+      <GenericDashboard
+        loading={loading}
+        onClickAdd={() => push('orders/create')}
       >
-        <AddIcon />
-      </Fab>
+        {edges.map(({ node }) => node).filter(searchFilter).map((node) => (
+          <InventoryCard
+            key={node.id}
+            data={Object.entries(node)
+              .filter(([name]) => !['__typename', 'id'].includes(name))
+              .map(([name, value]) => ({ name: lodash.startCase(name), value: String(value) }))}
+            title={node.number}
+            onClickShowCases={() => push(`/orders/${node.id}/cases`)}
+            onClickEdit={() => push(`/orders/${node.id}/`)}
+            onClickDelete={() => deleteOrder({
+              variables: { id: node.id },
+              update: updateCache(node.id),
+            })}
+          />
+        ))}
+      </GenericDashboard>
 
       <Route
         exact
-        path={['/orders/create', '/orders/update']}
+        path={['/orders/create', '/orders/:id/update']}
         component={UpsertOrderDialog}
       />
 
+      <Route
+        path="/orders/:id/cases"
+        component={OrderUseCaseDialog}
+      />
+
+      <Route
+        exact
+        path="/orders/:id/cases/use"
+        component={UpsertOrderUseCaseDialog}
+      />
     </>
   );
 };

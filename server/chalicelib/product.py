@@ -35,9 +35,13 @@ class ProductBase(
     pass
 
 
-class ProductInput(base.Input, ProductBase):
+class TableName:
 
-    __table__ = 'product'
+    __tablename__ = 'product'
+
+
+class ProductInput(base.Input, ProductBase, TableName):
+    __tablename__ = 'product'
 
     def to_output(self, id, date_created, date_modified):
         return Product(
@@ -48,20 +52,15 @@ class ProductInput(base.Input, ProductBase):
         )
 
 
-class Product(base.Object, ProductBase, types.Node):
-
-    __table__ = 'product'
-
-    def __str__(self):
-        return 'Product'
+class Product(base.Object, ProductBase, types.Node, TableName):
+    __tablename__ = 'product'
 
     materials = relay.ConnectionField(
         material.MaterialConnection, required=True)
 
     @staticmethod
     def resolve_materials(parent, info):
-        id = int(from_global_id(parent.id)[1])
-        return Product.select_uses(id, material.Material)
+        return Product.select_uses(parent.id, material.Material)
 
     class Meta:
         interfaces = (relay.Node,)
@@ -80,9 +79,8 @@ class ProductConnection(base.ObjectConnection):
             return parent.node['count_used'] if parent else None
 
 
-class CreateProduct(base.Create):
-
-    __table__ = 'product'
+class CreateProduct(base.Create, TableName):
+    __tablename__ = 'product'
 
     class Arguments:
         product = ProductInput(required=True)
@@ -94,9 +92,8 @@ class CreateProduct(base.Create):
         return {'product': CreateProduct.commit(product)}
 
 
-class UpdateProduct(base.Update):
-
-    __table__ = 'product'
+class UpdateProduct(base.Update, TableName):
+    __tablename__ = 'product'
 
     class Arguments:
         id = ID(required=True)
@@ -109,9 +106,8 @@ class UpdateProduct(base.Update):
         return {'product': UpdateProduct.commit(id, product)}
 
 
-class DeleteProduct(base.Delete):
-
-    __table__ = 'product'
+class DeleteProduct(base.Delete, TableName):
+    __tablename__ = 'product'
 
     class Arguments:
         id = ID(required=True)
@@ -124,9 +120,8 @@ class DeleteProduct(base.Delete):
         return {'id': id}
 
 
-class ProductUseMaterial(base.Use):
-
-    __table__ = 'product'
+class ProductUseMaterial(base.Use, TableName):
+    __tablename__ = 'product'
 
     class Arguments:
         product_id = ID(required=True)
@@ -136,15 +131,14 @@ class ProductUseMaterial(base.Use):
     material = Field(Material)
 
     @staticmethod
-    def mutate(parent, info, product_id: int, material_id: int, count: float):
+    def mutate(parent, info, product_id: str, material_id: str, count: float):
         ProductUseMaterial.commit(
             material.Material, product_id, material_id, count)
         return {'material': Material.select_where(id=material_id)}
 
 
-class ProductUnuseMaterial(base.Unuse):
-
-    __table__ = 'product'
+class ProductUnuseMaterial(base.Unuse, TableName):
+    __tablename__ = 'product'
 
     class Arguments:
         product_id = ID(required=True)

@@ -1,5 +1,5 @@
 # pylint: disable=relative-beyond-top-level
-from graphene import Field, ID
+from graphene import Field, ID, relay
 from . import base, types
 
 """
@@ -37,9 +37,11 @@ class MaterialBase(
     pass
 
 
-class MaterialInput(base.Input, MaterialBase):
+class TableName:
+    __tablename__ = 'material'
 
-    __table__ = 'material'
+
+class MaterialInput(base.Input, MaterialBase, TableName):
 
     def to_output(self, id, date_created, date_modified):
         return Material(
@@ -50,15 +52,14 @@ class MaterialInput(base.Input, MaterialBase):
         )
 
 
-class Material(base.Object, MaterialBase, types.Node):
+class Material(base.Object, MaterialBase, types.Node, TableName):
+    __tablename__ = 'material'
 
-    def __str__(self):
-        return 'Material'
-
-    __table__ = 'material'
+    class Meta:
+        interfaces = (relay.Node,)
 
 
-class MaterialConnection(base.ObjectConnection):
+class MaterialConnection(base.ObjectConnection, TableName):
 
     class Meta:
         node = Material
@@ -71,9 +72,8 @@ class MaterialConnection(base.ObjectConnection):
             return parent.node['count_used'] if parent else None
 
 
-class CreateMaterial(base.Create):
-
-    __table__ = 'material'
+class CreateMaterial(base.Create, TableName):
+    __tablename__ = 'material'
 
     class Arguments:
         material = MaterialInput(required=True)
@@ -85,9 +85,8 @@ class CreateMaterial(base.Create):
         return {'material': CreateMaterial.commit(material)}
 
 
-class UpdateMaterial(base.Update):
-
-    __table__ = 'material'
+class UpdateMaterial(base.Update, TableName):
+    __tablename__ = 'material'
 
     class Arguments:
         id = ID(required=True)
@@ -100,9 +99,8 @@ class UpdateMaterial(base.Update):
         return {'material': UpdateMaterial.commit(id, material)}
 
 
-class DeleteMaterial(base.Delete):
-
-    __table__ = 'material'
+class DeleteMaterial(base.Delete, TableName):
+    __tablename__ = 'material'
 
     class Arguments:
         id = ID(required=True)

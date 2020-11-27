@@ -1,9 +1,4 @@
 import React from 'react';
-import Fab from '@material-ui/core/Fab';
-import { makeStyles } from '@material-ui/core/styles';
-import AddIcon from '@material-ui/icons/Add';
-import Grid from '@material-ui/core/Grid';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import { Route, useHistory } from 'react-router';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/client';
@@ -12,31 +7,18 @@ import produce from 'immer';
 import {
   GET_PRODUCTS, DELETE_PRODUCT,
 } from '../../graphql/products';
-import UpsertProductDialog from '../../components/UpsertProductDialog';
+import UpsertProductDialog from '../../components/upsert/UpsertProductDialog';
 import InventoryCard from '../../components/InventoryCard';
-import ProductUseMaterialDialog from '../../components/ProductUseMaterialDialog';
-import UseMaterialDialog from '../../components/UseMaterialDialog';
-
-const useStyles = makeStyles((theme) => ({
-  margin: {
-    margin: 0,
-    top: 'auto',
-    right: 20,
-    bottom: 20,
-    left: 'auto',
-    position: 'fixed',
-  },
-  extendedIcon: {
-    marginRight: theme.spacing(1),
-  },
-}));
+import ProductUseMaterialDialog from '../../components/relational/view/ProductUseMaterialDialog';
+import GenericDashboard from './Generic';
+import UpsertProductUseCaseDialog from '../../components/relational/upsert/UpsertProductUseMaterialDialog';
 
 const ProductsDashboard = ({ searchString }) => {
-  const classes = useStyles();
-  const history = useHistory();
+  const { push } = useHistory();
 
   const {
-    loading, error, data,
+    loading,
+    data: { products: { edges = [] } = {} } = {},
   } = useQuery(GET_PRODUCTS);
 
   const [deleteProduct] = useMutation(DELETE_PRODUCT);
@@ -58,53 +40,35 @@ const ProductsDashboard = ({ searchString }) => {
     });
   };
 
-  if (loading || error) {
-    return <CircularProgress />;
-  }
-
-  const products = data.products.edges
-    .map((edge) => edge.node)
-    .filter(({ name }) => searchString === null || name.toLowerCase().includes(searchString))
-    .map((node) => node);
-
-  const getQueryString = (object) => Object.keys(object)
-    .map((key) => `${key}=${object[key]}`)
-    .join('&');
+  const searchFilter = ({ name }) => searchString === null
+  || name.toLowerCase().includes(searchString);
 
   return (
     <>
-      <Grid container spacing={3}>
-        {products.map((product) => (
-          <Grid key={product.id}>
-            <InventoryCard
-              data={Object.entries(product)
-                .filter(([name]) => !['__typename', 'id', 'name'].includes(name))
-                .map(([name, value]) => ({ name: lodash.startCase(name), value: String(value) }))}
-              title={product.name}
-              onClickShowMaterials={() => { history.push(`/products/${product.id}/materials`); }}
-              onClickEdit={() => history.push(`/products/update?${getQueryString(product)}`)}
-              onClickDelete={() => deleteProduct({
-                variables: { id: product.id },
-                update: updateCache(product.id),
-              })}
-            />
-          </Grid>
-        ))}
-      </Grid>
-
-      <Fab
-        size="medium"
-        color="secondary"
-        aria-label="add"
-        className={classes.margin}
-        onClick={() => history.push('/products/create')}
+      <GenericDashboard
+        loading={loading}
+        onClickAdd={() => push('/products/create')}
       >
-        <AddIcon />
-      </Fab>
+        {edges.map(({ node }) => node).filter(searchFilter).map((node) => (
+          <InventoryCard
+            key={node.id}
+            data={Object.entries(node)
+              .filter(([name]) => !['__typename', 'id', 'name'].includes(name))
+              .map(([name, value]) => ({ name: lodash.startCase(name), value: String(value) }))}
+            title={node.name}
+            onClickShowMaterials={() => { push(`/products/${node.id}/materials`); }}
+            onClickEdit={() => push(`/products/${node.id}/update`)}
+            onClickDelete={() => deleteProduct({
+              variables: { id: node.id },
+              update: updateCache(node.id),
+            })}
+          />
+        ))}
+      </GenericDashboard>
 
       <Route
         exact
-        path={['/products/create', '/products/update']}
+        path={['/products/create', '/products/:id/update']}
         component={UpsertProductDialog}
       />
 
@@ -115,7 +79,7 @@ const ProductsDashboard = ({ searchString }) => {
 
       <Route
         path="/products/:id/materials/use"
-        component={UseMaterialDialog}
+        component={UpsertProductUseCaseDialog}
       />
 
     </>

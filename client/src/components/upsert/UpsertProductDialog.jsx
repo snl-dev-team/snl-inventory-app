@@ -12,6 +12,7 @@ import Grid from '@material-ui/core/Grid';
 import { TextField, CheckboxWithLabel } from 'formik-material-ui';
 import { DatePicker } from 'formik-material-ui-pickers';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import * as Yup from 'yup';
 import {
   UPDATE_PRODUCT, CREATE_PRODUCT, GET_PRODUCTS, GET_PRODUCT,
 } from '../../graphql/products';
@@ -74,6 +75,16 @@ export default function UpsertProductDialog() {
 
   if (loading) return <CircularProgress />;
 
+  const validationSchema = Yup.object().shape({
+    name: Yup.string().required('Required!'),
+    number: Yup.string().required('Required!'),
+    count: Yup.number().required('Required!').positive('Must be > 0!'),
+    expirationDate: Yup.date().nullable(),
+    completed: product.completed || false,
+    notes: Yup.string(),
+    defaultMaterialCount: Yup.number().required('Required!').positive('Must be > 0!'),
+  });
+
   return (
     <Dialog
       open
@@ -84,14 +95,15 @@ export default function UpsertProductDialog() {
         {title}
       </DialogTitle>
       <Formik
+        validationSchema={validationSchema}
         initialValues={{
           name: product.name || '',
           number: product.number || '',
-          count: product.count || 0,
+          count: product.count || 1,
           expirationDate: product.expirationDate || null,
           completed: product.completed || false,
           notes: product.notes || '',
-          defaultMaterialCount: product.defaultMaterialCount || 0.0,
+          defaultMaterialCount: product.defaultMaterialCount || 1.0,
         }}
         onSubmit={onSubmit}
       >
@@ -100,7 +112,7 @@ export default function UpsertProductDialog() {
             {isSubmitting && <LinearProgress />}
             <DialogContent dividers>
               <Form>
-                <Grid container spacing={3} justify="center">
+                <Grid container spacing={5} justify="center">
                   <Grid item>
                     <Field
                       component={TextField}

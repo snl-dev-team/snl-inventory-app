@@ -12,6 +12,7 @@ import Grid from '@material-ui/core/Grid';
 import { TextField } from 'formik-material-ui';
 import { DatePicker } from 'formik-material-ui-pickers';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import * as Yup from 'yup';
 import {
   UPDATE_CASE, CREATE_CASE, GET_CASES, GET_CASE,
 } from '../../graphql/cases';
@@ -85,6 +86,16 @@ export default function UpsertCaseDialog() {
 
   if (loading) return <CircularProgress />;
 
+  const validationSchema = Yup.object().shape({
+    number: Yup.string().required('Required!'),
+    name: Yup.string().required('Required!'),
+    count: Yup.number().required('Required!').positive('Must be > 0!'),
+    expirationDate: Yup.date().nullable(),
+    notes: Yup.string(),
+    defaultProductCount: Yup.number().required('Required!').positive('Must be > 0!'),
+    defaultMaterialCount: Yup.number().required('Required!').positive('Must be > 0!'),
+  });
+
   return (
     <Dialog
       open
@@ -95,14 +106,15 @@ export default function UpsertCaseDialog() {
         {title}
       </DialogTitle>
       <Formik
+        validationSchema={validationSchema}
         initialValues={{
           number: case_.number || '',
           name: case_.name || '',
-          count: case_.count || 0,
+          count: case_.count || 1,
           expirationDate: case_.expirationDate || null,
           notes: case_.notes || '',
-          defaultProductCount: case_.defaultProductCount || 0,
-          defaultMaterialCount: case_.defaultMaterialCount || 0,
+          defaultProductCount: case_.defaultProductCount || 1,
+          defaultMaterialCount: case_.defaultMaterialCount || 1,
         }}
         onSubmit={onSubmit}
       >
@@ -111,7 +123,7 @@ export default function UpsertCaseDialog() {
             {isSubmitting && <LinearProgress />}
             <DialogContent dividers>
               <Form>
-                <Grid container spacing={3} justify="center">
+                <Grid container spacing={8} justify="center">
                   <Grid item>
                     <Field
                       component={TextField}
@@ -142,6 +154,7 @@ export default function UpsertCaseDialog() {
                       component={DatePicker}
                       label="Expiration Date"
                       name="expirationDate"
+                      clearable
                     />
                   </Grid>
                   <Grid item>

@@ -14,7 +14,7 @@ import FormikAutocomplete from '../FormikAutoComplete';
 
 export default function UpsertCaseUseMaterialDialog() {
   const options = [{ title: 'The Shawshank Redemption', year: 1994 }];
-  const { goBack } = useHistory();
+  const { push } = useHistory();
   const { id } = useParams();
 
   return (
@@ -28,7 +28,7 @@ export default function UpsertCaseUseMaterialDialog() {
           name: '',
           count: 0,
         }}
-        onSubmit={() => {}}
+        onSubmit={() => push(`case/${id}/material`)}
       >
         {({ submitForm, isSubmitting }) => (
           <>
@@ -66,13 +66,13 @@ export default function UpsertCaseUseMaterialDialog() {
             </DialogContent>
             <DialogActions>
               <Button
-                onClick={goBack}
+                onClick={() => push(`case/${id}/material`)}
                 color="primary"
               >
                 Cancel
               </Button>
               <Button
-                onClick={goBack}
+                onClick={submitForm}
                 color="primary"
               >
                 Use

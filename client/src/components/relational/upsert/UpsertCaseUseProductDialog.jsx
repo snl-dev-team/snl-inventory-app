@@ -10,12 +10,18 @@ import { Formik, Form, Field } from 'formik';
 import Grid from '@material-ui/core/Grid';
 import { TextField } from 'formik-material-ui';
 import { useHistory, useParams } from 'react-router';
+import * as Yup from 'yup';
 import FormikAutocomplete from '../FormikAutoComplete';
 
 export default function UpsertCaseUseProductDialog() {
   const options = [{ title: 'The Shawshank Redemption', year: 1994 }];
-  const { goBack } = useHistory();
+  const { push } = useHistory();
   const { id } = useParams();
+
+  const validationSchema = Yup.object().shape({
+    name: Yup.object().required('Required!').defined('Please enter a value!'),
+    count: Yup.number().required('Required!').positive('Must be > 0!'),
+  });
 
   return (
     <Dialog
@@ -66,13 +72,13 @@ export default function UpsertCaseUseProductDialog() {
             </DialogContent>
             <DialogActions>
               <Button
-                onClick={goBack}
+                onClick={() => push(`/case/${id}/product`)}
                 color="primary"
               >
                 Cancel
               </Button>
               <Button
-                onClick={goBack}
+                onClick={submitForm}
                 color="primary"
               >
                 Use

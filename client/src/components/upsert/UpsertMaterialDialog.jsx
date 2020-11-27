@@ -12,6 +12,7 @@ import Grid from '@material-ui/core/Grid';
 import { TextField, Select } from 'formik-material-ui';
 import { DatePicker } from 'formik-material-ui-pickers';
 import MenuItem from '@material-ui/core/MenuItem';
+import * as Yup from 'yup';
 import UNITS from '../../constants/units';
 import {
   UPDATE_MATERIAL, CREATE_MATERIAL, GET_MATERIALS, GET_MATERIAL,
@@ -29,7 +30,7 @@ export default function UpsertMaterialDialog() {
   } = useQuery(GET_MATERIAL, { variables: { id } });
 
   const isUpdate = id !== undefined;
-  const title = `${isUpdate ? 'Update' : 'Create'} Case`;
+  const title = `${isUpdate ? 'Update' : 'Create'} Material`;
 
   const onSubmit = (values, { setSubmitting }) => {
     const newValues = produce(values, (draft) => {
@@ -96,6 +97,19 @@ export default function UpsertMaterialDialog() {
 
   if (loading) return <CircularProgress />;
 
+  const validationSchema = Yup.object().shape({
+    name: Yup.string().required('Required!'),
+    number: Yup.string().required('Required!'),
+    count: Yup.number().required('Required!').positive('Must be > 0!'),
+    price: Yup.number().required('Required!').round(),
+    units: Yup.string().oneOf(Object.values(UNITS)).required('Required!'),
+    expirationDate: Yup.date().nullable(),
+    notes: Yup.string(),
+    purchaseOrderUrl: Yup.string().url().nullable(),
+    purchaseOrderNumber: Yup.string().nullable(),
+    certificateOfAnalysisUrl: Yup.string().url().nullable(),
+  });
+
   return (
     <Dialog
       open
@@ -106,10 +120,11 @@ export default function UpsertMaterialDialog() {
         {title}
       </DialogTitle>
       <Formik
+        validationSchema={validationSchema}
         initialValues={{
           name: material.name || '',
           number: material.number || '',
-          count: material.count || 0.0,
+          count: material.count || 1.0,
           price: material.price || 0,
           units: material.units || UNITS.UNIT,
           expirationDate: material.expirationDate || null,
@@ -125,7 +140,7 @@ export default function UpsertMaterialDialog() {
             {isSubmitting && <LinearProgress />}
             <DialogContent dividers>
               <Form>
-                <Grid container spacing={3} justify="center">
+                <Grid container spacing={5} justify="center">
                   <Grid item>
                     <Field
                       component={TextField}
@@ -166,6 +181,7 @@ export default function UpsertMaterialDialog() {
                       component={DatePicker}
                       label="Expiration Date"
                       name="expirationDate"
+                      clearable
                     />
                   </Grid>
                   <Grid item>

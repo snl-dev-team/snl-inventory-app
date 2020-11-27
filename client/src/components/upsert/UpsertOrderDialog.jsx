@@ -11,6 +11,7 @@ import { Formik, Form, Field } from 'formik';
 import Grid from '@material-ui/core/Grid';
 import { TextField, CheckboxWithLabel } from 'formik-material-ui';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import * as Yup from 'yup';
 import {
   UPDATE_ORDER,
   CREATE_ORDER,
@@ -31,7 +32,7 @@ export default function UpsertOrderDialog() {
   };
 
   const isUpdate = id !== undefined;
-  const title = `${isUpdate ? 'Update' : 'Create'}`;
+  const title = `${isUpdate ? 'Update' : 'Create'} Order`;
 
   const onSubmit = (values, { setSubmitting }) => {
     setSubmitting(true);
@@ -73,6 +74,14 @@ export default function UpsertOrderDialog() {
 
   if (loading) return <CircularProgress />;
 
+  const validationSchema = Yup.object().shape({
+    number: Yup.string().required('Required!'),
+    completed: Yup.boolean().default(false),
+    notes: Yup.string(),
+    customerName: Yup.string(),
+    defaultCaseCount: Yup.number().positive('Must be > 0!').round(),
+  });
+
   return (
     <Dialog
       open
@@ -90,6 +99,7 @@ export default function UpsertOrderDialog() {
           customerName: order.customerName || '',
           defaultCaseCount: order.defaultCaseCount || 0,
         }}
+        validationSchema={validationSchema}
         onSubmit={onSubmit}
       >
         {({ submitForm, isSubmitting }) => (
@@ -97,7 +107,7 @@ export default function UpsertOrderDialog() {
             {isSubmitting && <LinearProgress />}
             <DialogContent dividers>
               <Form>
-                <Grid container spacing={3} justify="center">
+                <Grid container spacing={5} justify="center">
                   <Grid item>
                     <Field
                       component={TextField}

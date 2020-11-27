@@ -108,11 +108,10 @@ class DeleteProduct(base.Delete):
     class Arguments:
         id = Identifier(required=True)
 
-    product = Field(Product)
+    id = Identifier(required=True)
 
     @staticmethod
     def mutate(parent, info, id):
-        print(id)
         DeleteProduct.commit(id)
         return {'id': id}
 

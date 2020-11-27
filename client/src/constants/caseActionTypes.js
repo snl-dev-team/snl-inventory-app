@@ -1,9 +1,0 @@
-// case_uses_material
-export const FETCH_CASE_USES_MATERIAL = 'FETCH_CASE_USES_MATERIAL';
-export const CASE_USE_MATERIAL = 'CASE_USE_MATERIAL';
-export const CASE_UNUSE_MATERIAL = 'CASE_UNUSE_MATERIAL';
-
-// case _uses_product
-export const FETCH_CASE_USES_PRODUCT = 'FETCH_CASE_USES_PRODUCT';
-export const CASE_USE_PRODUCT = 'CASE_USE_PRODUCT';
-export const CASE_UNUSE_PRODUCT = 'CASE_UNUSE_PRODUCT';

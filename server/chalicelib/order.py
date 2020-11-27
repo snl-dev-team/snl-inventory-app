@@ -102,7 +102,7 @@ class DeleteOrder(base.Delete):
     id = Identifier(required=True)
 
     @staticmethod
-    def mutate(parent, info, id):
+    def mutate(parent, info, id: str):
         DeleteOrder.commit(id)
         return {'id': id}
 

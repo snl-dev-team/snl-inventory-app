@@ -9,9 +9,11 @@ import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/client';
 import lodash from 'lodash';
 import produce from 'immer';
-import InventoryCard from '../../components/InventoryCard';
+import {
+  GET_CASES, DELETE_CASE,
+} from '../../graphql/cases';
 import UpsertCaseDialog from '../../components/UpsertCaseDialog';
-import { GET_CASES, DELETE_CASE } from '../../graphql/cases';
+import InventoryCard from '../../components/InventoryCard';
 
 const useStyles = makeStyles((theme) => ({
   margin: {
@@ -60,7 +62,8 @@ const CasesDashboard = ({ searchString }) => {
 
   const cases = data.cases.edges
     .map((edge) => edge.node)
-    .filter(({ name }) => searchString === null || name.toLowerCase().includes(searchString));
+    .filter(({ name }) => searchString === null || name.toLowerCase().includes(searchString))
+    .map((node) => node);
 
   const getQueryString = (object) => Object.keys(object)
     .map((key) => `${key}=${object[key]}`)
@@ -100,15 +103,10 @@ const CasesDashboard = ({ searchString }) => {
 
       <Route
         exact
-        path="/cases/create"
+        path={['/cases/create', '/cases/update']}
         component={UpsertCaseDialog}
       />
 
-      <Route
-        exact
-        path="/cases/update"
-        component={UpsertCaseDialog}
-      />
     </>
   );
 };

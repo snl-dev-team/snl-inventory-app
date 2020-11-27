@@ -187,7 +187,7 @@ class Update(Mutation, Table):
         """
         parameters = [{'name': 'id', 'value': {'longValue': item_id}}]
         res = execute_statement(sql, sql_parameters=parameters)
-
+        print(res)
         rows = process_select_response(res, [['date_created', DateTime]])
         date_created = rows[0]['date_created'] if rows else None
         date_modified = datetime.utcnow()
@@ -202,13 +202,14 @@ class Update(Mutation, Table):
 class Delete(Mutation, Table):
     @classmethod
     def commit(cls, id: int):
+        item_id = int(from_global_id(id)[1])
         sql = f"""
         DELETE FROM
             `{cls.__table__}`
         WHERE id = :id;
         """
         execute_statement(sql, sql_parameters=[
-                          {'name': 'id', 'value': {'longValue': int(id)}}])
+                          {'name': 'id', 'value': {'longValue': item_id}}])
 
     @staticmethod
     def mutate(parent, info, id):

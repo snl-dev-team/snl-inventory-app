@@ -1,183 +1,187 @@
-import React, { useState } from 'react';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
+import React from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import Grid from '@material-ui/core/Grid';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { useHistory, useParams } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import Switch from '@material-ui/core/Switch';
-import { FormControlLabel } from '@material-ui/core';
-import { createProduct, updateProduct } from '../actions/product';
+import { useHistory, useLocation } from 'react-router-dom';
+import { Button, LinearProgress } from '@material-ui/core';
+import { useMutation } from '@apollo/client';
+import produce from 'immer';
+import { Formik, Form, Field } from 'formik';
+import Grid from '@material-ui/core/Grid';
+import { TextField, CheckboxWithLabel } from 'formik-material-ui';
+import { DatePicker } from 'formik-material-ui-pickers';
+import { UPDATE_PRODUCT, CREATE_PRODUCT, GET_PRODUCTS } from '../graphql/products';
 
 export default function UpsertProductDialog() {
+  const useQueryString = () => new URLSearchParams(useLocation().search);
   const history = useHistory();
-  const dispatch = useDispatch();
-  const { id } = useParams();
-  const token = useSelector((state) => state.user.token);
+  const queryString = useQueryString();
+
+  const [createProduct] = useMutation(CREATE_PRODUCT);
+  const [updateProduct] = useMutation(UPDATE_PRODUCT);
 
   const handleClose = () => {
     history.push('/products');
   };
 
-  const isAdd = id === undefined;
-
-  const product = useSelector((state) => state.products[id]);
-
-  const [name, setName] = useState(
-    product !== undefined ? product.name : '',
-  );
-  const [number, setNumber] = useState(
-    product !== undefined ? product.number : '',
-  );
-  const [count, setCount] = useState(
-    product !== undefined ? product.count : 0,
-  );
-  const [expirationDate, setExpirationDate] = useState(
-    product !== undefined ? product.expirationDate : '',
-  );
-  const [completed, setCompleted] = useState(
-    product !== undefined ? product.completed : false,
-  );
-  const [notes, setNotes] = useState(
-    product !== undefined ? product.notes : '',
-  );
-
-  const canSave = name !== '' && number !== '' && expirationDate !== '';
+  const id = queryString.get('id');
+  const isUpdate = id !== null;
 
   const getTitle = () => {
-    if (isAdd) {
-      return 'Create Product';
+    if (isUpdate) {
+      return 'Update Product';
     }
-    return 'Edit Product';
+    return 'Create Product';
   };
 
-  const payload = {
-    id: parseInt(id, 10),
-    name,
-    number,
-    count,
-    expirationDate,
-    completed,
-    notes,
+  const onSubmit = (values, { setSubmitting }) => {
+    setSubmitting(true);
+    if (isUpdate) {
+      updateProduct({
+        variables: { ...values, id },
+      }).then(() => {
+        setSubmitting(false);
+        history.push('/products');
+      });
+    } else {
+      createProduct({
+        variables: values,
+        update: (client, { data: { createProduct: { product = {} } = {} } = {} } = {}) => {
+          const clientData = client.readQuery({
+            query: GET_PRODUCTS,
+          });
+          const newData = produce(clientData, (draftState) => {
+            draftState.products.edges.push({ __typename: 'ProductEdge', node: product });
+          });
+          client.writeQuery({
+            query: GET_PRODUCTS,
+            data: newData,
+          });
+        },
+      }).then(() => {
+        setSubmitting(false);
+        history.push('/products');
+      });
+    }
   };
 
-  const createProductAndClose = () => {
-    dispatch(
-      createProduct(payload, token),
-    );
-    history.push('/products');
-  };
-
-  const updateProductAndClose = () => {
-    dispatch(
-      updateProduct(payload, token),
-    );
-    history.push('/products');
+  const getQueryStringValue = (key, default_) => {
+    const value = queryString.get(key);
+    if (value === null || value === 'null') {
+      return default_;
+    }
+    if (value === 'true') {
+      return true;
+    }
+    if (value === 'false') {
+      return false;
+    }
+    if (key === 'count') {
+      return Number(value);
+    }
+    if (key === 'expirationDate') {
+      const d = new Date(value);
+      d.setDate(d.getDate() + 1);
+      return d;
+    }
+    return value;
   };
 
   return (
-    <div>
-      <Dialog
-        open
-        onClose={handleClose}
-        aria-labelledby="form-dialog-title"
+    <Dialog
+      open
+      onClose={handleClose}
+      aria-labelledby="form-dialog-title"
+    >
+      <DialogTitle id="form-dialog-title">
+        {getTitle()}
+      </DialogTitle>
+      <Formik
+        initialValues={{
+          name: getQueryStringValue('name', ''),
+          number: getQueryStringValue('number', ''),
+          count: getQueryStringValue('count', 0),
+          expirationDate: getQueryStringValue('expirationDate', null),
+          completed: getQueryStringValue('completed', false),
+          notes: getQueryStringValue('notes', ''),
+        }}
+        onSubmit={onSubmit}
       >
-        <DialogTitle id="form-dialog-title">
-          {getTitle()}
-        </DialogTitle>
-        <DialogContent dividers>
-          <Grid container spacing={3} justify="center">
-            <Grid item>
-              <TextField
-                autoFocus
-                margin="dense"
-                label="Product Name"
-                type="text"
-                fullWidth
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                margin="dense"
-                label="Lot Number"
-                type="text"
-                fullWidth
-                value={number}
-                onChange={(e) => setNumber(e.target.value)}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                margin="dense"
-                label="Count"
-                type="number"
-                fullWidth
-                value={count}
-                onChange={(e) => setCount(parseInt(e.target.value, 10))}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                margin="dense"
-                label="Expiration Date"
-                type="date"
-                fullWidth
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                value={expirationDate}
-                onChange={(e) => setExpirationDate(e.target.value)}
-              />
-            </Grid>
-            <Grid item>
-              <FormControlLabel
-                style={{ paddingTop: 25 }}
-                control={(
-                  <Switch
-                    checked={completed}
-                    size="small"
-                    onChange={(e) => setCompleted(e.target.checked)}
-                  />
-                )}
-                labelPlacement="start"
-                label="Completed"
-              />
-
-            </Grid>
-            <Grid item>
-              <TextField
-                autoFocus
-                margin="dense"
-                label="Notes"
-                multiline
-                rowsMax={6}
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-              />
-            </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => history.push('/products')}
-            color="primary"
-          >
-            Cancel
-          </Button>
-          <Button
-            disabled={!canSave}
-            onClick={isAdd ? createProductAndClose : updateProductAndClose}
-            color="primary"
-          >
-            {isAdd ? 'Create' : 'Save'}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
+        {({ submitForm, isSubmitting }) => (
+          <>
+            {isSubmitting && <LinearProgress />}
+            <DialogContent dividers>
+              <Form>
+                <Grid container spacing={3}>
+                  <Grid item>
+                    <Field
+                      component={TextField}
+                      type="text"
+                      label="Name"
+                      name="name"
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Field
+                      component={TextField}
+                      type="text"
+                      label="Number"
+                      name="number"
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Field
+                      component={TextField}
+                      type="number"
+                      label="Count"
+                      name="count"
+                      InputProps={{ inputProps: { min: 0 } }}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Field
+                      component={DatePicker}
+                      label="Expiration Date"
+                      name="expirationDate"
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Field
+                      component={TextField}
+                      name="notes"
+                      type="text"
+                      label="Notes"
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Field
+                      component={CheckboxWithLabel}
+                      type="checkbox"
+                      name="completed"
+                      Label={{ label: 'Completed' }}
+                    />
+                  </Grid>
+                </Grid>
+              </Form>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() => history.push('/products')}
+                color="primary"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={submitForm}
+                color="primary"
+              >
+                {isUpdate ? 'Update' : 'Create'}
+              </Button>
+            </DialogActions>
+          </>
+        )}
+      </Formik>
+    </Dialog>
   );
 }

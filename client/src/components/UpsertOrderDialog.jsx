@@ -1,136 +1,151 @@
-/* eslint-disable import/named */
-import React, { useState } from 'react';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
+import React from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import Grid from '@material-ui/core/Grid';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { useHistory, useParams } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { FormControlLabel } from '@material-ui/core';
-import Switch from '@material-ui/core/Switch';
-import { createOrder, updateOrder } from '../actions/order';
+import { useHistory, useLocation } from 'react-router-dom';
+import { Button, LinearProgress } from '@material-ui/core';
+import { useMutation } from '@apollo/client';
+import produce from 'immer';
+import { Formik, Form, Field } from 'formik';
+import Grid from '@material-ui/core/Grid';
+import { TextField, CheckboxWithLabel } from 'formik-material-ui';
+import { UPDATE_ORDER, CREATE_ORDER, GET_ORDERS } from '../graphql/orders';
 
 export default function UpsertOrderDialog() {
+  const useQueryString = () => new URLSearchParams(useLocation().search);
   const history = useHistory();
-  const dispatch = useDispatch();
-  const { id } = useParams();
-  const token = useSelector((state) => state.user.token);
+  const queryString = useQueryString();
+
+  const [createOrder] = useMutation(CREATE_ORDER);
+  const [updateOrder] = useMutation(UPDATE_ORDER);
 
   const handleClose = () => {
     history.push('/orders');
   };
 
-  const isAdd = id === undefined;
-
-  const order = useSelector((state) => state.orders[id]);
-
-  const [number, setNumber] = useState(
-    order !== undefined ? order.number : '',
-  );
-  const [notes, setNotes] = useState(
-    order !== undefined ? order.notes : '',
-  );
-  const [completed, setCompleted] = useState(
-    order !== undefined ? order.completed : false,
-  );
-
-  const canSave = true;
+  const id = queryString.get('id');
+  const isUpdate = id !== null;
 
   const getTitle = () => {
-    if (isAdd) {
-      return 'Create Order';
+    if (isUpdate) {
+      return 'Update Order';
     }
-    return 'Edit Order';
+    return 'Create Order';
   };
 
-  const payload = {
-    id: parseInt(id, 10),
-    number,
-    notes,
-    completed,
+  const onSubmit = (values, { setSubmitting }) => {
+    setSubmitting(true);
+    if (isUpdate) {
+      updateOrder({
+        variables: { ...values, id },
+      }).then(() => {
+        setSubmitting(false);
+        history.push('/orders');
+      });
+    } else {
+      createOrder({
+        variables: values,
+        update: (client, { data: { createOrder: { order = {} } = {} } = {} } = {}) => {
+          const clientData = client.readQuery({
+            query: GET_ORDERS,
+          });
+          const newData = produce(clientData, (draftState) => {
+            draftState.orders.edges.push({ __typename: 'OrderEdge', node: order });
+          });
+          client.writeQuery({
+            query: GET_ORDERS,
+            data: newData,
+          });
+        },
+      }).then(() => {
+        setSubmitting(false);
+        history.push('/orders');
+      });
+    }
   };
 
-  const createOrderAndClose = () => {
-    dispatch(
-      createOrder(payload, token),
-    );
-    history.push('/orders');
-  };
-
-  const updateOrderAndClose = () => {
-    dispatch(
-      updateOrder(payload, token),
-    );
-    history.push('/orders');
+  const getQueryStringValue = (key, default_) => {
+    const value = queryString.get(key);
+    if (value === null || value === 'null') {
+      return default_;
+    }
+    if (value === 'true') {
+      return true;
+    }
+    if (value === 'false') {
+      return false;
+    }
+    return value;
   };
 
   return (
-    <div>
-      <Dialog
-        open
-        onClose={handleClose}
-        aria-labelledby="form-dialog-title"
+    <Dialog
+      open
+      onClose={handleClose}
+      aria-labelledby="form-dialog-title"
+    >
+      <DialogTitle id="form-dialog-title">
+        {getTitle()}
+      </DialogTitle>
+      <Formik
+        initialValues={{
+          number: getQueryStringValue('number', ''),
+          completed: getQueryStringValue('completed', false),
+          notes: getQueryStringValue('notes', ''),
+        }}
+        onSubmit={onSubmit}
       >
-        <DialogTitle id="form-dialog-title">
-          {getTitle()}
-        </DialogTitle>
-        <DialogContent dividers>
-          <Grid container spacing={3} justify="center">
-
-            <Grid item>
-              <TextField
-                margin="dense"
-                label="Lot Number"
-                type="text"
-                fullWidth
-                value={number}
-                onChange={(e) => setNumber(e.target.value)}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                autoFocus
-                margin="dense"
-                label="Notes"
-                multiline
-                rowsMax={6}
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-              />
-              <FormControlLabel
-                style={{ paddingTop: 25 }}
-                control={(
-                  <Switch
-                    checked={completed}
-                    size="small"
-                    onChange={(e) => setCompleted(e.target.checked)}
-                  />
-                )}
-                labelPlacement="start"
-                label="Completed"
-              />
-            </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => history.push('/orders')}
-            color="primary"
-          >
-            Cancel
-          </Button>
-          <Button
-            disabled={!canSave}
-            onClick={isAdd ? createOrderAndClose : updateOrderAndClose}
-            color="primary"
-          >
-            {isAdd ? 'Create' : 'Save'}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
+        {({ submitForm, isSubmitting }) => (
+          <>
+            {isSubmitting && <LinearProgress />}
+            <DialogContent dividers>
+              <Form>
+                <Grid container spacing={3}>
+                  <Grid item>
+                    <Field
+                      component={TextField}
+                      type="text"
+                      label="Number"
+                      name="number"
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Field
+                      component={TextField}
+                      name="notes"
+                      type="text"
+                      label="Notes"
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Field
+                      component={CheckboxWithLabel}
+                      type="checkbox"
+                      name="completed"
+                      Label={{ label: 'Completed' }}
+                    />
+                  </Grid>
+                </Grid>
+              </Form>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() => history.push('/orders')}
+                color="primary"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={submitForm}
+                color="primary"
+              >
+                {isUpdate ? 'Update' : 'Create'}
+              </Button>
+            </DialogActions>
+          </>
+        )}
+      </Formik>
+    </Dialog>
   );
 }

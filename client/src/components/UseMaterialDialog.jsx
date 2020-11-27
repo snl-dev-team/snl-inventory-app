@@ -28,7 +28,7 @@ export default function UseMaterialDialog() {
           name: '',
           count: 0,
         }}
-        onSubmit={console.log}
+        onSubmit={() => {}}
       >
         {({ submitForm, isSubmitting }) => (
           <>

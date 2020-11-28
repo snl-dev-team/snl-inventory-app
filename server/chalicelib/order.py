@@ -122,31 +122,36 @@ class DeleteOrder(base.Delete, TableName):
         return {'id': id}
 
 
-class OrderUseCase(base.Use):
+class OrderShipsCase(base.Ships):
     __tablename__ = 'order'
 
     class Arguments:
         order_id = ID(required=True)
         case_id = ID(required=True)
-        count = Integer(required=True)
+        count_not_shipped = Integer(required=True)
+        count_shipped = Integer(required=True)
 
     case = Field(case.Case)
-    count_used = Integer(required=True)
+    count_not_shipped = Integer(required=True)
+    count_shipped = Integer(required=True)
 
     @staticmethod
-    def mutate(parent, info, order_id: int, case_id: int, count: int):
-        return {'order': OrderUseCase.commit(case.Case, order_id, case_id, count)}
+    def mutate(parent, info, order_id: int, case_id: int, count_not_shipped: int, count_shipped: int):
+        OrderShipsCase.commit(
+            case.Case, order_id, case_id, count_not_shipped, count_shipped)
+        return {'case': case.Case.select_where(id=case_id), 'count_not_shipped': count_not_shipped, 'count_shipped': count_shipped}
 
 
-class OrderUnuseCase(base.Unuse):
+class OrderUnshipsCase(base.Unships):
     __tablename__ = 'order'
 
     class Arguments:
         order_id = ID(required=True)
         case_id = ID(required=True)
 
-    case = Field(case.Case)
+    case_id = ID(required=True)
 
     @staticmethod
-    def mutate(parent, info, order_id: int, case_id: int):
-        return {'order': OrderUnuseCase.commit(case.Case, order_id, case_id)}
+    def mutate(parent, info, order_id: int, case_id: str):
+        OrderUnshipsCase.commit(case.Case, order_id, case_id)
+        return {'case_id': case_id}

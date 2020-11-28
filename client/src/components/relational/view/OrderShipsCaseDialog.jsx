@@ -1,12 +1,12 @@
 import React from 'react';
 import { useHistory, useParams } from 'react-router';
 import { useQuery } from '@apollo/client';
-import lodash from 'lodash';
+import { startCase } from 'lodash';
 import { GET_ORDER_CASES } from '../../../graphql/orders';
 import InventoryCard from '../../InventoryCard';
 import UseDialog from './UseDialog';
 
-export default function OrderUseCaseDialog() {
+export default function OrderShipsCaseDialog() {
   const { id } = useParams();
   const { push } = useHistory();
   const {
@@ -25,15 +25,15 @@ export default function OrderUseCaseDialog() {
       onClickCancel={() => push('/orders')}
       title="Order Cases"
     >
-      {!loading ? edges.map(({ node, countUsed }) => (
+      {!loading ? edges.map(({ node, countShipped, countNotShipped }) => (
         <InventoryCard
+          key={node.id}
           data={Object.entries(node)
             .filter(([name]) => !['__typename', 'id', 'name'].includes(name))
-            .concat([['countUsed', countUsed]])
-            .map(([name, value]) => ({ name: lodash.startOrder(name), value: String(value) }))}
+            .concat([['countNotShipped', countNotShipped], ['countShipped', countShipped]])
+            .map(([name, value]) => ({ name: startCase(name), value: String(value) }))}
           title={node.name}
           onClickDelete={() => {}}
-          onClickEdit={() => {}}
         />
       )) : []}
     </UseDialog>

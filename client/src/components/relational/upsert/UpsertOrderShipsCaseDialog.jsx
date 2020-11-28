@@ -10,19 +10,61 @@ import { Formik, Form, Field } from 'formik';
 import Grid from '@material-ui/core/Grid';
 import { TextField } from 'formik-material-ui';
 import { useHistory, useParams } from 'react-router';
+import { useMutation, useQuery } from '@apollo/client';
 import * as Yup from 'yup';
+import produce from 'immer';
 import FormikAutocomplete from '../FormikAutoComplete';
+import { GET_ORDER_CASES, ORDER_SHIPS_CASE } from '../../../graphql/orders';
+import { GET_CASES } from '../../../graphql/cases';
 
 export default function UpsertOrderUseCaseDialog() {
-  const options = [{ title: 'The Shawshank Redemption', year: 1994 }];
   const { push } = useHistory();
   const { id } = useParams();
+  const [orderShipsCase] = useMutation(ORDER_SHIPS_CASE);
+  const { loading, data: { cases: { edges = [] } = {} } = {} } = useQuery(GET_CASES);
+  const cases = edges.map(({ node }) => node);
 
   const validationSchema = Yup.object().shape({
-    name: Yup.object().required('Required!').defined('Please enter a value!').default(''),
-    shippedCount: Yup.number().required('Required!').positive('Must be > 0!').default(0),
-    notShippedCount: Yup.number().required('Required!').positive('Must be > 0!').default(0),
+    name: Yup.object().required('Required!').default(''),
+    countShipped: Yup.number().required('Required!').min(0).default(0),
+    countNotShipped: Yup.number().required('Required!').min(0).default(0),
   });
+
+  const onSubmit = (orderId, caseId, countNotShipped, countShipped) => {
+    orderShipsCase({
+      variables: {
+        orderId, caseId, countNotShipped, countShipped,
+      },
+      update: (client, { data: { orderShipsCase: { case: case_ } = {} } }) => {
+        const clientData = client.readQuery({
+          query: GET_ORDER_CASES,
+          variables: { id: orderId },
+        });
+        const newData = produce(clientData, (draftState) => {
+          const idx = draftState.order.cases.edges.findIndex(
+            (edge) => edge.node.id === case_.id,
+          );
+          if (idx === -1) {
+            draftState.order.cases.edges.push(
+              {
+                __typename: 'CaseEdge', countNotShipped, countShipped, node: case_,
+              },
+            );
+          } else {
+            // eslint-disable-next-line no-param-reassign
+            draftState.order.cases.edges[idx] = {
+              __typename: 'CaseEdge', countNotShipped, countShipped, node: case_,
+            };
+          }
+        });
+        client.writeQuery({
+          query: GET_ORDER_CASES,
+          data: newData,
+        });
+      },
+    });
+    push(`/orders/${id}/cases`);
+  };
 
   return (
     <Dialog
@@ -31,28 +73,29 @@ export default function UpsertOrderUseCaseDialog() {
     >
       <DialogTitle id="form-dialog-title">Order Use Case</DialogTitle>
       <Formik
-        initialValues={validationSchema.getDefault()}
         validationSchema={validationSchema}
-        onSubmit={() => push(`/order/${id}/case`)}
+        initialValues={validationSchema.getDefault()}
+        onSubmit={(v) => { onSubmit(id, v.name.id, v.countNotShipped, v.countShipped); }}
       >
         {({ submitForm, isSubmitting }) => (
           <>
             {isSubmitting && <LinearProgress />}
             <DialogContent dividers>
               <Form>
-                <Grid justify="center" container spacing={3}>
+                <Grid container spacing={3} justify="center">
                   <Grid item>
                     <Field
                       name="name"
-                      style={{ width: 400 }}
+                      style={{ width: 300 }}
                       component={FormikAutocomplete}
                       label="Case"
-                      getOptionLabel={(option) => (option.title ? option.title : '')}
+                      getOptionLabel={(option) => (option.name !== undefined ? `${option.name} / ${option.number}` : '')}
                       getOptionSelected={(
                         option,
                         value,
                       ) => value.value === option.value}
-                      options={options}
+                      options={cases}
+                      loading={loading}
                       textFieldProps={{ fullWidth: true, margin: 'normal', variant: 'outlined' }}
                     />
                   </Grid>
@@ -61,8 +104,8 @@ export default function UpsertOrderUseCaseDialog() {
                       component={TextField}
                       style={{ marginTop: 16 }}
                       type="number"
-                      label="Shipped Count"
-                      name="shippedCount"
+                      label="Count Not Shipped"
+                      name="countNotShipped"
                       InputProps={{ inputProps: { min: 0 } }}
                     />
                   </Grid>
@@ -71,8 +114,8 @@ export default function UpsertOrderUseCaseDialog() {
                       component={TextField}
                       style={{ marginTop: 16 }}
                       type="number"
-                      label="Not Shipped Count"
-                      name="notShippedCount"
+                      label="Count Shipped"
+                      name="countShipped"
                       InputProps={{ inputProps: { min: 0 } }}
                     />
                   </Grid>
@@ -81,7 +124,7 @@ export default function UpsertOrderUseCaseDialog() {
             </DialogContent>
             <DialogActions>
               <Button
-                onClick={() => push(`/order/${id}/case`)}
+                onClick={() => push(`/orders/${id}/cases`)}
                 color="primary"
               >
                 Cancel

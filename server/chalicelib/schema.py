@@ -61,8 +61,8 @@ class Mutation(ObjectType):
     create_order = order.CreateOrder.Field()
     update_order = order.UpdateOrder.Field()
     delete_order = order.DeleteOrder.Field()
-    order_use_case = order.OrderUseCase.Field()
-    order_unuse_case = order.OrderUnuseCase.Field()
+    order_ships_case = order.OrderShipsCase.Field()
+    order_unships_case = order.OrderUnshipsCase.Field()
 
 
 schema = Schema(

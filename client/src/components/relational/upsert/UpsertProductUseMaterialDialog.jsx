@@ -43,11 +43,11 @@ export default function UpsertProductUseMaterialDialog() {
           );
           if (idx === -1) {
             draftState.product.materials.edges.push(
-              { __typename: 'MaterialEdge', countUsed: count, node: material },
+              { __typename: 'MaterialEdge', count, node: material },
             );
           } else {
             // eslint-disable-next-line no-param-reassign
-            draftState.product.materials.edges[idx] = { __typename: 'MaterialEdge', countUsed: count, node: material };
+            draftState.product.materials.edges[idx] = { __typename: 'MaterialEdge', count, node: material };
           }
         });
         client.writeQuery({

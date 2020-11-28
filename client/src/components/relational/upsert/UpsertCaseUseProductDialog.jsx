@@ -43,11 +43,11 @@ export default function UpsertCaseUseProductDialog() {
           );
           if (idx === -1) {
             draftState.case.products.edges.push(
-              { __typename: 'ProductEdge', countUsed: count, node: product },
+              { __typename: 'ProductEdge', count, node: product },
             );
           } else {
             // eslint-disable-next-line no-param-reassign
-            draftState.case.products.edges[idx] = { __typename: 'ProductEdge', countUsed: count, node: product };
+            draftState.case.products.edges[idx] = { __typename: 'ProductEdge', count, node: product };
           }
         });
         client.writeQuery({

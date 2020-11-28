@@ -125,6 +125,7 @@ class Object(ObjectType, Base):
 
     @classmethod
     def select_ships(user: ObjectType, id: str, used: ObjectType):
+        print(id)
         id = int(from_global_id(id)[1])
         sql = f"""
         SELECT
@@ -146,15 +147,19 @@ class Object(ObjectType, Base):
                 {'name': f'{user.__tablename__}_id', 'value': {'longValue': id}}]
         )
 
-        return process_select_response(res, list(used.members()) + [('count_shipped', used.count), ('count_not_shipped', used.count)])
+        rows = process_select_response(res, list(used.members(
+        )) + [('count_shipped', used.count), ('count_not_shipped', used.count)])
+        return used.rows_to_global_id(rows)
 
     class Meta:
         interfaces = (relay.Node,)
 
     @classmethod
     def get_node(cls, info, id):
+        print(id)
         id = int(id)
         node = cls.select_where(id)
+        print(node)
         return cls(**node)
 
 
@@ -288,6 +293,57 @@ class Unuse(Mutation, Table):
         WHERE
             `{user.__tablename__}_id` = {user_item_id}
             AND `{used.__tablename__}_id` = {used_item_id};
+        """
+
+        execute_statement(sql)
+
+    @staticmethod
+    def mutate(parent, info, id):
+        pass
+
+
+class Ships(Mutation, Table):
+    @classmethod
+    def commit(shipper, shipped, shipper_id, shipped_id, count_not_shipped, count_shipped):
+        shipper_item_id = int(from_global_id(shipper_id)[1])
+        shipped_item_id = int(from_global_id(shipped_id)[1])
+        sql = f"""
+        REPLACE INTO
+            `{shipper.__tablename__}_uses_{shipped.__tablename__}` (
+                `{shipper.__tablename__}_id`,
+                `{shipped.__tablename__}_id`,
+                `count_not_shipped`,
+                `count_shipped`
+
+            )
+        VALUES (
+            {shipper_item_id},
+            {shipped_item_id},
+            {count_not_shipped},
+            {count_shipped}
+            
+
+        )
+        """
+
+        execute_statement(sql)
+
+    @staticmethod
+    def mutate(parent, info, id):
+        pass
+
+
+class Unships(Mutation, Table):
+    @classmethod
+    def commit(shipper, shipped, shipper_id, shipped_id):
+        shipper_item_id = int(from_global_id(shipper_id)[1])
+        shipped_item_id = int(from_global_id(shipped_id)[1])
+        sql = f"""
+        DELETE FROM
+            `{shipper.__tablename__}_uses_{shipped.__tablename__}`
+        WHERE
+            `{shipper.__tablename__}_id` = {shipper_item_id}
+            AND `{shipped.__tablename__}_id` = {shipped_item_id};
         """
 
         execute_statement(sql)

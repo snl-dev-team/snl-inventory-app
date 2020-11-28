@@ -10,18 +10,54 @@ import { Formik, Form, Field } from 'formik';
 import Grid from '@material-ui/core/Grid';
 import { TextField } from 'formik-material-ui';
 import { useHistory, useParams } from 'react-router';
+import { useMutation, useQuery } from '@apollo/client';
 import * as Yup from 'yup';
+import produce from 'immer';
 import FormikAutocomplete from '../FormikAutoComplete';
+import { GET_CASE_PRODUCTS, CASE_USE_PRODUCT } from '../../../graphql/cases';
+import { GET_PRODUCTS } from '../../../graphql/products';
 
 export default function UpsertCaseUseProductDialog() {
-  const options = [{ title: 'The Shawshank Redemption', year: 1994 }];
   const { push } = useHistory();
   const { id } = useParams();
+  const [caseUseProduct] = useMutation(CASE_USE_PRODUCT);
+  const { loading, data: { products: { edges = [] } = {} } = {} } = useQuery(GET_PRODUCTS);
+  const products = edges.map(({ node }) => node);
 
   const validationSchema = Yup.object().shape({
-    name: Yup.object().required('Required!').defined('Please enter a value!'),
-    count: Yup.number().required('Required!').positive('Must be > 0!'),
+    name: Yup.object().required('Required!').defined('Please enter a value!').default(''),
+    count: Yup.number().required('Required!').positive('Must be > 0!').default(0),
   });
+
+  const onSubmit = (caseId, productId, count) => {
+    caseUseProduct({
+      variables: { caseId, productId, count },
+      update: (client, { data: { caseUseProduct: { product } = {} } }) => {
+        const clientData = client.readQuery({
+          query: GET_CASE_PRODUCTS,
+          variables: { id: caseId },
+        });
+        const newData = produce(clientData, (draftState) => {
+          const idx = draftState.case.products.edges.findIndex(
+            (edge) => edge.node.id === product.id,
+          );
+          if (idx === -1) {
+            draftState.case.products.edges.push(
+              { __typename: 'ProductEdge', countUsed: count, node: product },
+            );
+          } else {
+            // eslint-disable-next-line no-param-reassign
+            draftState.case.products.edges[idx] = { __typename: 'ProductEdge', countUsed: count, node: product };
+          }
+        });
+        client.writeQuery({
+          query: GET_CASE_PRODUCTS,
+          data: newData,
+        });
+      },
+    });
+    push(`/cases/${id}/products`);
+  };
 
   return (
     <Dialog
@@ -30,11 +66,9 @@ export default function UpsertCaseUseProductDialog() {
     >
       <DialogTitle id="form-dialog-title">Case Use Product</DialogTitle>
       <Formik
-        initialValues={{
-          name: '',
-          count: 0,
-        }}
-        onSubmit={() => {}}
+        validationSchema={validationSchema}
+        initialValues={validationSchema.getDefault()}
+        onSubmit={(v) => { onSubmit(id, v.name.id, v.count); }}
       >
         {({ submitForm, isSubmitting }) => (
           <>
@@ -48,12 +82,13 @@ export default function UpsertCaseUseProductDialog() {
                       style={{ width: 300 }}
                       component={FormikAutocomplete}
                       label="Product"
-                      getOptionLabel={(option) => (option.title ? option.title : '')}
+                      getOptionLabel={(option) => (option.name !== undefined ? `${option.name} / ${option.number}` : '')}
                       getOptionSelected={(
                         option,
                         value,
                       ) => value.value === option.value}
-                      options={options}
+                      options={products}
+                      loading={loading}
                       textFieldProps={{ fullWidth: true, margin: 'normal', variant: 'outlined' }}
                     />
                   </Grid>
@@ -72,7 +107,7 @@ export default function UpsertCaseUseProductDialog() {
             </DialogContent>
             <DialogActions>
               <Button
-                onClick={() => push(`/case/${id}/product`)}
+                onClick={() => push(`/cases/${id}/products`)}
                 color="primary"
               >
                 Cancel

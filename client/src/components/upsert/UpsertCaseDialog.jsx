@@ -13,6 +13,7 @@ import { TextField } from 'formik-material-ui';
 import { DatePicker } from 'formik-material-ui-pickers';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import * as Yup from 'yup';
+import { mergeWith, isNull } from 'lodash';
 import {
   UPDATE_CASE, CREATE_CASE, GET_CASES, GET_CASE,
 } from '../../graphql/cases';
@@ -87,13 +88,13 @@ export default function UpsertCaseDialog() {
   if (loading) return <CircularProgress />;
 
   const validationSchema = Yup.object().shape({
-    number: Yup.string().required('Required!'),
-    name: Yup.string().required('Required!'),
-    count: Yup.number().required('Required!').positive('Must be > 0!'),
-    expirationDate: Yup.date().nullable(),
-    notes: Yup.string(),
-    defaultProductCount: Yup.number().required('Required!').positive('Must be > 0!'),
-    defaultMaterialCount: Yup.number().required('Required!').positive('Must be > 0!'),
+    number: Yup.string().required('Required!').default(''),
+    name: Yup.string().required('Required!').default(''),
+    count: Yup.number().required('Required!').positive('Must be > 0!').default(1),
+    expirationDate: Yup.date().nullable().default(null),
+    notes: Yup.string().default(''),
+    defaultProductCount: Yup.number().required('Required!').positive('Must be > 0!').default(1),
+    defaultMaterialCount: Yup.number().required('Required!').positive('Must be > 0!').default(1),
   });
 
   return (
@@ -107,15 +108,9 @@ export default function UpsertCaseDialog() {
       </DialogTitle>
       <Formik
         validationSchema={validationSchema}
-        initialValues={{
-          number: case_.number || '',
-          name: case_.name || '',
-          count: case_.count || 1,
-          expirationDate: case_.expirationDate || null,
-          notes: case_.notes || '',
-          defaultProductCount: case_.defaultProductCount || 1,
-          defaultMaterialCount: case_.defaultMaterialCount || 1,
-        }}
+        initialValues={mergeWith({},
+          validationSchema.getDefault(),
+          case_, (o, s) => (isNull(s) ? o : s))}
         onSubmit={onSubmit}
       >
         {({ submitForm, isSubmitting }) => (

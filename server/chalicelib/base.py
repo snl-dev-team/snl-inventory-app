@@ -119,8 +119,9 @@ class Object(ObjectType, Base):
             sql_parameters=[
                 {'name': f'{user.__tablename__}_id', 'value': {'longValue': id}}]
         )
-
-        return process_select_response(res, list(used.members()) + [('count_used', used.count)])
+        rows = process_select_response(
+            res, list(used.members()) + [('count_used', used.count)])
+        return used.rows_to_global_id(rows)
 
     @classmethod
     def select_ships(user: ObjectType, id: str, used: ObjectType):
@@ -279,12 +280,14 @@ class Use(Mutation, Table):
 class Unuse(Mutation, Table):
     @classmethod
     def commit(user, used, user_id, used_id):
+        user_item_id = int(from_global_id(user_id)[1])
+        used_item_id = int(from_global_id(used_id)[1])
         sql = f"""
         DELETE FROM
             `{user.__tablename__}_uses_{used.__tablename__}`
         WHERE
-            `{user.__tablename__}_id` = {user_id}
-            AND `{used.__tablename__}_id` = {used_id};
+            `{user.__tablename__}_id` = {user_item_id}
+            AND `{used.__tablename__}_id` = {used_item_id};
         """
 
         execute_statement(sql)

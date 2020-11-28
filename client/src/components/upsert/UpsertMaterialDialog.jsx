@@ -13,6 +13,7 @@ import { TextField, Select } from 'formik-material-ui';
 import { DatePicker } from 'formik-material-ui-pickers';
 import MenuItem from '@material-ui/core/MenuItem';
 import * as Yup from 'yup';
+import { mergeWith, isNull } from 'lodash';
 import UNITS from '../../constants/units';
 import {
   UPDATE_MATERIAL, CREATE_MATERIAL, GET_MATERIALS, GET_MATERIAL,
@@ -98,16 +99,18 @@ export default function UpsertMaterialDialog() {
   if (loading) return <CircularProgress />;
 
   const validationSchema = Yup.object().shape({
-    name: Yup.string().required('Required!'),
-    number: Yup.string().required('Required!'),
-    count: Yup.number().required('Required!').positive('Must be > 0!'),
-    price: Yup.number().required('Required!').round(),
-    units: Yup.string().oneOf(Object.values(UNITS)).required('Required!'),
-    expirationDate: Yup.date().nullable(),
-    notes: Yup.string(),
-    purchaseOrderUrl: Yup.string().url().nullable(),
-    purchaseOrderNumber: Yup.string().nullable(),
-    certificateOfAnalysisUrl: Yup.string().url().nullable(),
+    name: Yup.string().required('Required!').default(''),
+    number: Yup.string().required('Required!').default(''),
+    count: Yup.number().required('Required!')
+      .positive('Must be > 0!').round()
+      .default(1),
+    price: Yup.number().required('Required!').round().default(0),
+    units: Yup.string().oneOf(Object.values(UNITS)).required('Required!').default(UNITS.UNIT),
+    expirationDate: Yup.date().nullable().default(null),
+    notes: Yup.string().default(''),
+    purchaseOrderUrl: Yup.string().url().nullable().default(''),
+    purchaseOrderNumber: Yup.string().nullable().default(''),
+    certificateOfAnalysisUrl: Yup.string().url().nullable().default(''),
   });
 
   return (
@@ -121,18 +124,9 @@ export default function UpsertMaterialDialog() {
       </DialogTitle>
       <Formik
         validationSchema={validationSchema}
-        initialValues={{
-          name: material.name || '',
-          number: material.number || '',
-          count: material.count || 1.0,
-          price: material.price || 0,
-          units: material.units || UNITS.UNIT,
-          expirationDate: material.expirationDate || null,
-          notes: material.notes || '',
-          purchaseOrderUrl: material.purchaseOrderUrl || '',
-          purchaseOrderNumber: material.purchaseOrderNumber || '',
-          certificateOfAnalysisUrl: material.certificateOfAnalysisUrl || '',
-        }}
+        initialValues={mergeWith({},
+          validationSchema.getDefault(),
+          material, (o, s) => (isNull(s) ? o : s))}
         onSubmit={onSubmit}
       >
         {({ submitForm, isSubmitting }) => (

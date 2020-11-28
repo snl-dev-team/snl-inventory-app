@@ -12,6 +12,7 @@ import Grid from '@material-ui/core/Grid';
 import { TextField, CheckboxWithLabel } from 'formik-material-ui';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import * as Yup from 'yup';
+import { mergeWith, isNull } from 'lodash';
 import {
   UPDATE_ORDER,
   CREATE_ORDER,
@@ -75,11 +76,11 @@ export default function UpsertOrderDialog() {
   if (loading) return <CircularProgress />;
 
   const validationSchema = Yup.object().shape({
-    number: Yup.string().required('Required!'),
+    number: Yup.string().required('Required!').default(''),
     completed: Yup.boolean().default(false),
-    notes: Yup.string(),
-    customerName: Yup.string(),
-    defaultCaseCount: Yup.number().positive('Must be > 0!').round(),
+    notes: Yup.string().default(''),
+    customerName: Yup.string().default(''),
+    defaultCaseCount: Yup.number().positive('Must be > 0!').round().default(1),
   });
 
   return (
@@ -92,13 +93,9 @@ export default function UpsertOrderDialog() {
         {title}
       </DialogTitle>
       <Formik
-        initialValues={{
-          number: order.number || '',
-          completed: order.completed || false,
-          notes: order.notes || '',
-          customerName: order.customerName || '',
-          defaultCaseCount: order.defaultCaseCount || 0,
-        }}
+        initialValues={mergeWith({},
+          validationSchema.getDefault(),
+          order, (o, s) => (isNull(s) ? o : s))}
         validationSchema={validationSchema}
         onSubmit={onSubmit}
       >

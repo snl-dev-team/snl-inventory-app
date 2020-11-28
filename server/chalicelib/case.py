@@ -144,7 +144,9 @@ class CaseUseMaterial(base.Use):
 
     @staticmethod
     def mutate(parent, info, case_id: int, material_id: int, count: float):
-        return {'case': CaseUseMaterial.commit(material.Material, case_id, material_id, count)}
+        CaseUseMaterial.commit(
+            material.Material, case_id, material_id, count)
+        return {'material': material.Material.select_where(id=material_id), 'count_used': count}
 
 
 class CaseUnuseMaterial(base.Unuse):
@@ -154,11 +156,12 @@ class CaseUnuseMaterial(base.Unuse):
         case_id = ID(required=True)
         material_id = ID(required=True)
 
-    material = Field(material.Material, required=True)
+    material_id = ID(required=True)
 
     @staticmethod
     def mutate(parent, info, case_id: int, material_id: int):
-        return {'case': CaseUnuseMaterial.commit(material.Material, case_id, material_id)}
+        CaseUnuseMaterial.commit(material.Material, case_id, material_id)
+        return {'material_id': material_id}
 
 
 class CaseUseProduct(base.Use):
@@ -174,7 +177,9 @@ class CaseUseProduct(base.Use):
 
     @staticmethod
     def mutate(parent, info, case_id: int, product_id: int, count: int):
-        return {'case': CaseUseProduct.commit(product.Product, case_id, product_id, count)}
+        CaseUseProduct.commit(
+            product.Product, case_id, product_id, count)
+        return {'product': product.Product.select_where(id=product_id), 'count_used': count}
 
 
 class CaseUnuseProduct(base.Unuse):
@@ -184,8 +189,9 @@ class CaseUnuseProduct(base.Unuse):
         case_id = ID(required=True)
         product_id = ID(required=True)
 
-    product = Field(product.Product, required=True)
+    product_id = ID(required=True)
 
     @staticmethod
     def mutate(parent, info, case_id: int, product_id: int):
-        return {'case': CaseUnuseProduct.commit(product.Product, case_id, product_id)}
+        CaseUnuseProduct.commit(material.Material, case_id, product_id)
+        return {'product_id': product_id}

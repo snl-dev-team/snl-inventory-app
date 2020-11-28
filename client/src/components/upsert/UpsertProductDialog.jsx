@@ -13,6 +13,7 @@ import { TextField, CheckboxWithLabel } from 'formik-material-ui';
 import { DatePicker } from 'formik-material-ui-pickers';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import * as Yup from 'yup';
+import { mergeWith, isNull } from 'lodash';
 import {
   UPDATE_PRODUCT, CREATE_PRODUCT, GET_PRODUCTS, GET_PRODUCT,
 } from '../../graphql/products';
@@ -76,13 +77,13 @@ export default function UpsertProductDialog() {
   if (loading) return <CircularProgress />;
 
   const validationSchema = Yup.object().shape({
-    name: Yup.string().required('Required!'),
-    number: Yup.string().required('Required!'),
-    count: Yup.number().required('Required!').positive('Must be > 0!'),
-    expirationDate: Yup.date().nullable(),
-    completed: product.completed || false,
-    notes: Yup.string(),
-    defaultMaterialCount: Yup.number().required('Required!').positive('Must be > 0!'),
+    name: Yup.string().required('Required!').default(''),
+    number: Yup.string().required('Required!').default(''),
+    count: Yup.number().required('Required!').positive('Must be > 0!').default(1),
+    expirationDate: Yup.date().nullable().default(null),
+    completed: Yup.boolean().required('Required!').default(false),
+    notes: Yup.string().default(''),
+    defaultMaterialCount: Yup.number().required('Required!').positive('Must be > 0!').default(1),
   });
 
   return (
@@ -96,15 +97,9 @@ export default function UpsertProductDialog() {
       </DialogTitle>
       <Formik
         validationSchema={validationSchema}
-        initialValues={{
-          name: product.name || '',
-          number: product.number || '',
-          count: product.count || 1,
-          expirationDate: product.expirationDate || null,
-          completed: product.completed || false,
-          notes: product.notes || '',
-          defaultMaterialCount: product.defaultMaterialCount || 1.0,
-        }}
+        initialValues={mergeWith({},
+          validationSchema.getDefault(),
+          product, (o, s) => (isNull(s) ? o : s))}
         onSubmit={onSubmit}
       >
         {({ submitForm, isSubmitting }) => (

@@ -90,8 +90,7 @@ const GET_CASE_PRODUCTS = gql`
       name
       products {
         edges {
-          countNotShipped
-          countShipped
+          countUsed
           node {
             ...Product
           }
@@ -133,12 +132,9 @@ const CASE_UNUSE_MATERIAL = gql`
       caseId: $caseId
       materialId: $materialId
     ) {
-      material {
-        ...Material
-      }
+      materialId
     }
   }
-  ${MATERIAL_FRAGMENT}
 `;
 
 const CASE_USE_PRODUCT = gql`
@@ -158,7 +154,7 @@ const CASE_USE_PRODUCT = gql`
 `;
 
 const CASE_UNUSE_PRODUCT = gql`
-  mutation CaseUseProduct($caseId: ID!, $productId: ID!) {
+  mutation CaseUnseProduct($caseId: ID!, $productId: ID!) {
     caseUnuseProduct(
       caseId: $caseId
       productId: $productId

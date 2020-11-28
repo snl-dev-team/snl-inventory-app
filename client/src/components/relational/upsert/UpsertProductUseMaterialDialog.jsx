@@ -12,8 +12,9 @@ import { TextField } from 'formik-material-ui';
 import { useHistory, useParams } from 'react-router';
 import { useMutation, useQuery } from '@apollo/client';
 import * as Yup from 'yup';
+import produce from 'immer';
 import FormikAutocomplete from '../FormikAutoComplete';
-import { GET_PRODUCTS, PRODUCT_USE_MATERIAL } from '../../../graphql/products';
+import { GET_PRODUCT_MATERIALS, PRODUCT_USE_MATERIAL } from '../../../graphql/products';
 import { GET_MATERIALS } from '../../../graphql/materials';
 
 export default function UpsertProductUseMaterialDialog() {
@@ -24,14 +25,36 @@ export default function UpsertProductUseMaterialDialog() {
   const materials = edges.map(({ node }) => node);
 
   const validationSchema = Yup.object().shape({
-    name: Yup.object().required('Required!').defined('Please enter a value!'),
-    count: Yup.number().required('Required!').positive('Must be > 0!'),
+    name: Yup.object().required('Required!').defined('Please enter a value!').default(''),
+    count: Yup.number().required('Required!').positive('Must be > 0!').default(0),
   });
 
   const onSubmit = (productId, materialId, count) => {
-    // TODO(isaiahnields): update Apollo cache
     productUseMaterial({
       variables: { productId, materialId, count },
+      update: (client, { data: { productUseMaterial: { material } = {} } }) => {
+        const clientData = client.readQuery({
+          query: GET_PRODUCT_MATERIALS,
+          variables: { id: productId },
+        });
+        const newData = produce(clientData, (draftState) => {
+          const idx = draftState.product.materials.edges.findIndex(
+            (edge) => edge.node.id === material.id,
+          );
+          if (idx === -1) {
+            draftState.product.materials.edges.push(
+              { __typename: 'MaterialEdge', countUsed: count, node: material },
+            );
+          } else {
+            // eslint-disable-next-line no-param-reassign
+            draftState.product.materials.edges[idx] = { __typename: 'MaterialEdge', countUsed: count, node: material };
+          }
+        });
+        client.writeQuery({
+          query: GET_PRODUCT_MATERIALS,
+          data: newData,
+        });
+      },
     });
     push(`/products/${id}/materials`);
   };
@@ -44,10 +67,7 @@ export default function UpsertProductUseMaterialDialog() {
       <DialogTitle id="form-dialog-title">Product Use Material</DialogTitle>
       <Formik
         validationSchema={validationSchema}
-        initialValues={{
-          name: '',
-          count: 0,
-        }}
+        initialValues={validationSchema.getDefault()}
         onSubmit={(v) => { onSubmit(id, v.name.id, v.count); }}
       >
         {({ submitForm, isSubmitting }) => (

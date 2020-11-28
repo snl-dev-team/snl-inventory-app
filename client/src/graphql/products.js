@@ -104,12 +104,9 @@ const PRODUCT_UNUSE_MATERIAL = gql`
       materialId: $materialId
       productId: $productId
     ) {
-      material {
-        ...Material
-      }
+      materialId
     }
   }
-  ${MATERIAL_FRAGMENT}
 `;
 
 const GET_PRODUCT = gql`

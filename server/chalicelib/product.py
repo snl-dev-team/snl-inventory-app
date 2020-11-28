@@ -2,7 +2,6 @@
 from graphene import Field, relay, ID
 from .types import Float, Integer
 from . import base, material, types
-from .material import Material
 from graphql_relay import from_global_id
 
 """
@@ -128,14 +127,14 @@ class ProductUseMaterial(base.Use, TableName):
         material_id = ID(required=True)
         count = Float(required=True)
 
-    material = Field(Material, required=True)
+    material = Field(material.Material, required=True)
     count_used = Float(required=True)
 
     @staticmethod
     def mutate(parent, info, product_id: str, material_id: str, count: float):
         ProductUseMaterial.commit(
             material.Material, product_id, material_id, count)
-        return {'material': Material.select_where(id=material_id), 'count_used': count}
+        return {'material': material.Material.select_where(id=material_id), 'count_used': count}
 
 
 class ProductUnuseMaterial(base.Unuse, TableName):
@@ -145,8 +144,9 @@ class ProductUnuseMaterial(base.Unuse, TableName):
         product_id = ID(required=True)
         material_id = ID(required=True)
 
-    material = Field(Material, required=True)
+    material_id = ID(required=True)
 
     @staticmethod
-    def mutate(parent, info, product_id: int, material_id: int):
-        return {'product': ProductUnuseMaterial.commit(material.Material, product_id, material_id)}
+    def mutate(parent, info, product_id: str, material_id: str):
+        ProductUnuseMaterial.commit(material.Material, product_id, material_id)
+        return {'material_id': material_id}

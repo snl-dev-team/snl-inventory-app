@@ -19,9 +19,9 @@ export default function UpsertOrderUseCaseDialog() {
   const { id } = useParams();
 
   const validationSchema = Yup.object().shape({
-    name: Yup.object().required('Required!').defined('Please enter a value!'),
-    shippedCount: Yup.number().required('Required!').positive('Must be > 0!'),
-    notShippedCount: Yup.number().required('Required!').positive('Must be > 0!'),
+    name: Yup.object().required('Required!').defined('Please enter a value!').default(''),
+    shippedCount: Yup.number().required('Required!').positive('Must be > 0!').default(0),
+    notShippedCount: Yup.number().required('Required!').positive('Must be > 0!').default(0),
   });
 
   return (
@@ -31,11 +31,7 @@ export default function UpsertOrderUseCaseDialog() {
     >
       <DialogTitle id="form-dialog-title">Order Use Case</DialogTitle>
       <Formik
-        initialValues={{
-          name: '',
-          shippedCount: 0,
-          notShippedCount: 0,
-        }}
+        initialValues={validationSchema.getDefault()}
         validationSchema={validationSchema}
         onSubmit={() => push(`/order/${id}/case`)}
       >

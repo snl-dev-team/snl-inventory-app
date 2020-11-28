@@ -193,5 +193,5 @@ class CaseUnuseProduct(base.Unuse):
 
     @staticmethod
     def mutate(parent, info, case_id: int, product_id: int):
-        CaseUnuseProduct.commit(material.Material, case_id, product_id)
+        CaseUnuseProduct.commit(product.Product, case_id, product_id)
         return {'product_id': product_id}

@@ -159,12 +159,9 @@ const CASE_UNUSE_PRODUCT = gql`
       caseId: $caseId
       productId: $productId
     ) {
-      product {
-        ...Product
-      }
+      productId
     }
   }
-  ${PRODUCT_FRAGMENT}
 `;
 
 export {

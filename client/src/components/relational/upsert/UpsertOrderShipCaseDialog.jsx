@@ -14,13 +14,13 @@ import { useMutation, useQuery } from '@apollo/client';
 import * as Yup from 'yup';
 import produce from 'immer';
 import FormikAutocomplete from '../FormikAutoComplete';
-import { GET_ORDER_CASES, ORDER_SHIPS_CASE } from '../../../graphql/orders';
+import { GET_ORDER_CASES, ORDER_SHIP_CASE } from '../../../graphql/orders';
 import { GET_CASES } from '../../../graphql/cases';
 
 export default function UpsertOrderUseCaseDialog() {
   const { push } = useHistory();
   const { id } = useParams();
-  const [orderShipsCase] = useMutation(ORDER_SHIPS_CASE);
+  const [orderShipCase] = useMutation(ORDER_SHIP_CASE);
   const { loading, data: { cases: { edges = [] } = {} } = {} } = useQuery(GET_CASES);
   const cases = edges.map(({ node }) => node);
 
@@ -31,11 +31,11 @@ export default function UpsertOrderUseCaseDialog() {
   });
 
   const onSubmit = (orderId, caseId, countNotShipped, countShipped) => {
-    orderShipsCase({
+    orderShipCase({
       variables: {
         orderId, caseId, countNotShipped, countShipped,
       },
-      update: (client, { data: { orderShipsCase: { case: case_ } = {} } }) => {
+      update: (client, { data: { orderShipCase: { case: case_ } = {} } }) => {
         const clientData = client.readQuery({
           query: GET_ORDER_CASES,
           variables: { id: orderId },

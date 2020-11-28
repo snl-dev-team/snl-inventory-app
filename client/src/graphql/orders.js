@@ -90,9 +90,9 @@ const GET_ORDER = gql`
   ${ORDER_FRAGMENT}
 `;
 
-const ORDER_SHIPS_CASE = gql`
-  mutation OrderShipsCase($orderId: ID!, $caseId: ID!, $countNotShipped: Integer!, $countShipped: Integer!) {
-    orderShipsCase(orderId: $orderId, caseId: $caseId, countNotShipped: $countNotShipped, countShipped: $countShipped) {
+const ORDER_SHIP_CASE = gql`
+  mutation OrderShipCase($orderId: ID!, $caseId: ID!, $countNotShipped: Integer!, $countShipped: Integer!) {
+    orderShipCase(orderId: $orderId, caseId: $caseId, countNotShipped: $countNotShipped, countShipped: $countShipped) {
       countNotShipped
       countShipped
       case {
@@ -103,9 +103,9 @@ const ORDER_SHIPS_CASE = gql`
   ${CASE_FRAGMENT}
 `;
 
-const ORDER_UNSHIPS_CASE = gql`
-  mutation OrderUnshipsCase($orderId: ID!, $caseId: ID!) {
-    orderUnshipsCase(orderId: $orderId, caseId: $caseId) {
+const ORDER_UNSHIP_CASE = gql`
+  mutation OrderUnshipCase($orderId: ID!, $caseId: ID!) {
+    orderUnshipCase(orderId: $orderId, caseId: $caseId) {
       caseId
     }
   }
@@ -118,6 +118,6 @@ export {
   DELETE_ORDER,
   GET_ORDER_CASES,
   GET_ORDER,
-  ORDER_SHIPS_CASE,
-  ORDER_UNSHIPS_CASE,
+  ORDER_SHIP_CASE,
+  ORDER_UNSHIP_CASE,
 };

@@ -15,6 +15,16 @@ const useStyles = makeStyles(() => ({
     left: 'auto',
     position: 'fixed',
   },
+  spinner: {
+    justifyContent:
+    'center',
+    alignContent: 'center',
+    height: '100%',
+    width: '100%',
+    position: 'absolute',
+    top: 0,
+    left: '5%',
+  },
 }));
 
 const GenericDashboard = ({
@@ -36,7 +46,15 @@ const GenericDashboard = ({
       </Grid>
       )}
 
-      {loading && <CircularProgress />}
+      {loading && (
+      <div className={classes.spinner}>
+        <CircularProgress
+          transform="translateX(-50%)"
+          status="loading"
+          style={{ marginLeft: '50%', marginTop: '50%' }}
+        />
+      </div>
+      )}
 
       <Fab
         size="medium"

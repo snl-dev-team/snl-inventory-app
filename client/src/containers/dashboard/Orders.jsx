@@ -10,8 +10,8 @@ import {
 import UpsertOrderDialog from '../../components/upsert/UpsertOrderDialog';
 import InventoryCard from '../../components/InventoryCard';
 import GenericDashboard from './Generic';
-import OrderShipsCaseDialog from '../../components/relational/view/OrderShipsCaseDialog';
-import UpsertOrderShipsCaseDialog from '../../components/relational/upsert/UpsertOrderShipsCaseDialog';
+import OrderShipCaseDialog from '../../components/relational/view/OrderShipCaseDialog';
+import UpsertOrderShipCaseDialog from '../../components/relational/upsert/UpsertOrderShipCaseDialog';
 
 const OrdersDashboard = ({ searchString }) => {
   const { push } = useHistory();
@@ -74,13 +74,13 @@ const OrdersDashboard = ({ searchString }) => {
 
       <Route
         path="/orders/:id/cases"
-        component={OrderShipsCaseDialog}
+        component={OrderShipCaseDialog}
       />
 
       <Route
         exact
         path="/orders/:id/cases/use"
-        component={UpsertOrderShipsCaseDialog}
+        component={UpsertOrderShipCaseDialog}
       />
     </>
   );

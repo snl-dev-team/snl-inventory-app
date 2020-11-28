@@ -32,6 +32,16 @@ const useStyles = makeStyles((theme) => ({
   grid: {
     padding: theme.spacing(5),
   },
+  spinner: {
+    justifyContent:
+    'center',
+    alignContent: 'center',
+    height: '100%',
+    width: '100%',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+  },
 }));
 
 export default function UseDialog({
@@ -72,7 +82,15 @@ export default function UseDialog({
         </Toolbar>
       </AppBar>
       <CssBaseline />
-      {loading && <CircularProgress />}
+      {loading && (
+      <div className={classes.spinner}>
+        <CircularProgress
+          transform="translateX(-50%)"
+          status="loading"
+          style={{ marginLeft: '50%', marginTop: '50%' }}
+        />
+      </div>
+      )}
       <Grid container className={classes.grid} spacing={3}>
         {!loading && children.map((child) => (
           <Grid key={child.key} item>

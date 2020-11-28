@@ -18,7 +18,9 @@ import ListItemText from '@material-ui/core/ListItemText';
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import { Route, useHistory, Redirect } from 'react-router-dom';
+import {
+  Route, useHistory, Redirect, useRouteMatch,
+} from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -273,6 +275,7 @@ export default function Dashboard() {
         <Divider />
         <List>
           <ListItem
+            selected={useRouteMatch('/orders')}
             button
             key="Orders"
             onClick={() => {
@@ -286,6 +289,7 @@ export default function Dashboard() {
           </ListItem>
           <ListItem
             button
+            selected={useRouteMatch('/cases')}
             key="Cases"
             onClick={() => {
               history.push('/cases');
@@ -298,6 +302,7 @@ export default function Dashboard() {
           </ListItem>
           <ListItem
             button
+            selected={useRouteMatch('/products')}
             key="Products"
             onClick={() => {
               history.push('/products');
@@ -309,6 +314,7 @@ export default function Dashboard() {
             <ListItemText primary="Products" />
           </ListItem>
           <ListItem
+            selected={useRouteMatch('/materials')}
             button
             key="Materials"
             onClick={() => history.push('/materials')}

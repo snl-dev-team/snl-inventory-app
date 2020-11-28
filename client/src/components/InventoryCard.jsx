@@ -7,12 +7,13 @@ import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import EditIcon from '@material-ui/icons/Edit';
-import PaletteIcon from '@material-ui/icons/Palette';
-import DeleteIcon from '@material-ui/icons/Delete';
-import LocalPharmacyIcon from '@material-ui/icons/LocalPharmacy';
-import GridOnIcon from '@material-ui/icons/GridOn';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faPrescriptionBottle, faPills, faBoxOpen,
+} from '@fortawesome/free-solid-svg-icons';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -47,10 +48,13 @@ export default function InventoryCard({
 }) {
   const classes = useStyles();
 
-  const buttons = [
-    [onClickShowCases, GridOnIcon],
-    [onClickShowProducts, LocalPharmacyIcon],
-    [onClickShowMaterials, PaletteIcon],
+  const relationButtons = [
+    [onClickShowCases, () => <FontAwesomeIcon icon={faBoxOpen} />],
+    [onClickShowProducts, () => <FontAwesomeIcon icon={faPrescriptionBottle} />],
+    [onClickShowMaterials, () => <FontAwesomeIcon icon={faPills} />],
+  ];
+
+  const itemButtons = [
     [onClickEdit, EditIcon],
     [onClickDelete, DeleteIcon],
   ];
@@ -77,7 +81,18 @@ export default function InventoryCard({
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        {buttons.filter((button) => button[0] !== null).map((button, idx) => {
+        {relationButtons.filter((button) => button[0] !== null).map((button) => {
+          const [onClick, Icon] = button;
+          return (
+            <IconButton
+              onClick={onClick}
+              key={onClick.name}
+            >
+              <Icon />
+            </IconButton>
+          );
+        })}
+        {itemButtons.filter((button) => button[0] !== null).map((button, idx) => {
           const [onClick, Icon] = button;
           return (
             <IconButton

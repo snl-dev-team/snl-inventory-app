@@ -18,14 +18,14 @@ import ListItemText from '@material-ui/core/ListItemText';
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
-import GridOnIcon from '@material-ui/icons/GridOn';
-import LocalPharmacyIcon from '@material-ui/icons/LocalPharmacy';
 import { Route, useHistory, Redirect } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import PaletteIcon from '@material-ui/icons/Palette';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faFileInvoiceDollar, faBoxOpen, faPills, faPrescriptionBottle,
+} from '@fortawesome/free-solid-svg-icons';
 import ProductsDashboard from './Products';
 import MaterialsDashboard from './Materials';
 import OrdersDashboard from './Orders';
@@ -280,7 +280,7 @@ export default function Dashboard() {
             }}
           >
             <ListItemIcon>
-              <ShoppingCartIcon />
+              <FontAwesomeIcon icon={faFileInvoiceDollar} />
             </ListItemIcon>
             <ListItemText primary="Orders" />
           </ListItem>
@@ -292,7 +292,7 @@ export default function Dashboard() {
             }}
           >
             <ListItemIcon>
-              <GridOnIcon />
+              <FontAwesomeIcon icon={faBoxOpen} />
             </ListItemIcon>
             <ListItemText primary="Cases" />
           </ListItem>
@@ -304,7 +304,7 @@ export default function Dashboard() {
             }}
           >
             <ListItemIcon>
-              <LocalPharmacyIcon />
+              <FontAwesomeIcon icon={faPrescriptionBottle} />
             </ListItemIcon>
             <ListItemText primary="Products" />
           </ListItem>
@@ -314,7 +314,7 @@ export default function Dashboard() {
             onClick={() => history.push('/materials')}
           >
             <ListItemIcon>
-              <PaletteIcon />
+              <FontAwesomeIcon icon={faPills} />
             </ListItemIcon>
             <ListItemText primary="Materials" />
           </ListItem>

@@ -13,14 +13,12 @@ import { useHistory, useParams } from 'react-router';
 import { useMutation, useQuery } from '@apollo/client';
 import * as Yup from 'yup';
 import FormikAutocomplete from '../FormikAutoComplete';
-import { PRODUCT_USE_MATERIAL, PRODUCT_UNUSE_MATERIAL } from '../../../graphql/products';
+import { GET_PRODUCTS, PRODUCT_USE_MATERIAL } from '../../../graphql/products';
 import { GET_MATERIALS } from '../../../graphql/materials';
 
 export default function UpsertProductUseMaterialDialog() {
-  const options = [{ title: 'The Shawshank Redemption', year: 1994 }];
   const { push } = useHistory();
   const { id } = useParams();
-  const [productUnuseMaterial] = useMutation(PRODUCT_UNUSE_MATERIAL);
   const [productUseMaterial] = useMutation(PRODUCT_USE_MATERIAL);
   const { loading, data: { materials: { edges = [] } = {} } = {} } = useQuery(GET_MATERIALS);
   const materials = edges.map(({ node }) => node);
@@ -29,6 +27,14 @@ export default function UpsertProductUseMaterialDialog() {
     name: Yup.object().required('Required!').defined('Please enter a value!'),
     count: Yup.number().required('Required!').positive('Must be > 0!'),
   });
+
+  const onSubmit = (productId, materialId, count) => {
+    // TODO(isaiahnields): update Apollo cache
+    productUseMaterial({
+      variables: { productId, materialId, count },
+    });
+    push(`/products/${id}/materials`);
+  };
 
   return (
     <Dialog
@@ -42,7 +48,7 @@ export default function UpsertProductUseMaterialDialog() {
           name: '',
           count: 0,
         }}
-        onSubmit={() => push(`/products/${id}/materials`)}
+        onSubmit={(v) => { onSubmit(id, v.name.id, v.count); }}
       >
         {({ submitForm, isSubmitting }) => (
           <>
@@ -56,12 +62,13 @@ export default function UpsertProductUseMaterialDialog() {
                       style={{ width: 300 }}
                       component={FormikAutocomplete}
                       label="Material"
-                      getOptionLabel={(option) => (option.title ? option.title : '')}
+                      getOptionLabel={(option) => (option.name !== undefined ? `${option.name} / ${option.number}` : '')}
                       getOptionSelected={(
                         option,
                         value,
                       ) => value.value === option.value}
                       options={materials}
+                      loading={loading}
                       textFieldProps={{ fullWidth: true, margin: 'normal', variant: 'outlined' }}
                     />
                   </Grid>

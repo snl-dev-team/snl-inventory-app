@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     position: 'fixed',
   },
   grid: {
-    padding: theme.spacing(3),
+    padding: theme.spacing(5),
   },
 }));
 
@@ -73,13 +73,13 @@ export default function UseDialog({
       </AppBar>
       <CssBaseline />
       {loading && <CircularProgress />}
-      {!loading && children.map((child) => (
-        <Grid container className={classes.grid}>
-          <Grid item>
+      <Grid container className={classes.grid} spacing={3}>
+        {!loading && children.map((child) => (
+          <Grid key={child.key} item>
             {child}
           </Grid>
-        </Grid>
-      ))}
+        ))}
+      </Grid>
       <Fab
         size="medium"
         color="secondary"

@@ -135,7 +135,7 @@ class ProductUseMaterial(base.Use, TableName):
     def mutate(parent, info, product_id: str, material_id: str, count: float):
         ProductUseMaterial.commit(
             material.Material, product_id, material_id, count)
-        return {'material': Material.select_where(id=material_id)}
+        return {'material': Material.select_where(id=material_id), 'count_used': count}
 
 
 class ProductUnuseMaterial(base.Unuse, TableName):

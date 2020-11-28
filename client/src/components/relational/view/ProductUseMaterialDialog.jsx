@@ -27,6 +27,7 @@ export default function ProductUseMaterialDialog() {
     >
       {!loading ? edges.map(({ node, countUsed }) => (
         <InventoryCard
+          key={node.id}
           data={Object.entries(node)
             .filter(([name]) => !['__typename', 'id', 'name'].includes(name))
             .concat([['countUsed', countUsed]])

@@ -127,7 +127,7 @@ class DeleteCase(base.Delete, TableName):
 
     @staticmethod
     def mutate(parent, info, id):
-        DeleteCase.commit(id)
+        DeleteCase.commit(id, users=['order'], usees=['product', 'material'])
         return {'id': id}
 
 

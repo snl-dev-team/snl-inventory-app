@@ -19,23 +19,20 @@ DELIMITER //
                 SET @disable_triggers = NULL;
             END IF;
         END//
-
-        CREATE TRIGGER before_insert_product_uses_material
-            BEFORE INSERT
+        CREATE TRIGGER after_insert_product_uses_material
+            AFTER INSERT
             ON `product_uses_material` FOR EACH ROW
         BEGIN
             CALL product_uses_material_monitor(0.0, NEW.count, NEW.material_id);
         END//
-
-        CREATE TRIGGER before_delete_product_uses_material
-            BEFORE DELETE
+        CREATE TRIGGER after_delete_product_uses_material
+            AFTER DELETE
             ON `product_uses_material` FOR EACH ROW
         BEGIN
             CALL product_uses_material_monitor(OLD.count, 0.0, OLD.material_id);
         END//
-
-        CREATE TRIGGER before_update_product_uses_material
-            BEFORE UPDATE
+        CREATE TRIGGER after_update_product_uses_material
+            AFTER UPDATE
             ON `product_uses_material` FOR EACH ROW
         BEGIN
             CALL product_uses_material_monitor(OLD.count, NEW.count, NEW.material_id);
@@ -58,23 +55,20 @@ DELIMITER //
                 SET @disable_triggers = NULL;
             END IF;
         END//
-
-        CREATE TRIGGER before_insert_case_uses_material
-            BEFORE INSERT
+        CREATE TRIGGER after_insert_case_uses_material
+            AFTER INSERT
             ON `case_uses_material` FOR EACH ROW
         BEGIN
             CALL case_uses_material_monitor(0.0, NEW.count, NEW.material_id);
         END//
-
-        CREATE TRIGGER before_delete_case_uses_material
-            BEFORE DELETE
+        CREATE TRIGGER after_delete_case_uses_material
+            AFTER DELETE
             ON `case_uses_material` FOR EACH ROW
         BEGIN
             CALL case_uses_material_monitor(OLD.count, 0.0, OLD.material_id);
         END//
-
-        CREATE TRIGGER before_update_case_uses_material
-            BEFORE UPDATE
+        CREATE TRIGGER after_update_case_uses_material
+            AFTER UPDATE
             ON `case_uses_material` FOR EACH ROW
         BEGIN
             CALL case_uses_material_monitor(OLD.count, NEW.count, NEW.material_id);
@@ -97,23 +91,20 @@ DELIMITER //
                 SET @disable_triggers = NULL;
             END IF;
         END//
-
-        CREATE TRIGGER before_insert_case_uses_product
-            BEFORE INSERT
+        CREATE TRIGGER after_insert_case_uses_product
+            AFTER INSERT
             ON `case_uses_product` FOR EACH ROW
         BEGIN
             CALL case_uses_product_monitor(0, NEW.count, NEW.product_id);
         END//
-
-        CREATE TRIGGER before_delete_case_uses_product
-            BEFORE DELETE
+        CREATE TRIGGER after_delete_case_uses_product
+            AFTER DELETE
             ON `case_uses_product` FOR EACH ROW
         BEGIN
             CALL case_uses_product_monitor(OLD.count, 0, OLD.product_id);
         END//
-
-        CREATE TRIGGER before_update_case_uses_product
-            BEFORE UPDATE
+        CREATE TRIGGER after_update_case_uses_product
+            AFTER UPDATE
             ON `case_uses_product` FOR EACH ROW
         BEGIN
             CALL case_uses_product_monitor(OLD.count, NEW.count, NEW.product_id);
@@ -136,32 +127,29 @@ DELIMITER //
                 SET @disable_triggers = NULL;
             END IF;
         END//
-
-        CREATE TRIGGER before_insert_order_uses_case
-            BEFORE INSERT
+        CREATE TRIGGER after_insert_order_uses_case
+            AFTER INSERT
             ON `order_uses_case` FOR EACH ROW
         BEGIN
             CALL order_uses_case_monitor(0, NEW.count, NEW.case_id);
         END//
-
-        CREATE TRIGGER before_delete_order_uses_case
-            BEFORE DELETE
+        CREATE TRIGGER after_delete_order_uses_case
+            AFTER DELETE
             ON `order_uses_case` FOR EACH ROW
         BEGIN
             CALL order_uses_case_monitor(OLD.count, 0, OLD.case_id);
         END//
-
-        CREATE TRIGGER before_update_order_uses_case
-            BEFORE UPDATE
+        CREATE TRIGGER after_update_order_uses_case
+            AFTER UPDATE
             ON `order_uses_case` FOR EACH ROW
         BEGIN
             CALL order_uses_case_monitor(OLD.count, NEW.count, NEW.case_id);
         END//
         
--- UPDATE TABLE TRIGGERS
+-- DATE MODIFIED TRIGGERS
 
 
-        CREATE TRIGGER after_update_material
+        CREATE TRIGGER before_update_material
             BEFORE UPDATE
             ON `material` FOR EACH ROW
         BEGIN
@@ -170,7 +158,7 @@ DELIMITER //
         
 
 
-        CREATE TRIGGER after_update_product
+        CREATE TRIGGER before_update_product
             BEFORE UPDATE
             ON `product` FOR EACH ROW
         BEGIN
@@ -179,7 +167,7 @@ DELIMITER //
         
 
 
-        CREATE TRIGGER after_update_case
+        CREATE TRIGGER before_update_case
             BEFORE UPDATE
             ON `case` FOR EACH ROW
         BEGIN
@@ -188,60 +176,11 @@ DELIMITER //
         
 
 
-        CREATE TRIGGER after_update_order
+        CREATE TRIGGER before_update_order
             BEFORE UPDATE
             ON `order` FOR EACH ROW
         BEGIN
             SET NEW.date_modified = CURRENT_TIMESTAMP;
-        END//
-        
--- DELETE TABLE TRIGGERS
-
-
-        CREATE TRIGGER before_delete_material
-            BEFORE DELETE
-            ON `material` FOR EACH ROW
-        BEGIN
-            
-        SET @disable_trigger = 1;
-        DELETE FROM `product_uses_material`
-        WHERE `material_id` = OLD.id;
-        SET @disable_trigger = NULL;
-        
-
-        SET @disable_trigger = 1;
-        DELETE FROM `case_uses_material`
-        WHERE `material_id` = OLD.id;
-        SET @disable_trigger = NULL;
-        
-        END//
-        
-
-
-        CREATE TRIGGER before_delete_product
-            BEFORE DELETE
-            ON `product` FOR EACH ROW
-        BEGIN
-            
-        SET @disable_trigger = 1;
-        DELETE FROM `case_uses_product`
-        WHERE `product_id` = OLD.id;
-        SET @disable_trigger = NULL;
-        
-        END//
-        
-
-
-        CREATE TRIGGER before_delete_case
-            BEFORE DELETE
-            ON `case` FOR EACH ROW
-        BEGIN
-            
-        SET @disable_trigger = 1;
-        DELETE FROM `order_uses_case`
-        WHERE `case_id` = OLD.id;
-        SET @disable_trigger = NULL;
-        
         END//
         DELIMITER ;
 

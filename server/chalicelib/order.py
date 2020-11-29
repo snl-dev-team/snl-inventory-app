@@ -109,7 +109,7 @@ class DeleteOrder(base.Delete, TableName):
 
     @staticmethod
     def mutate(parent, info, id: str):
-        DeleteOrder.commit(id)
+        DeleteOrder.commit(id, users=[], usees=['case'])
         return {'id': id}
 
 

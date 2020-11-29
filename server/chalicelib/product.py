@@ -74,7 +74,7 @@ class ProductConnection(base.ObjectConnection):
         count = Float()
 
         @staticmethod
-        def resolve_count_used(parent, info):
+        def resolve_count(parent, info):
             return parent.node['count'] if parent else None
 
 
@@ -115,7 +115,7 @@ class DeleteProduct(base.Delete, TableName):
 
     @staticmethod
     def mutate(parent, info, id):
-        DeleteProduct.commit(id)
+        DeleteProduct.commit(id, users=['case'], usees=['material'])
         return {'id': id}
 
 

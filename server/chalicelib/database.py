@@ -12,7 +12,7 @@ database_cluster_arn = os.environ.get('DATABASE_CLUSTER_ARN')
 rds_client = boto3.client('rds-data')
 
 
-def execute_statement(sql, sql_parameters=[]):
+def execute_statement(sql, sql_parameters=[], transaction_id=''):
     sql = sqlparse.format(sql, reindent=True)
     logging.info(sql)
     response = rds_client.execute_statement(
@@ -20,7 +20,8 @@ def execute_statement(sql, sql_parameters=[]):
         database=database_name,
         resourceArn=database_cluster_arn,
         sql=sql,
-        parameters=sql_parameters
+        parameters=sql_parameters,
+        transactionId=transaction_id
     )
     return response
 
@@ -37,3 +38,29 @@ def process_select_response(response, members):
                 value)
         data.append(data_row)
     return data
+
+
+def execute_transaction(sqls):
+    transaction = rds_client.begin_transaction(
+        secretArn=database_secrets_arn,
+        resourceArn=database_cluster_arn,
+        database=database_name
+    )
+    try:
+        for sql, sql_parameters in sqls:
+            execute_statement(sql, sql_parameters,
+                              transaction['transactionId'])
+    except Exception as e:
+        print(f'Error: {e}')
+        rds_client.rollback_transaction(
+            secretArn=database_secrets_arn,
+            resourceArn=database_cluster_arn,
+            transactionId=transaction['transactionId']
+        )
+
+    else:
+        rds_client.commit_transaction(
+            secretArn=database_secrets_arn,
+            resourceArn=database_cluster_arn,
+            transactionId=transaction['transactionId']
+        )

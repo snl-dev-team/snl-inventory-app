@@ -3,7 +3,7 @@ from graphene import ObjectType, InputObjectType, Mutation, Connection, relay, I
 from re import findall
 from datetime import datetime
 from inspect import getmembers, isroutine
-from .database import execute_statement, process_select_response
+from .database import execute_statement, process_select_response, execute_transaction
 from graphql_relay import to_global_id, from_global_id
 from .types import Integer, BaseType, DateTime, Integer
 
@@ -105,7 +105,6 @@ class Object(ObjectType, Base):
             relations = [['count', used.count]]
         else:
             relations = [['count', used.count]] + [relations]
-        print(relations)
         relation_string = ',\n'.join(
             f"`{user.__tablename__}_uses_{used.__tablename__}`.`{name}` {name}"
             for name, _ in relations
@@ -137,10 +136,8 @@ class Object(ObjectType, Base):
 
     @classmethod
     def get_node(cls, info, id):
-        print(id)
         id = int(id)
         node = cls.select_where(id)
-        print(node)
         return cls(**node)
 
 
@@ -222,15 +219,29 @@ class Update(Mutation, Table):
 
 class Delete(Mutation, Table):
     @classmethod
-    def commit(cls, id: int):
+    def commit(cls, id: str, usees=None, users=None):
         item_id = int(from_global_id(id)[1])
-        sql = f"""
+        if usees == None:
+            usees = []
+        if users == None:
+            users = []
+
+        delete_user = [[f"""
+        DELETE FROM `{user}_uses_{cls.__tablename__}`
+        WHERE `{cls.__tablename__}_id` = {item_id};
+        """, []] for user in users]
+
+        delete_used = [[f"""
+        DELETE FROM `{cls.__tablename__}_uses_{used}`
+        WHERE `{cls.__tablename__}_id` = {item_id};
+        """, []] for used in usees]
+
+        delete_self = [[f"""
         DELETE FROM
             `{cls.__tablename__}`
         WHERE id = :id;
-        """
-        execute_statement(sql, sql_parameters=[
-                          {'name': 'id', 'value': {'longValue': item_id}}])
+        """, [{'name': 'id', 'value': {'longValue': item_id}}]]]
+        execute_transaction(delete_user + delete_used + delete_self)
 
     @staticmethod
     def mutate(parent, info, id):
@@ -243,7 +254,7 @@ class Use(Mutation, Table):
         user_item_id = int(from_global_id(user_id)[1])
         used_item_id = int(from_global_id(used_id)[1])
         if relations == None:
-            relations = ['count', count]
+            relations = [['count', count]]
         else:
             relations = [['count', count]] + [relations]
 

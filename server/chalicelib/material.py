@@ -68,7 +68,8 @@ class MaterialConnection(base.ObjectConnection, TableName):
         count = types.Integer()
 
         @staticmethod
-        def resolve_count_used(parent, info):
+        def resolve_count(parent, info):
+            print(parent)
             return parent.node['count'] if parent else None
 
 
@@ -109,5 +110,5 @@ class DeleteMaterial(base.Delete, TableName):
 
     @staticmethod
     def mutate(parent, info, id):
-        DeleteMaterial.commit(id)
+        DeleteMaterial.commit(id, usees=[], users=['product', 'case'])
         return {'id': id}

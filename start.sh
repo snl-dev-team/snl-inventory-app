@@ -1,0 +1,1 @@
+cd client && npm run start & cd ../server && source venv/bin/activate && chalice local --port=8001

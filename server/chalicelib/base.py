@@ -99,12 +99,21 @@ class Object(ObjectType, Base):
         return cls.row_to_global_id(rows[0]) if rows else None
 
     @classmethod
-    def select_uses(user: ObjectType, id: str, used: ObjectType):
+    def select_uses(user: ObjectType, id: str, used: ObjectType, relations=None):
         id = int(from_global_id(id)[1])
+        if relations is None:
+            relations = [['count', used.count]]
+        else:
+            relations = [['count', used.count]] + [relations]
+        print(relations)
+        relation_string = ',\n'.join(
+            f"`{user.__tablename__}_uses_{used.__tablename__}`.`{name}` {name}"
+            for name, _ in relations
+        )
         sql = f"""
         SELECT
             {used.get_column_string()},
-            `{user.__tablename__}_uses_{used.__tablename__}`.`count` count_used
+            {relation_string}
         FROM
             `{user.__tablename__}`,
             `{user.__tablename__}_uses_{used.__tablename__}`,
@@ -120,35 +129,7 @@ class Object(ObjectType, Base):
                 {'name': f'{user.__tablename__}_id', 'value': {'longValue': id}}]
         )
         rows = process_select_response(
-            res, list(used.members()) + [('count_used', used.count)])
-        return used.rows_to_global_id(rows)
-
-    @classmethod
-    def select_ships(user: ObjectType, id: str, used: ObjectType):
-        print(id)
-        id = int(from_global_id(id)[1])
-        sql = f"""
-        SELECT
-            {used.get_column_string()},
-            `{user.__tablename__}_uses_{used.__tablename__}`.`count_shipped` count_shipped,
-            `{user.__tablename__}_uses_{used.__tablename__}`.`count_not_shipped` count_not_shipped
-        FROM
-            `{user.__tablename__}`,
-            `{user.__tablename__}_uses_{used.__tablename__}`,
-            `{used.__tablename__}`
-        WHERE
-            `{user.__tablename__}`.`id` = :{user.__tablename__}_id
-            AND `{user.__tablename__}_uses_{used.__tablename__}`.`{user.__tablename__}_id` = `{user.__tablename__}`.`id`
-            AND `{user.__tablename__}_uses_{used.__tablename__}`.`{used.__tablename__}_id` = `{used.__tablename__}`.`id`;
-        """
-        res = execute_statement(
-            sql,
-            sql_parameters=[
-                {'name': f'{user.__tablename__}_id', 'value': {'longValue': id}}]
-        )
-
-        rows = process_select_response(res, list(used.members(
-        )) + [('count_shipped', used.count), ('count_not_shipped', used.count)])
+            res, list(used.members()) + relations)
         return used.rows_to_global_id(rows)
 
     class Meta:
@@ -258,20 +239,28 @@ class Delete(Mutation, Table):
 
 class Use(Mutation, Table):
     @classmethod
-    def commit(user, used, user_id, used_id, count):
+    def commit(user, used, user_id, used_id, count, relations=None):
         user_item_id = int(from_global_id(user_id)[1])
         used_item_id = int(from_global_id(used_id)[1])
+        if relations == None:
+            relations = ['count', count]
+        else:
+            relations = [['count', count]] + [relations]
+
+        column_string = ',\n'.join(f"`{name}`" for name, _ in relations)
+        value_string = ',\n'.join(f"{value}" for _, value in relations)
+
         sql = f"""
         REPLACE INTO
             `{user.__tablename__}_uses_{used.__tablename__}` (
                 `{user.__tablename__}_id`,
                 `{used.__tablename__}_id`,
-                `count`
+                {column_string}
             )
         VALUES (
             {user_item_id},
             {used_item_id},
-            {count}
+            {value_string}
         )
         """
 
@@ -293,57 +282,6 @@ class Unuse(Mutation, Table):
         WHERE
             `{user.__tablename__}_id` = {user_item_id}
             AND `{used.__tablename__}_id` = {used_item_id};
-        """
-
-        execute_statement(sql)
-
-    @staticmethod
-    def mutate(parent, info, id):
-        pass
-
-
-class Ships(Mutation, Table):
-    @classmethod
-    def commit(shipper, shipped, shipper_id, shipped_id, count_not_shipped, count_shipped):
-        shipper_item_id = int(from_global_id(shipper_id)[1])
-        shipped_item_id = int(from_global_id(shipped_id)[1])
-        sql = f"""
-        REPLACE INTO
-            `{shipper.__tablename__}_uses_{shipped.__tablename__}` (
-                `{shipper.__tablename__}_id`,
-                `{shipped.__tablename__}_id`,
-                `count_not_shipped`,
-                `count_shipped`
-
-            )
-        VALUES (
-            {shipper_item_id},
-            {shipped_item_id},
-            {count_not_shipped},
-            {count_shipped}
-            
-
-        )
-        """
-
-        execute_statement(sql)
-
-    @staticmethod
-    def mutate(parent, info, id):
-        pass
-
-
-class Unships(Mutation, Table):
-    @classmethod
-    def commit(shipper, shipped, shipper_id, shipped_id):
-        shipper_item_id = int(from_global_id(shipper_id)[1])
-        shipped_item_id = int(from_global_id(shipped_id)[1])
-        sql = f"""
-        DELETE FROM
-            `{shipper.__tablename__}_uses_{shipped.__tablename__}`
-        WHERE
-            `{shipper.__tablename__}_id` = {shipper_item_id}
-            AND `{shipped.__tablename__}_id` = {shipped_item_id};
         """
 
         execute_statement(sql)

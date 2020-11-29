@@ -72,7 +72,7 @@ const GET_CASE_MATERIALS = gql`
       name
       materials {
         edges {
-          countUsed
+          count
           node {
             ...Material
           }
@@ -90,7 +90,7 @@ const GET_CASE_PRODUCTS = gql`
       name
       products {
         edges {
-          countUsed
+          count
           node {
             ...Product
           }
@@ -117,7 +117,7 @@ const CASE_USE_MATERIAL = gql`
       materialId: $materialId
       count: $count
     ) {
-      countUsed
+      count
       material {
         ...Material
       }
@@ -144,7 +144,7 @@ const CASE_USE_PRODUCT = gql`
       productId: $productId
       count: $count
     ) {
-      countUsed
+      count
       product {
         ...Product
       }

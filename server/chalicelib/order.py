@@ -16,15 +16,6 @@ from . import base, material, case, types
 | default_material_count | int(10) unsigned | NO   |     | NULL              |                |
 | customer_name          | varchar(255)     | NO   |     | NULL              |                |
 +------------------------+------------------+------+-----+-------------------+----------------+
-
-+-------------------+---------+------+-----+---------+-------+
-| Field             | Type    | Null | Key | Default | Extra |
-+-------------------+---------+------+-----+---------+-------+
-| order_id          | int(11) | NO   | PRI | NULL    |       |
-| case_id           | int(11) | NO   | PRI | NULL    |       |
-| count_shipped     | int(11) | NO   |     | NULL    |       |
-| count_not_shipped | int(11) | NO   |     | NULL    |       |
-+-------------------+---------+------+-----+---------+-------+
 """
 
 
@@ -62,7 +53,7 @@ class Order(base.Object, OrderBase, types.Node, TableName):
 
     @staticmethod
     def resolve_cases(parent, info):
-        return Order.select_ships(parent.id, case.Case)
+        return Order.select_uses(parent.id, case.Case, relations=['order_count', Integer])
 
     class Meta:
         interfaces = (relay.Node,)
@@ -74,11 +65,11 @@ class OrderConnection(base.ObjectConnection):
         node = Order
 
     class Edge:
-        count_used = Integer()
+        count = Integer()
 
         @staticmethod
-        def resolve_count_used(parent, info):
-            return parent.node['count_used'] if parent else None
+        def resolve_count(parent, info):
+            return parent.node['count'] if parent else None
 
 
 class CreateOrder(base.Create, TableName):
@@ -122,27 +113,27 @@ class DeleteOrder(base.Delete, TableName):
         return {'id': id}
 
 
-class OrderShipsCase(base.Ships):
+class OrderUseCase(base.Use):
     __tablename__ = 'order'
 
     class Arguments:
         order_id = ID(required=True)
         case_id = ID(required=True)
-        count_not_shipped = Integer(required=True)
-        count_shipped = Integer(required=True)
+        count = Integer(required=True)
+        order_count = Integer(required=True)
 
     case = Field(case.Case)
-    count_not_shipped = Integer(required=True)
-    count_shipped = Integer(required=True)
+    count = Integer(required=True)
+    order_count = Integer(required=True)
 
     @staticmethod
-    def mutate(parent, info, order_id: int, case_id: int, count_not_shipped: int, count_shipped: int):
-        OrderShipsCase.commit(
-            case.Case, order_id, case_id, count_not_shipped, count_shipped)
-        return {'case': case.Case.select_where(id=case_id), 'count_not_shipped': count_not_shipped, 'count_shipped': count_shipped}
+    def mutate(parent, info, order_id: int, case_id: int, count: int, order_count: int):
+        OrderUseCase.commit(
+            case.Case, order_id, case_id, count, relations=['order_count', order_count])
+        return {'case': case.Case.select_where(id=case_id), 'count': count, 'order_count': order_count}
 
 
-class OrderUnshipsCase(base.Unships):
+class OrderUnuseCase(base.Unuse):
     __tablename__ = 'order'
 
     class Arguments:
@@ -153,5 +144,5 @@ class OrderUnshipsCase(base.Unships):
 
     @staticmethod
     def mutate(parent, info, order_id: int, case_id: str):
-        OrderUnshipsCase.commit(case.Case, order_id, case_id)
+        OrderUnuseCase.commit(case.Case, order_id, case_id)
         return {'case_id': case_id}

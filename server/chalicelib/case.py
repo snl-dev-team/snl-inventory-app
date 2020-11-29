@@ -78,16 +78,16 @@ class CaseConnection(base.ObjectConnection):
         node = Case
 
     class Edge:
-        count_shipped = Integer()
-        count_not_shipped = Integer()
+        count = Integer()
+        order_count = Integer()
 
         @staticmethod
-        def resolve_count_shipped(parent, info):
-            return parent.node['count_shipped'] if parent else None
+        def resolve_count(parent, info):
+            return parent.node['count'] if parent else None
 
         @staticmethod
-        def resolve_count_not_shipped(parent, info):
-            return parent.node['count_not_shipped'] if parent else None
+        def resolve_order_count(parent, info):
+            return parent.node['order_count'] if parent else None
 
 
 class CreateCase(base.Create, TableName):
@@ -140,13 +140,13 @@ class CaseUseMaterial(base.Use):
         count = Float(required=True)
 
     material = Field(material.Material, required=True)
-    count_used = Float(required=True)
+    count = Float(required=True)
 
     @staticmethod
     def mutate(parent, info, case_id: int, material_id: int, count: float):
         CaseUseMaterial.commit(
             material.Material, case_id, material_id, count)
-        return {'material': material.Material.select_where(id=material_id), 'count_used': count}
+        return {'material': material.Material.select_where(id=material_id), 'count': count}
 
 
 class CaseUnuseMaterial(base.Unuse):
@@ -173,13 +173,13 @@ class CaseUseProduct(base.Use):
         count = Integer(required=True)
 
     product = Field(product.Product, required=True)
-    count_used = Integer(required=True)
+    count = Integer(required=True)
 
     @staticmethod
     def mutate(parent, info, case_id: int, product_id: int, count: int):
         CaseUseProduct.commit(
             product.Product, case_id, product_id, count)
-        return {'product': product.Product.select_where(id=product_id), 'count_used': count}
+        return {'product': product.Product.select_where(id=product_id), 'count': count}
 
 
 class CaseUnuseProduct(base.Unuse):

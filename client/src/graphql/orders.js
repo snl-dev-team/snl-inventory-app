@@ -69,8 +69,8 @@ const GET_ORDER_CASES = gql`
       number
       cases {
         edges {
-          countShipped
-          countNotShipped
+          count
+          orderCount
           node {
             ...Case
           }
@@ -90,11 +90,11 @@ const GET_ORDER = gql`
   ${ORDER_FRAGMENT}
 `;
 
-const ORDER_SHIP_CASE = gql`
-  mutation OrderShipCase($orderId: ID!, $caseId: ID!, $countNotShipped: Integer!, $countShipped: Integer!) {
-    orderShipCase(orderId: $orderId, caseId: $caseId, countNotShipped: $countNotShipped, countShipped: $countShipped) {
-      countNotShipped
-      countShipped
+const ORDER_USE_CASE = gql`
+  mutation OrderUseCase($orderId: ID!, $caseId: ID!, $count: Integer!, $orderCount: Integer!) {
+    orderUseCase(orderId: $orderId, caseId: $caseId, count: $count, orderCount: $orderCount) {
+      count
+      orderCount
       case {
         ...Case
       }
@@ -103,9 +103,9 @@ const ORDER_SHIP_CASE = gql`
   ${CASE_FRAGMENT}
 `;
 
-const ORDER_UNSHIP_CASE = gql`
-  mutation OrderUnshipCase($orderId: ID!, $caseId: ID!) {
-    orderUnshipCase(orderId: $orderId, caseId: $caseId) {
+const ORDER_UNUSE_CASE = gql`
+  mutation OrderUnuseCase($orderId: ID!, $caseId: ID!) {
+    orderUnuseCase(orderId: $orderId, caseId: $caseId) {
       caseId
     }
   }
@@ -118,6 +118,6 @@ export {
   DELETE_ORDER,
   GET_ORDER_CASES,
   GET_ORDER,
-  ORDER_SHIP_CASE,
-  ORDER_UNSHIP_CASE,
+  ORDER_USE_CASE,
+  ORDER_UNUSE_CASE,
 };

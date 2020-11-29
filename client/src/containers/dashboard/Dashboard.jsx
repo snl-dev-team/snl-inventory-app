@@ -275,7 +275,7 @@ export default function Dashboard() {
         <Divider />
         <List>
           <ListItem
-            selected={useRouteMatch('/orders')}
+            selected={useRouteMatch('/orders') !== null}
             button
             key="Orders"
             onClick={() => {
@@ -289,7 +289,7 @@ export default function Dashboard() {
           </ListItem>
           <ListItem
             button
-            selected={useRouteMatch('/cases')}
+            selected={useRouteMatch('/cases') !== null}
             key="Cases"
             onClick={() => {
               history.push('/cases');
@@ -302,7 +302,7 @@ export default function Dashboard() {
           </ListItem>
           <ListItem
             button
-            selected={useRouteMatch('/products')}
+            selected={useRouteMatch('/products') !== null}
             key="Products"
             onClick={() => {
               history.push('/products');
@@ -314,7 +314,7 @@ export default function Dashboard() {
             <ListItemText primary="Products" />
           </ListItem>
           <ListItem
-            selected={useRouteMatch('/materials')}
+            selected={useRouteMatch('/materials') !== null}
             button
             key="Materials"
             onClick={() => history.push('/materials')}

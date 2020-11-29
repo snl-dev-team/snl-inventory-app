@@ -71,11 +71,11 @@ class ProductConnection(base.ObjectConnection):
         node = Product
 
     class Edge:
-        count_used = Float()
+        count = Float()
 
         @staticmethod
         def resolve_count_used(parent, info):
-            return parent.node['count_used'] if parent else None
+            return parent.node['count'] if parent else None
 
 
 class CreateProduct(base.Create, TableName):
@@ -128,13 +128,13 @@ class ProductUseMaterial(base.Use, TableName):
         count = Float(required=True)
 
     material = Field(material.Material, required=True)
-    count_used = Float(required=True)
+    count = Float(required=True)
 
     @staticmethod
     def mutate(parent, info, product_id: str, material_id: str, count: float):
         ProductUseMaterial.commit(
             material.Material, product_id, material_id, count)
-        return {'material': material.Material.select_where(id=material_id), 'count_used': count}
+        return {'material': material.Material.select_where(id=material_id), 'count': count}
 
 
 class ProductUnuseMaterial(base.Unuse, TableName):

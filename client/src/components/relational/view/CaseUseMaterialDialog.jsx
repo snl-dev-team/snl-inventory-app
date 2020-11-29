@@ -49,12 +49,12 @@ export default function CaseUseMaterialDialog() {
       onClickCancel={() => push('/cases/')}
       title="Case Materials"
     >
-      {!loading ? edges.map(({ node, countUsed }) => (
+      {!loading ? edges.map(({ node, count }) => (
         <InventoryCard
           key={node.id}
           data={Object.entries(node)
             .filter(([name]) => !['__typename', 'id', 'name'].includes(name))
-            .concat([['countUsed', countUsed]])
+            .concat([['countUsed', count]])
             .map(([name, value]) => ({ name: lodash.startCase(name), value: String(value) }))}
           title={node.name}
           onClickDelete={() => onClickDelete(node.id)}

@@ -71,7 +71,7 @@ const GET_PRODUCT_MATERIALS = gql`
       name
       materials {
         edges {
-          countUsed
+          count
           node {
             ...Material
           }
@@ -89,7 +89,7 @@ const PRODUCT_USE_MATERIAL = gql`
       productId: $productId
       count: $count
     ) {
-      countUsed
+      count
       material {
         ...Material
       }

@@ -65,11 +65,11 @@ class MaterialConnection(base.ObjectConnection, TableName):
         node = Material
 
     class Edge:
-        count_used = types.Integer()
+        count = types.Integer()
 
         @staticmethod
         def resolve_count_used(parent, info):
-            return parent.node['count_used'] if parent else None
+            return parent.node['count'] if parent else None
 
 
 class CreateMaterial(base.Create, TableName):

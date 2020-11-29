@@ -14,28 +14,28 @@ import { useMutation, useQuery } from '@apollo/client';
 import * as Yup from 'yup';
 import produce from 'immer';
 import FormikAutocomplete from '../FormikAutoComplete';
-import { GET_ORDER_CASES, ORDER_SHIP_CASE } from '../../../graphql/orders';
+import { GET_ORDER_CASES, ORDER_USE_CASE } from '../../../graphql/orders';
 import { GET_CASES } from '../../../graphql/cases';
 
 export default function UpsertOrderUseCaseDialog() {
   const { push } = useHistory();
   const { id } = useParams();
-  const [orderShipCase] = useMutation(ORDER_SHIP_CASE);
+  const [orderUseCase] = useMutation(ORDER_USE_CASE);
   const { loading, data: { cases: { edges = [] } = {} } = {} } = useQuery(GET_CASES);
   const cases = edges.map(({ node }) => node);
 
   const validationSchema = Yup.object().shape({
     name: Yup.object().required('Required!').default(''),
-    countShipped: Yup.number().required('Required!').min(0).default(0),
-    countNotShipped: Yup.number().required('Required!').min(0).default(0),
+    count: Yup.number().required('Required!').min(0).default(0),
+    orderCount: Yup.number().required('Required!').min(0).default(0),
   });
 
-  const onSubmit = (orderId, caseId, countNotShipped, countShipped) => {
-    orderShipCase({
+  const onSubmit = (orderId, caseId, count, orderCount) => {
+    orderUseCase({
       variables: {
-        orderId, caseId, countNotShipped, countShipped,
+        orderId, caseId, count, orderCount,
       },
-      update: (client, { data: { orderShipCase: { case: case_ } = {} } }) => {
+      update: (client, { data: { orderUseCase: { case: case_ } = {} } }) => {
         const clientData = client.readQuery({
           query: GET_ORDER_CASES,
           variables: { id: orderId },
@@ -47,13 +47,13 @@ export default function UpsertOrderUseCaseDialog() {
           if (idx === -1) {
             draftState.order.cases.edges.push(
               {
-                __typename: 'CaseEdge', countNotShipped, countShipped, node: case_,
+                __typename: 'CaseEdge', count, orderCount, node: case_,
               },
             );
           } else {
             // eslint-disable-next-line no-param-reassign
             draftState.order.cases.edges[idx] = {
-              __typename: 'CaseEdge', countNotShipped, countShipped, node: case_,
+              __typename: 'CaseEdge', count, orderCount, node: case_,
             };
           }
         });
@@ -75,7 +75,7 @@ export default function UpsertOrderUseCaseDialog() {
       <Formik
         validationSchema={validationSchema}
         initialValues={validationSchema.getDefault()}
-        onSubmit={(v) => { onSubmit(id, v.name.id, v.countNotShipped, v.countShipped); }}
+        onSubmit={(v) => { onSubmit(id, v.name.id, v.count, v.orderCount); }}
       >
         {({ submitForm, isSubmitting }) => (
           <>
@@ -104,8 +104,8 @@ export default function UpsertOrderUseCaseDialog() {
                       component={TextField}
                       style={{ marginTop: 16 }}
                       type="number"
-                      label="Count Not Shipped"
-                      name="countNotShipped"
+                      label="Count Shipped"
+                      name="count"
                       InputProps={{ inputProps: { min: 0 } }}
                     />
                   </Grid>
@@ -114,8 +114,8 @@ export default function UpsertOrderUseCaseDialog() {
                       component={TextField}
                       style={{ marginTop: 16 }}
                       type="number"
-                      label="Count Shipped"
-                      name="countShipped"
+                      label="Order Count"
+                      name="orderCount"
                       InputProps={{ inputProps: { min: 0 } }}
                     />
                   </Grid>

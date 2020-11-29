@@ -3,7 +3,7 @@ import { useHistory, useParams } from 'react-router';
 import { useQuery, useMutation } from '@apollo/client';
 import { startCase } from 'lodash';
 import produce from 'immer';
-import { GET_ORDER_CASES, ORDER_UNSHIP_CASE } from '../../../graphql/orders';
+import { GET_ORDER_CASES, ORDER_UNUSE_CASE } from '../../../graphql/orders';
 import InventoryCard from '../../InventoryCard';
 import UseDialog from './UseDialog';
 
@@ -18,7 +18,7 @@ export default function OrderUseCaseDialog() {
       } = {},
     } = {}, loading,
   } = useQuery(GET_ORDER_CASES, { variables: { id } });
-  const [orderUnuseCase] = useMutation(ORDER_UNSHIP_CASE);
+  const [orderUnuseCase] = useMutation(ORDER_UNUSE_CASE);
 
   const onClickDelete = (caseId) => {
     orderUnuseCase({
@@ -49,12 +49,12 @@ export default function OrderUseCaseDialog() {
       onClickCancel={() => push('/orders/')}
       title="Order Cases"
     >
-      {!loading ? edges.map(({ node, countNotShipped, countShipped }) => (
+      {!loading ? edges.map(({ node, count, orderCount }) => (
         <InventoryCard
           key={node.id}
           data={Object.entries(node)
             .filter(([name]) => !['__typename', 'id', 'name'].includes(name))
-            .concat([['countNotShipped', countNotShipped], ['countShipped', countShipped]])
+            .concat([['countShipped', count], ['orderCount', orderCount]])
             .map(([name, value]) => ({ name: startCase(name), value: String(value) }))}
           title={node.name}
           onClickDelete={() => onClickDelete(node.id)}

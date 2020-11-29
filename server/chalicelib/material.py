@@ -70,7 +70,7 @@ class MaterialConnection(base.ObjectConnection, TableName):
         @staticmethod
         def resolve_count(parent, info):
             print(parent)
-            return parent.node['count'] if parent else None
+            return parent.node['count_used'] if parent else None
 
 
 class CreateMaterial(base.Create, TableName):

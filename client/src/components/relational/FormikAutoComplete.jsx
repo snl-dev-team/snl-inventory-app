@@ -6,7 +6,7 @@ import { Autocomplete } from '@material-ui/lab';
 import { TextField } from '@material-ui/core';
 import { fieldToTextField } from 'formik-material-ui';
 
-const FormikAutocomplete = ({ textFieldProps, ...props }) => {
+const FormikAutocomplete = ({ textFieldProps, onChange, ...props }) => {
   const { form: { setTouched, setFieldValue } } = props;
   const {
     error, helperText, label, ...field
@@ -16,7 +16,10 @@ const FormikAutocomplete = ({ textFieldProps, ...props }) => {
     <Autocomplete
       {...props}
       {...field}
-      onChange={(_, value) => setFieldValue(name, value)}
+      onChange={(_, value) => {
+        setFieldValue(name, value);
+        onChange(value);
+      }}
       onBlur={() => setTouched({ [name]: true })}
       renderInput={(props) => (
         <TextField

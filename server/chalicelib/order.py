@@ -53,7 +53,7 @@ class Order(base.Object, OrderBase, types.Node, TableName):
 
     @staticmethod
     def resolve_cases(parent, info):
-        return Order.select_uses(parent.id, case.Case, relations=['order_count', Integer])
+        return Order.select_uses(parent.id, case.Case, relations=['order_count', 'order_count', Integer])
 
     class Meta:
         interfaces = (relay.Node,)
@@ -69,7 +69,7 @@ class OrderConnection(base.ObjectConnection):
 
         @staticmethod
         def resolve_count(parent, info):
-            return parent.node['count'] if parent else None
+            return parent.node['count_used'] if parent else None
 
 
 class CreateOrder(base.Create, TableName):

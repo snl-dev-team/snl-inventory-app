@@ -102,12 +102,12 @@ class Object(ObjectType, Base):
     def select_uses(user: ObjectType, id: str, used: ObjectType, relations=None):
         id = int(from_global_id(id)[1])
         if relations is None:
-            relations = [['count', used.count]]
+            relations = [['count', 'count_used', used.count]]
         else:
-            relations = [['count', used.count]] + [relations]
+            relations = [['count', 'count_used', used.count]] + [relations]
         relation_string = ',\n'.join(
-            f"`{user.__tablename__}_uses_{used.__tablename__}`.`{name}` {name}"
-            for name, _ in relations
+            f"`{user.__tablename__}_uses_{used.__tablename__}`.`{column_name}` {name}"
+            for column_name, name, _ in relations
         )
         sql = f"""
         SELECT

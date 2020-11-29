@@ -13,8 +13,9 @@ export default function OrderUseCaseDialog() {
   const {
     data: {
       order: {
-        cases: { edges = [] } = {
-        },
+        cases: {
+          edges = [],
+        } = {},
       } = {},
     } = {}, loading,
   } = useQuery(GET_ORDER_CASES, { variables: { id } });

@@ -83,7 +83,7 @@ class CaseConnection(base.ObjectConnection):
 
         @staticmethod
         def resolve_count(parent, info):
-            return parent.node['count'] if parent else None
+            return parent.node['count_used'] if parent else None
 
         @staticmethod
         def resolve_order_count(parent, info):

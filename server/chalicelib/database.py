@@ -32,7 +32,10 @@ def process_select_response(response, members):
     for record in records:
         data_row = {}
         for entry, member in zip(record, members):
-            name, column = member
+            if len(member) == 3:
+                _, name, column = member
+            else:
+                name, column = member
             value = entry.get(column.boto3, None)
             data_row[name] = None if value is None else column.deserialize(
                 value)

@@ -13,6 +13,7 @@ import { useHistory, useParams } from 'react-router';
 import { useMutation, useQuery } from '@apollo/client';
 import * as Yup from 'yup';
 import produce from 'immer';
+import { map, find } from 'lodash';
 import FormikAutocomplete from '../FormikAutoComplete';
 import { GET_CASE_PRODUCTS, CASE_USE_PRODUCT } from '../../../graphql/cases';
 import { GET_PRODUCTS } from '../../../graphql/products';
@@ -21,12 +22,27 @@ export default function UpsertCaseUseProductDialog() {
   const { push } = useHistory();
   const { id } = useParams();
   const [caseUseProduct] = useMutation(CASE_USE_PRODUCT);
-  const { loading, data: { products: { edges = [] } = {} } = {} } = useQuery(GET_PRODUCTS);
-  const products = edges.map(({ node }) => node);
+  const {
+    loading, data: {
+      products: { edges: productEdges = [] } = {
+      },
+    } = {},
+  } = useQuery(GET_PRODUCTS);
+  const { data: { case: { products: { edges: caseEdges = [] } = {} } = {} } = {} } = useQuery(
+    GET_CASE_PRODUCTS, { variables: { id } },
+  );
+  let products = productEdges.map(({ node }) => node);
+  const caseProducts = caseEdges.map(({ count, node }) => ({
+    countUsed: count,
+    ...node,
+  }));
+  products = map(products, (item) => ({ ...find(caseProducts, { id: item.id }), ...item }));
 
   const validationSchema = Yup.object().shape({
     name: Yup.object().required('Required!').defined('Please enter a value!').default(''),
-    count: Yup.number().required('Required!').positive('Must be > 0!').default(0),
+    count: Yup.number().required('Required!').positive('Must be > 0!').default(0)
+      .test('test-count', 'Need more product!',
+        (value, { parent }) => (parent.name !== '' ? value <= parent.name.count + (parent.name.countUsed || 0) : true)),
   });
 
   const onSubmit = (caseId, productId, count) => {
@@ -66,11 +82,18 @@ export default function UpsertCaseUseProductDialog() {
     >
       <DialogTitle id="form-dialog-title">Case Use Product</DialogTitle>
       <Formik
+        // eslint-disable-next-line react/jsx-no-bind
         validationSchema={validationSchema}
         initialValues={validationSchema.getDefault()}
         onSubmit={(v) => { onSubmit(id, v.name.id, v.count); }}
       >
-        {({ submitForm, isSubmitting }) => (
+        {({
+          submitForm, isSubmitting, values: {
+            name: { count: countAvailable = 0, countUsed = 0 } = {},
+          } = {},
+          setFieldValue,
+          ...v
+        }) => (
           <>
             {isSubmitting && <LinearProgress />}
             <DialogContent dividers>
@@ -81,6 +104,7 @@ export default function UpsertCaseUseProductDialog() {
                       name="name"
                       style={{ width: 300 }}
                       component={FormikAutocomplete}
+                      disableClearable
                       label="Product"
                       getOptionLabel={(option) => (option.name !== undefined ? `${option.name} / ${option.number}` : '')}
                       getOptionSelected={(
@@ -90,6 +114,7 @@ export default function UpsertCaseUseProductDialog() {
                       options={products}
                       loading={loading}
                       textFieldProps={{ fullWidth: true, margin: 'normal', variant: 'outlined' }}
+                      onChange={(value) => { setFieldValue('count', value.count || 0); }}
                     />
                   </Grid>
                   <Grid item>
@@ -97,9 +122,9 @@ export default function UpsertCaseUseProductDialog() {
                       component={TextField}
                       style={{ marginTop: 16 }}
                       type="number"
-                      label="Count"
+                      label="New Count"
                       name="count"
-                      InputProps={{ inputProps: { min: 0 } }}
+                      InputProps={{ inputProps: { min: 0, max: countAvailable + countUsed } }}
                     />
                   </Grid>
                 </Grid>
@@ -116,7 +141,7 @@ export default function UpsertCaseUseProductDialog() {
                 onClick={submitForm}
                 color="primary"
               >
-                Use
+                Confirm
               </Button>
             </DialogActions>
           </>

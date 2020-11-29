@@ -13,6 +13,7 @@ import { useHistory, useParams } from 'react-router';
 import { useMutation, useQuery } from '@apollo/client';
 import * as Yup from 'yup';
 import produce from 'immer';
+import { map, find } from 'lodash';
 import FormikAutocomplete from '../FormikAutoComplete';
 import { GET_ORDER_CASES, ORDER_USE_CASE } from '../../../graphql/orders';
 import { GET_CASES } from '../../../graphql/cases';
@@ -21,12 +22,33 @@ export default function UpsertOrderUseCaseDialog() {
   const { push } = useHistory();
   const { id } = useParams();
   const [orderUseCase] = useMutation(ORDER_USE_CASE);
-  const { loading, data: { cases: { edges = [] } = {} } = {} } = useQuery(GET_CASES);
-  const cases = edges.map(({ node }) => node);
+  const {
+    loading, data: {
+      cases: { edges: caseEdges = [] } = {
+      },
+    } = {},
+  } = useQuery(GET_CASES);
+  const {
+    data: {
+      order: {
+        cases: { edges: orderEdges = [] } = {},
+      } = {},
+    } = {},
+  } = useQuery(
+    GET_ORDER_CASES, { variables: { id } },
+  );
+  let cases = caseEdges.map(({ node }) => node);
+  const orderCases = orderEdges.map(({ count, node }) => ({
+    countUsed: count,
+    ...node,
+  }));
+  cases = map(cases, (item) => ({ ...find(orderCases, { id: item.id }), ...item }));
 
   const validationSchema = Yup.object().shape({
-    name: Yup.object().required('Required!').default(''),
-    count: Yup.number().required('Required!').min(0).default(0),
+    name: Yup.object().required('Required!').defined('Please enter a value!').default(''),
+    count: Yup.number().required('Required!').positive('Must be > 0!').default(0)
+      .test('test-count', 'Need more cases!',
+        (value, { parent }) => (parent.name !== '' ? value <= parent.name.count + (parent.name.countUsed || 0) : true)),
     orderCount: Yup.number().required('Required!').min(0).default(0),
   });
 
@@ -73,11 +95,18 @@ export default function UpsertOrderUseCaseDialog() {
     >
       <DialogTitle id="form-dialog-title">Order Use Case</DialogTitle>
       <Formik
+        // eslint-disable-next-line react/jsx-no-bind
         validationSchema={validationSchema}
         initialValues={validationSchema.getDefault()}
         onSubmit={(v) => { onSubmit(id, v.name.id, v.count, v.orderCount); }}
       >
-        {({ submitForm, isSubmitting }) => (
+        {({
+          submitForm, isSubmitting, values: {
+            name: { count: countAvailable = 0, countUsed = 0 } = {},
+          } = {},
+          setFieldValue,
+          ...v
+        }) => (
           <>
             {isSubmitting && <LinearProgress />}
             <DialogContent dividers>
@@ -88,6 +117,7 @@ export default function UpsertOrderUseCaseDialog() {
                       name="name"
                       style={{ width: 300 }}
                       component={FormikAutocomplete}
+                      disableClearable
                       label="Case"
                       getOptionLabel={(option) => (option.name !== undefined ? `${option.name} / ${option.number}` : '')}
                       getOptionSelected={(
@@ -96,6 +126,7 @@ export default function UpsertOrderUseCaseDialog() {
                       ) => value.value === option.value}
                       options={cases}
                       loading={loading}
+                      onChange={(value) => { setFieldValue('count', value.count || 0); }}
                       textFieldProps={{ fullWidth: true, margin: 'normal', variant: 'outlined' }}
                     />
                   </Grid>
@@ -104,9 +135,9 @@ export default function UpsertOrderUseCaseDialog() {
                       component={TextField}
                       style={{ marginTop: 16 }}
                       type="number"
-                      label="Count Shipped"
+                      label="New Count"
                       name="count"
-                      InputProps={{ inputProps: { min: 0 } }}
+                      InputProps={{ inputProps: { min: 0, max: countAvailable + countUsed } }}
                     />
                   </Grid>
                   <Grid item>
@@ -133,7 +164,7 @@ export default function UpsertOrderUseCaseDialog() {
                 onClick={submitForm}
                 color="primary"
               >
-                Use
+                Confirm
               </Button>
             </DialogActions>
           </>

@@ -13,6 +13,7 @@ import { useHistory, useParams } from 'react-router';
 import { useMutation, useQuery } from '@apollo/client';
 import * as Yup from 'yup';
 import produce from 'immer';
+import { map, find } from 'lodash';
 import FormikAutocomplete from '../FormikAutoComplete';
 import { GET_PRODUCT_MATERIALS, PRODUCT_USE_MATERIAL } from '../../../graphql/products';
 import { GET_MATERIALS } from '../../../graphql/materials';
@@ -21,12 +22,33 @@ export default function UpsertProductUseMaterialDialog() {
   const { push } = useHistory();
   const { id } = useParams();
   const [productUseMaterial] = useMutation(PRODUCT_USE_MATERIAL);
-  const { loading, data: { materials: { edges = [] } = {} } = {} } = useQuery(GET_MATERIALS);
-  const materials = edges.map(({ node }) => node);
+  const {
+    loading, data: {
+      materials: { edges: materialEdges = [] } = {
+      },
+    } = {},
+  } = useQuery(GET_MATERIALS);
+  const {
+    data: {
+      product: {
+        materials: { edges: productEdges = [] } = {},
+      } = {},
+    } = {},
+  } = useQuery(
+    GET_PRODUCT_MATERIALS, { variables: { id } },
+  );
+  let materials = materialEdges.map(({ node }) => node);
+  const productMaterials = productEdges.map(({ count, node }) => ({
+    countUsed: count,
+    ...node,
+  }));
+  materials = map(materials, (item) => ({ ...find(productMaterials, { id: item.id }), ...item }));
 
   const validationSchema = Yup.object().shape({
     name: Yup.object().required('Required!').defined('Please enter a value!').default(''),
-    count: Yup.number().required('Required!').positive('Must be > 0!').default(0),
+    count: Yup.number().required('Required!').positive('Must be > 0!').default(0)
+      .test('test-count', 'Need more material!',
+        (value, { parent }) => (parent.name !== '' ? value <= parent.name.count + (parent.name.countUsed || 0) : true)),
   });
 
   const onSubmit = (productId, materialId, count) => {
@@ -66,11 +88,18 @@ export default function UpsertProductUseMaterialDialog() {
     >
       <DialogTitle id="form-dialog-title">Product Use Material</DialogTitle>
       <Formik
+        // eslint-disable-next-line react/jsx-no-bind
         validationSchema={validationSchema}
         initialValues={validationSchema.getDefault()}
         onSubmit={(v) => { onSubmit(id, v.name.id, v.count); }}
       >
-        {({ submitForm, isSubmitting }) => (
+        {({
+          submitForm, isSubmitting, values: {
+            name: { count: countAvailable = 0, countUsed = 0 } = {},
+          } = {},
+          setFieldValue,
+          ...v
+        }) => (
           <>
             {isSubmitting && <LinearProgress />}
             <DialogContent dividers>
@@ -81,6 +110,7 @@ export default function UpsertProductUseMaterialDialog() {
                       name="name"
                       style={{ width: 300 }}
                       component={FormikAutocomplete}
+                      disableClearable
                       label="Material"
                       getOptionLabel={(option) => (option.name !== undefined ? `${option.name} / ${option.number}` : '')}
                       getOptionSelected={(
@@ -88,6 +118,7 @@ export default function UpsertProductUseMaterialDialog() {
                         value,
                       ) => value.value === option.value}
                       options={materials}
+                      onChange={(value) => { setFieldValue('count', value.count || 0); }}
                       loading={loading}
                       textFieldProps={{ fullWidth: true, margin: 'normal', variant: 'outlined' }}
                     />
@@ -97,9 +128,9 @@ export default function UpsertProductUseMaterialDialog() {
                       component={TextField}
                       style={{ marginTop: 16 }}
                       type="number"
-                      label="Count"
+                      label="New Count"
                       name="count"
-                      InputProps={{ inputProps: { min: 0 } }}
+                      InputProps={{ inputProps: { min: 0, max: countAvailable + countUsed } }}
                     />
                   </Grid>
                 </Grid>
@@ -116,7 +147,7 @@ export default function UpsertProductUseMaterialDialog() {
                 onClick={submitForm}
                 color="primary"
               >
-                Use
+                Confirm
               </Button>
             </DialogActions>
           </>

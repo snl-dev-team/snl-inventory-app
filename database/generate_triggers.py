@@ -15,14 +15,10 @@ def create_relation_triggers():
             IN usedId INT
         )
         BEGIN
-            IF @disable_triggers IS NULL THEN
-                SET @disable_triggers = 1;
-                UPDATE `{used}`
-                SET
-                    `count` = `count` - (newCount - oldCount)
-                WHERE `id` = usedId;
-                SET @disable_triggers = NULL;
-            END IF;
+            UPDATE `{used}`
+            SET
+                `count` = `count` - (newCount - oldCount)
+            WHERE `id` = usedId;
         END//
         CREATE TRIGGER after_insert_{user}_uses_{used}
             AFTER INSERT

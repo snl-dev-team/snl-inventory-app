@@ -10,14 +10,10 @@ DELIMITER //
             IN usedId INT
         )
         BEGIN
-            IF @disable_triggers IS NULL THEN
-                SET @disable_triggers = 1;
-                UPDATE `material`
-                SET
-                    `count` = `count` - (newCount - oldCount)
-                WHERE `id` = usedId;
-                SET @disable_triggers = NULL;
-            END IF;
+            UPDATE `material`
+            SET
+                `count` = `count` - (newCount - oldCount)
+            WHERE `id` = usedId;
         END//
         CREATE TRIGGER after_insert_product_uses_material
             AFTER INSERT
@@ -46,14 +42,10 @@ DELIMITER //
             IN usedId INT
         )
         BEGIN
-            IF @disable_triggers IS NULL THEN
-                SET @disable_triggers = 1;
-                UPDATE `material`
-                SET
-                    `count` = `count` - (newCount - oldCount)
-                WHERE `id` = usedId;
-                SET @disable_triggers = NULL;
-            END IF;
+            UPDATE `material`
+            SET
+                `count` = `count` - (newCount - oldCount)
+            WHERE `id` = usedId;
         END//
         CREATE TRIGGER after_insert_case_uses_material
             AFTER INSERT
@@ -82,14 +74,10 @@ DELIMITER //
             IN usedId INT
         )
         BEGIN
-            IF @disable_triggers IS NULL THEN
-                SET @disable_triggers = 1;
-                UPDATE `product`
-                SET
-                    `count` = `count` - (newCount - oldCount)
-                WHERE `id` = usedId;
-                SET @disable_triggers = NULL;
-            END IF;
+            UPDATE `product`
+            SET
+                `count` = `count` - (newCount - oldCount)
+            WHERE `id` = usedId;
         END//
         CREATE TRIGGER after_insert_case_uses_product
             AFTER INSERT
@@ -118,14 +106,10 @@ DELIMITER //
             IN usedId INT
         )
         BEGIN
-            IF @disable_triggers IS NULL THEN
-                SET @disable_triggers = 1;
-                UPDATE `case`
-                SET
-                    `count` = `count` - (newCount - oldCount)
-                WHERE `id` = usedId;
-                SET @disable_triggers = NULL;
-            END IF;
+            UPDATE `case`
+            SET
+                `count` = `count` - (newCount - oldCount)
+            WHERE `id` = usedId;
         END//
         CREATE TRIGGER after_insert_order_uses_case
             AFTER INSERT

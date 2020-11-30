@@ -19,11 +19,14 @@ export default function CaseUseMaterialDialog() {
   const {
     data: {
       case: {
-        materials: { edges = [] } = {
-        },
+        materials: {
+          edges = [],
+        } = {},
       } = {},
-    } = {}, loading,
+    } = {},
+    loading,
   } = useQuery(GET_CASE_MATERIALS, { variables: { id } });
+
   const [caseUnuseMaterial] = useMutation(CASE_UNUSE_MATERIAL);
 
   const updateCache = (client, materialId) => {

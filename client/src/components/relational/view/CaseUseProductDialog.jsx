@@ -16,10 +16,12 @@ export default function CaseUseProductDialog() {
   const {
     data: {
       case: {
-        products: { edges = [] } = {
-        },
+        products: {
+          edges = [],
+        } = {},
       } = {},
-    } = {}, loading,
+    } = {},
+    loading,
   } = useQuery(GET_CASE_PRODUCTS, { variables: { id } });
   const [caseUnuseProduct] = useMutation(CASE_UNUSE_PRODUCT);
 

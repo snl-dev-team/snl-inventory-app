@@ -23,7 +23,8 @@ export default function OrderUseCaseDialog() {
           edges = [],
         } = {},
       } = {},
-    } = {}, loading,
+    } = {},
+    loading,
   } = useQuery(GET_ORDER_CASES, { variables: { id } });
   const [orderUnuseCase] = useMutation(ORDER_UNUSE_CASE);
 

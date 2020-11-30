@@ -28,11 +28,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faFileInvoiceDollar, faBoxOpen, faPills, faPrescriptionBottle,
 } from '@fortawesome/free-solid-svg-icons';
+import ListIcon from '@material-ui/icons/List';
+import GridOnIcon from '@material-ui/icons/GridOn';
 import ProductsDashboard from './Products';
 import MaterialsDashboard from './Materials';
 import OrdersDashboard from './Orders';
 import CasesDashboard from './Cases';
 import { signOut } from '../../actions/user';
+import VIEW_MODES from '../../constants/viewModes';
 
 const drawerWidth = 240;
 
@@ -153,6 +156,15 @@ export default function Dashboard() {
   const [searchString, setSearchString] = useState('');
   const [searching, setSearching] = useState(false);
 
+  const [viewMode, setViewMode] = useState(VIEW_MODES.GRID);
+
+  const toggleViewMode = () => {
+    setViewMode(
+      viewMode === VIEW_MODES.GRID
+        ? VIEW_MODES.CARDS : VIEW_MODES.GRID,
+    );
+  };
+
   const isMenuOpen = Boolean(anchorEl);
 
   const handleDrawerOpen = () => {
@@ -240,7 +252,14 @@ export default function Dashboard() {
             />
           </div>
           <IconButton
-            aria-label="account of current user"
+            aria-controls="menu-appbar"
+            aria-haspopup="true"
+            color="inherit"
+            onClick={toggleViewMode}
+          >
+            {viewMode === VIEW_MODES.CARDS ? <ListIcon /> : <GridOnIcon /> }
+          </IconButton>
+          <IconButton
             aria-controls="menu-appbar"
             aria-haspopup="true"
             color="inherit"
@@ -332,6 +351,7 @@ export default function Dashboard() {
           path="/materials"
           component={() => (
             <MaterialsDashboard
+              viewMode={viewMode}
               searchString={lowerCaseSearchString}
               searching={searching}
             />
@@ -341,6 +361,7 @@ export default function Dashboard() {
           path="/orders"
           component={() => (
             <OrdersDashboard
+              viewMode={viewMode}
               searchString={lowerCaseSearchString}
               searching={searching}
             />
@@ -350,6 +371,7 @@ export default function Dashboard() {
           path="/cases"
           component={() => (
             <CasesDashboard
+              viewMode={viewMode}
               searchString={lowerCaseSearchString}
               searching={searching}
             />
@@ -359,6 +381,7 @@ export default function Dashboard() {
           path="/products"
           component={() => (
             <ProductsDashboard
+              viewMode={viewMode}
               searchString={lowerCaseSearchString}
               searching={searching}
             />

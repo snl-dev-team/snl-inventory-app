@@ -10,9 +10,14 @@ import DateFnsUtils from '@date-io/date-fns';
 import Amplify from 'aws-amplify';
 import fetch from 'isomorphic-fetch';
 import produce from 'immer';
+import { LicenseInfo } from '@material-ui/x-grid';
 import App from './App';
 import { store, persistor } from './store';
 import { URL } from './constants/url';
+
+LicenseInfo.setLicenseKey(
+  '488779ec6858f0411f799cd59a7f11efT1JERVI6MTg0ODgsRVhQSVJZPTE2MzU5OTczMTUwMDAsS0VZVkVSU0lPTj0x',
+);
 
 Amplify.configure({
   Auth: {

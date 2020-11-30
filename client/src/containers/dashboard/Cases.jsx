@@ -2,8 +2,9 @@ import React from 'react';
 import { Route, useHistory } from 'react-router';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/client';
-import lodash from 'lodash';
+import { map, startCase } from 'lodash';
 import produce from 'immer';
+import { XGrid } from '@material-ui/x-grid';
 import {
   GET_CASES, DELETE_CASE,
 } from '../../graphql/cases';
@@ -14,8 +15,25 @@ import GenericDashboard from './Generic';
 import CaseUseMaterialDialog from '../../components/relational/view/CaseUseMaterialDialog';
 import UpsertCaseUseMaterialDialog from '../../components/relational/upsert/UpsertCaseUseMaterialDialog';
 import UpsertCaseUseProductDialog from '../../components/relational/upsert/UpsertCaseUseProductDialog';
+import VIEW_MODES from '../../constants/viewModes';
 
-const CasesDashboard = ({ searchString }) => {
+const COLUMNS = [
+  { field: 'id', hide: true },
+  { field: 'number', headerName: 'Number' },
+  { field: 'name', headerName: 'Name' },
+  { field: 'count', headerName: 'Count' },
+  {
+    field: 'expirationDate', headerName: 'Expiration Date', width: 150, type: 'date',
+  },
+  {
+    field: 'dateModified', headerName: 'Date Modified', width: 200, type: 'dateTime',
+  },
+  {
+    field: 'dateCreated', headerName: 'Date Created', width: 200, type: 'dateTime',
+  },
+];
+
+const CasesDashboard = ({ searchString, viewMode }) => {
   const { push } = useHistory();
 
   const {
@@ -48,12 +66,13 @@ const CasesDashboard = ({ searchString }) => {
         error={error}
         onClickAdd={() => push('/cases/create')}
       >
-        {edges.map(({ node }) => node).filter(searchFilter).map((node) => (
+        {viewMode === VIEW_MODES.CARDS
+        && edges.map(({ node }) => node).filter(searchFilter).map((node) => (
           <InventoryCard
             key={node.id}
             data={Object.entries(node)
               .filter(([name]) => !['__typename', 'id', 'name'].includes(name))
-              .map(([name, value]) => ({ name: lodash.startCase(name), value: String(value) }))}
+              .map(([name, value]) => ({ name: startCase(name), value: String(value) }))}
             title={node.name}
             onClickShowMaterials={() => push(`/cases/${node.id}/materials`)}
             onClickShowProducts={() => push(`/cases/${node.id}/products`)}
@@ -64,6 +83,23 @@ const CasesDashboard = ({ searchString }) => {
             })}
           />
         ))}
+        {viewMode === VIEW_MODES.GRID && (
+        <div style={{ height: 800, width: '100%', marginTop: 20 }}>
+          <XGrid
+              // eslint-disable-next-line react/jsx-props-no-spreading
+            columns={COLUMNS}
+            loading={loading}
+            onRowClick={({ data: { id } }) => push(`cases/${id}/update`)}
+            rows={map(edges, ({ node }) => ({
+              ...node,
+              dateCreated: new Date(node.dateCreated),
+              dateModified: new Date(node.dateModified),
+              expirationDate: node.expirationDate ? new Date(node.expirationDate) : null,
+            }))}
+            rowHeight={38}
+          />
+        </div>
+        )}
       </GenericDashboard>
       <Route
         exact
@@ -100,6 +136,7 @@ export default CasesDashboard;
 
 CasesDashboard.propTypes = {
   searchString: PropTypes.string,
+  viewMode: PropTypes.oneOf(Object.values(VIEW_MODES)).isRequired,
 };
 
 CasesDashboard.defaultProps = {

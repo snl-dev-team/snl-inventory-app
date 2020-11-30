@@ -33,18 +33,21 @@ const GenericDashboard = ({
   children,
 }) => {
   const classes = useStyles();
+  const [cards, grid] = children;
 
   return (
     <>
       {!loading && (
       <Grid container spacing={3}>
-        {children.map((child) => (
+        {cards && cards.map((child) => (
           <Grid key={child.key} item>
             {child}
           </Grid>
         ))}
       </Grid>
       )}
+
+      {!loading && grid}
 
       {loading && (
       <div className={classes.spinner}>

@@ -1,44 +1,67 @@
 import React from 'react';
 import { useHistory, useParams } from 'react-router';
 import { useQuery, useMutation } from '@apollo/client';
-import lodash from 'lodash';
+import {
+  find, startCase, remove, findIndex,
+} from 'lodash';
 import produce from 'immer';
 import { GET_PRODUCT_MATERIALS, PRODUCT_UNUSE_MATERIAL } from '../../../graphql/products';
 import InventoryCard from '../../InventoryCard';
 import UseDialog from './UseDialog';
+import { GET_MATERIALS } from '../../../graphql/materials';
 
 export default function ProductUseMaterialDialog() {
   const { id } = useParams();
   const { push } = useHistory();
+
   const {
     data: {
       product: {
-        materials: { edges = [] } = {
-        },
+        materials: {
+          edges = [],
+        } = {},
       } = {},
-    } = {}, loading,
+    } = {},
+    loading,
   } = useQuery(GET_PRODUCT_MATERIALS, { variables: { id } });
+
   const [productUnuseMaterial] = useMutation(PRODUCT_UNUSE_MATERIAL);
+
+  const updateCache = (client, materialId) => {
+    const deleteRelation = () => {
+      const clientData = client.readQuery({ query: GET_PRODUCT_MATERIALS, variables: { id } });
+
+      const countUsed = find(clientData.product.materials.edges,
+        (edge) => edge.node.id === materialId).count;
+
+      const newData = produce(clientData, (draftState) => {
+        remove(draftState.product.materials.edges,
+          (edge) => edge.node.id === materialId);
+      });
+
+      client.writeQuery({ query: GET_PRODUCT_MATERIALS, data: newData });
+      return countUsed;
+    };
+
+    const updateMaterialCount = (countUsed) => {
+      const clientData = client.readQuery({ query: GET_MATERIALS, variables: { id } });
+      const newData = produce(clientData, (draftState) => {
+        const idx = findIndex(draftState.materials.edges, { node: { id: materialId } });
+        // eslint-disable-next-line no-param-reassign
+        draftState.materials.edges[idx].node.count += countUsed;
+      });
+
+      client.writeQuery({ query: GET_MATERIALS, variables: { id }, data: newData });
+    };
+
+    const countUsed = deleteRelation();
+    updateMaterialCount(countUsed);
+  };
 
   const onClickDelete = (materialId) => {
     productUnuseMaterial({
       variables: { productId: id, materialId },
-      update: (client) => {
-        const clientData = client.readQuery({
-          query: GET_PRODUCT_MATERIALS,
-          variables: { id },
-        });
-        const newData = produce(clientData, (draftState) => {
-          const idx = draftState.product.materials.edges.findIndex(
-            (edge) => edge.node.id === materialId,
-          );
-          draftState.product.materials.edges.splice(idx, 1);
-        });
-        client.writeQuery({
-          query: GET_PRODUCT_MATERIALS,
-          data: newData,
-        });
-      },
+      update: (client) => updateCache(client, materialId),
     });
   };
 
@@ -55,7 +78,7 @@ export default function ProductUseMaterialDialog() {
           data={Object.entries(node)
             .filter(([name]) => !['__typename', 'id', 'name'].includes(name))
             .concat([['countUsed', count]])
-            .map(([name, value]) => ({ name: lodash.startCase(name), value: String(value) }))}
+            .map(([name, value]) => ({ name: startCase(name), value: String(value) }))}
           title={node.name}
           onClickDelete={() => onClickDelete(node.id)}
         />

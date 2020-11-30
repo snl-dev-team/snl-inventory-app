@@ -1,9 +1,12 @@
 import React from 'react';
 import { useHistory, useParams } from 'react-router';
 import { useQuery, useMutation } from '@apollo/client';
-import lodash from 'lodash';
+import {
+  find, startCase, findIndex, remove,
+} from 'lodash';
 import produce from 'immer';
 import { GET_CASE_PRODUCTS, CASE_UNUSE_PRODUCT } from '../../../graphql/cases';
+import { GET_PRODUCTS } from '../../../graphql/products';
 import InventoryCard from '../../InventoryCard';
 import UseDialog from './UseDialog';
 
@@ -20,25 +23,41 @@ export default function CaseUseProductDialog() {
   } = useQuery(GET_CASE_PRODUCTS, { variables: { id } });
   const [caseUnuseProduct] = useMutation(CASE_UNUSE_PRODUCT);
 
+  const updateCache = (client, productId) => {
+    const deleteRelation = () => {
+      const clientData = client.readQuery({ query: GET_CASE_PRODUCTS, variables: { id } });
+
+      const countUsed = find(clientData.case.products.edges,
+        (edge) => edge.node.id === productId).count;
+
+      const newData = produce(clientData, (draftState) => {
+        remove(draftState.case.products.edges,
+          (edge) => edge.node.id === productId);
+      });
+
+      client.writeQuery({ query: GET_CASE_PRODUCTS, data: newData });
+      return countUsed;
+    };
+
+    const updateProductCount = (countUsed) => {
+      const clientData = client.readQuery({ query: GET_PRODUCTS, variables: { id } });
+      const newData = produce(clientData, (draftState) => {
+        const idx = findIndex(draftState.products.edges, { node: { id: productId } });
+        // eslint-disable-next-line no-param-reassign
+        draftState.products.edges[idx].node.count += countUsed;
+      });
+
+      client.writeQuery({ query: GET_PRODUCTS, variables: { id }, data: newData });
+    };
+
+    const countUsed = deleteRelation();
+    updateProductCount(countUsed);
+  };
+
   const onClickDelete = (productId) => {
     caseUnuseProduct({
       variables: { caseId: id, productId },
-      update: (client) => {
-        const clientData = client.readQuery({
-          query: GET_CASE_PRODUCTS,
-          variables: { id },
-        });
-        const newData = produce(clientData, (draftState) => {
-          const idx = draftState.case.products.edges.findIndex(
-            (edge) => edge.node.id === productId,
-          );
-          draftState.case.products.edges.splice(idx, 1);
-        });
-        client.writeQuery({
-          query: GET_CASE_PRODUCTS,
-          data: newData,
-        });
-      },
+      update: (client) => updateCache(client, productId),
     });
   };
 
@@ -55,7 +74,7 @@ export default function CaseUseProductDialog() {
           data={Object.entries(node)
             .filter(([name]) => !['__typename', 'id', 'name'].includes(name))
             .concat([['countUsed', count]])
-            .map(([name, value]) => ({ name: lodash.startCase(name), value: String(value) }))}
+            .map(([name, value]) => ({ name: startCase(name), value: String(value) }))}
           title={node.name}
           onClickDelete={() => onClickDelete(node.id)}
         />

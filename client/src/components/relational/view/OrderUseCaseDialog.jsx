@@ -72,7 +72,7 @@ export default function OrderUseCaseDialog() {
       loading={loading}
       onClickAdd={() => push(`/orders/${id}/cases/use`)}
       onClickCancel={() => push('/orders/')}
-      title={`Order Cases: ${number}`}
+      title={`Order Cases: ${number || ''}`}
     >
       {!loading ? edges.map(({ node, count, orderCount }) => (
         <InventoryCard

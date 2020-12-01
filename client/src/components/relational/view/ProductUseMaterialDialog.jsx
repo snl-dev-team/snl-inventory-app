@@ -71,7 +71,7 @@ export default function ProductUseMaterialDialog() {
       loading={loading}
       onClickAdd={() => push(`/products/${id}/materials/use`)}
       onClickCancel={() => push('/products/')}
-      title={`Product Materials: ${name}`}
+      title={`Product Materials: ${name || ''}`}
     >
       {!loading ? edges.map(({ node, count }) => (
         <InventoryCard

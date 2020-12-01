@@ -109,6 +109,7 @@ export default function UpsertMaterialDialog() {
     units: Yup.string().oneOf(Object.values(UNITS)).required('Required!').default(UNITS.UNIT),
     expirationDate: Yup.date().nullable().default(null),
     notes: Yup.string().default(''),
+    vendorName: Yup.string().default(''),
     purchaseOrderUrl: Yup.string().url().nullable().default(''),
     purchaseOrderNumber: Yup.string().nullable().default(''),
     certificateOfAnalysisUrl: Yup.string().url().nullable().default(''),
@@ -187,7 +188,14 @@ export default function UpsertMaterialDialog() {
                       label="Notes"
                     />
                   </Grid>
-
+                  <Grid item>
+                    <Field
+                      component={TextField}
+                      name="vendorName"
+                      type="text"
+                      label="Vendor Name"
+                    />
+                  </Grid>
                   <Grid item>
                     <Field
                       component={TextField}

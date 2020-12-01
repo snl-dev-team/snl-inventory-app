@@ -73,7 +73,7 @@ export default function CaseUseMaterialDialog() {
       loading={loading}
       onClickAdd={() => push(`/cases/${id}/materials/use`)}
       onClickCancel={() => push('/cases/')}
-      title={`Case Materials: ${name}`}
+      title={`Case Materials: ${name || ''}`}
     >
       {!loading ? edges.map(({ node, count }) => (
         <InventoryCard

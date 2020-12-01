@@ -168,6 +168,7 @@ class Numberable:
 
 
 class HasVendor:
+    vendor_name = String()
     purchase_order_url = String()
     purchase_order_number = String()
     certificate_of_analysis_url = String()

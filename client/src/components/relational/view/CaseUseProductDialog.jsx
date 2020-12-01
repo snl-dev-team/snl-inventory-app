@@ -69,7 +69,7 @@ export default function CaseUseProductDialog() {
       loading={loading}
       onClickAdd={() => push(`/cases/${id}/products/use`)}
       onClickCancel={() => push('/cases/')}
-      title={`Case Products: ${name}`}
+      title={`Case Products: ${name || ''}`}
     >
       {!loading ? edges.map(({ node, count }) => (
         <InventoryCard

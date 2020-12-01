@@ -22,8 +22,9 @@ const COLUMNS = [
   {
     field: 'expirationDate', headerName: 'Expiration Date', width: 150, type: 'date',
   },
-  { field: 'units', headerName: 'Units' },
-  { field: 'purchaseOrderNumber', headerName: 'PO Number', width: 150 },
+  { field: 'units', headerName: 'Units', width: 75 },
+  { field: 'vendorName', headerName: 'Vendor Name', width: 150 },
+  { field: 'purchaseOrderNumber', headerName: 'PO Number', width: 100 },
   { field: 'purchaseOrderUrl', headerName: 'PO URL' },
   {
     field: 'dateModified', headerName: 'Date Modified', width: 200, type: 'dateTime',
@@ -60,7 +61,9 @@ const MaterialsDashboard = ({ searchString, viewMode }) => {
   const searchFilter = ({ name }) => searchString === null
   || name.toLowerCase().includes(searchString);
 
-  const Cards = edges.map(({ node }) => node).filter(searchFilter).map((node) => (
+  const nodes = edges.map(({ node }) => node).filter(searchFilter);
+
+  const Cards = nodes.map((node) => (
     <InventoryCard
       key={node.id}
       data={Object.entries(node)
@@ -90,7 +93,7 @@ const MaterialsDashboard = ({ searchString, viewMode }) => {
               columns={COLUMNS}
               loading={loading}
               onRowClick={({ data: { id } }) => push(`materials/${id}/update`)}
-              rows={map(edges, ({ node }) => ({
+              rows={map(nodes, (node) => ({
                 ...node,
                 dateCreated: new Date(node.dateCreated),
                 dateModified: new Date(node.dateModified),

@@ -16,6 +16,7 @@ export default function CaseUseProductDialog() {
   const {
     data: {
       case: {
+        name,
         products: {
           edges = [],
         } = {},
@@ -68,15 +69,15 @@ export default function CaseUseProductDialog() {
       loading={loading}
       onClickAdd={() => push(`/cases/${id}/products/use`)}
       onClickCancel={() => push('/cases/')}
-      title="Case Products"
+      title={`Case Products: ${name}`}
     >
       {!loading ? edges.map(({ node, count }) => (
         <InventoryCard
           key={node.id}
           data={Object.entries(node)
-            .filter(([name]) => !['__typename', 'id', 'name'].includes(name))
+            .filter(([name_]) => !['__typename', 'id', 'name'].includes(name_))
             .concat([['countUsed', count]])
-            .map(([name, value]) => ({ name: startCase(name), value: String(value) }))}
+            .map(([name_, value]) => ({ name: startCase(name_), value: String(value) }))}
           title={node.name}
           onClickDelete={() => onClickDelete(node.id)}
           useProduct

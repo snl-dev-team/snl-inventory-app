@@ -67,6 +67,8 @@ const ProductsDashboard = ({ searchString, viewMode }) => {
   const searchFilter = ({ name }) => searchString === null
   || name.toLowerCase().includes(searchString);
 
+  const nodes = edges.map(({ node }) => node).filter(searchFilter);
+
   return (
     <>
       <GenericDashboard
@@ -74,7 +76,7 @@ const ProductsDashboard = ({ searchString, viewMode }) => {
         onClickAdd={() => push('/products/create')}
       >
         {viewMode === VIEW_MODES.CARDS
-        && edges.map(({ node }) => node).filter(searchFilter).map((node) => (
+        && nodes.map((node) => (
           <InventoryCard
             key={node.id}
             data={Object.entries(node)
@@ -96,7 +98,7 @@ const ProductsDashboard = ({ searchString, viewMode }) => {
               columns={COLUMNS}
               loading={loading}
               onRowClick={({ data: { id } }) => push(`products/${id}/update`)}
-              rows={map(edges, ({ node }) => ({
+              rows={map(nodes, (node) => ({
                 ...node,
                 dateCreated: new Date(node.dateCreated),
                 dateModified: new Date(node.dateModified),

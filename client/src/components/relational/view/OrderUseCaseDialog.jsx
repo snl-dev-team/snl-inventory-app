@@ -19,6 +19,7 @@ export default function OrderUseCaseDialog() {
   const {
     data: {
       order: {
+        number,
         cases: {
           edges = [],
         } = {},
@@ -71,17 +72,18 @@ export default function OrderUseCaseDialog() {
       loading={loading}
       onClickAdd={() => push(`/orders/${id}/cases/use`)}
       onClickCancel={() => push('/orders/')}
-      title="Order Cases"
+      title={`Order Cases: ${number}`}
     >
       {!loading ? edges.map(({ node, count, orderCount }) => (
         <InventoryCard
           key={node.id}
           data={Object.entries(node)
-            .filter(([name]) => !['__typename', 'id', 'name'].includes(name))
+            .filter(([name_]) => !['__typename', 'id', 'name'].includes(name_))
             .concat([['countShipped', count], ['orderCount', orderCount]])
-            .map(([name, value]) => ({ name: startCase(name), value: String(value) }))}
+            .map(([name_, value]) => ({ name: startCase(name_), value: String(value) }))}
           title={node.name}
           onClickDelete={() => onClickDelete(node.id)}
+          useCase
         />
       )) : []}
     </UseDialog>

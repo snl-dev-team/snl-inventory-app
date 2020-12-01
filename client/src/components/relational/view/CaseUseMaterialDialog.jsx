@@ -19,6 +19,7 @@ export default function CaseUseMaterialDialog() {
   const {
     data: {
       case: {
+        name,
         materials: {
           edges = [],
         } = {},
@@ -72,17 +73,18 @@ export default function CaseUseMaterialDialog() {
       loading={loading}
       onClickAdd={() => push(`/cases/${id}/materials/use`)}
       onClickCancel={() => push('/cases/')}
-      title="Case Materials"
+      title={`Case Materials: ${name}`}
     >
       {!loading ? edges.map(({ node, count }) => (
         <InventoryCard
           key={node.id}
           data={Object.entries(node)
-            .filter(([name]) => !['__typename', 'id', 'name'].includes(name))
+            .filter(([name_]) => !['__typename', 'id', 'name'].includes(name_))
             .concat([['countUsed', count]])
-            .map(([name, value]) => ({ name: startCase(name), value: String(value) }))}
+            .map(([name_, value]) => ({ name: startCase(name_), value: String(value) }))}
           title={node.name}
           onClickDelete={() => onClickDelete(node.id)}
+          useMaterial
         />
       )) : []}
     </UseDialog>

@@ -156,7 +156,7 @@ export default function Dashboard() {
   const [searchString, setSearchString] = useState('');
   const [searching, setSearching] = useState(false);
 
-  const [viewMode, setViewMode] = useState(VIEW_MODES.GRID);
+  const [viewMode, setViewMode] = useState(VIEW_MODES.CARDS);
 
   const toggleViewMode = () => {
     setViewMode(

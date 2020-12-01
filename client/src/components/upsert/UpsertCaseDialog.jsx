@@ -11,9 +11,9 @@ import { Formik, Form, Field } from 'formik';
 import Grid from '@material-ui/core/Grid';
 import { TextField } from 'formik-material-ui';
 import { DatePicker } from 'formik-material-ui-pickers';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import * as Yup from 'yup';
 import { mergeWith, isNull } from 'lodash';
+import Spinner from '../Spinner';
 import {
   UPDATE_CASE, CREATE_CASE, GET_CASES, GET_CASE,
 } from '../../graphql/cases';
@@ -85,7 +85,7 @@ export default function UpsertCaseDialog() {
     }
   };
 
-  if (loading) return <CircularProgress />;
+  if (loading) return <Spinner />;
 
   const validationSchema = Yup.object().shape({
     number: Yup.string().required('Required!').default(''),

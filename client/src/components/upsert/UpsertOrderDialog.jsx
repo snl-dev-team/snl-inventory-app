@@ -10,9 +10,9 @@ import produce from 'immer';
 import { Formik, Form, Field } from 'formik';
 import Grid from '@material-ui/core/Grid';
 import { TextField, CheckboxWithLabel } from 'formik-material-ui';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import * as Yup from 'yup';
 import { mergeWith, isNull } from 'lodash';
+import Spinner from '../Spinner';
 import {
   UPDATE_ORDER,
   CREATE_ORDER,
@@ -73,7 +73,7 @@ export default function UpsertOrderDialog() {
     }
   };
 
-  if (loading) return <CircularProgress />;
+  if (loading) return <Spinner />;
 
   const validationSchema = Yup.object().shape({
     number: Yup.string().required('Required!').default(''),

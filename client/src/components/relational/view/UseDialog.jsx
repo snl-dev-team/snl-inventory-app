@@ -7,11 +7,11 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import Grid from '@material-ui/core/Grid';
-import { CircularProgress } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import PropTypes from 'prop-types';
+import Spinner from '../../Spinner';
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -68,6 +68,7 @@ export default function UseDialog({
       PaperProps={{
         style: {
           backgroundColor: '#fafafa',
+          overflowX: 'hidden',
         },
       }}
     >
@@ -82,15 +83,7 @@ export default function UseDialog({
         </Toolbar>
       </AppBar>
       <CssBaseline />
-      {loading && (
-      <div className={classes.spinner}>
-        <CircularProgress
-          transform="translateX(-50%)"
-          status="loading"
-          style={{ marginLeft: '50%', marginTop: '50%' }}
-        />
-      </div>
-      )}
+      {loading && (<Spinner />)}
       <Grid container className={classes.grid} spacing={3}>
         {!loading && children.map((child) => (
           <Grid key={child.key} item>

@@ -84,6 +84,7 @@ const OrdersDashboard = ({ searchString, viewMode }) => {
               variables: { id: node.id },
               update: updateCache(node.id),
             })}
+            order
           />
         ))}
         {viewMode === VIEW_MODES.GRID && (

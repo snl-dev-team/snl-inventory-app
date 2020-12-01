@@ -3,8 +3,8 @@ import Fab from '@material-ui/core/Fab';
 import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import Grid from '@material-ui/core/Grid';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import PropTypes from 'prop-types';
+import Spinner from '../../components/Spinner';
 
 const useStyles = makeStyles(() => ({
   margin: {
@@ -49,15 +49,7 @@ const GenericDashboard = ({
 
       {!loading && grid}
 
-      {loading && (
-      <div className={classes.spinner}>
-        <CircularProgress
-          transform="translateX(-50%)"
-          status="loading"
-          style={{ marginLeft: '50%', marginTop: '50%' }}
-        />
-      </div>
-      )}
+      {loading && (<Spinner />)}
 
       <Fab
         size="medium"

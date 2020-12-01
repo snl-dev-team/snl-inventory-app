@@ -19,7 +19,7 @@ import Chip from '@material-ui/core/Chip';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import { Divider } from '@material-ui/core';
 import CachedIcon from '@material-ui/icons/Cached';
-import FaceIcon from '@material-ui/icons/Face';
+import StoreIcon from '@material-ui/icons/Store';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -86,7 +86,7 @@ export default function InventoryCard({
 
   return (
     <Card className={classes.root}>
-      <CardHeader title={title} />
+      <CardHeader title={title} style={{ paddingBottom: 0 }} />
       <CardContent>
         <Typography
           variant="body2"
@@ -310,7 +310,7 @@ function MaterialCardContent({ data }) {
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         {data.filter((row) => ['Vendor Name'].includes(row.name)).map((row) => (
           <div key={row.name}>
-            <Chip className={classes.chip} color="primary" label={row.value} icon={<FaceIcon />} />
+            <Chip className={classes.chip} color="primary" label={row.value === 'null' ? 'None' : row.value} icon={<StoreIcon />} />
           </div>
         ))}
         {data.filter((row) => ['Count'].includes(row.name)).map((row) => (
@@ -416,7 +416,7 @@ function OrderCardContent({ data }) {
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         {data.filter((row) => ['Customer Name'].includes(row.name)).map((row) => (
           <div key={row.name}>
-            <Chip className={classes.chip} color="primary" label={row.value} icon={<FaceIcon />} />
+            <Chip className={classes.chip} color="primary" label={row.value} icon={<StoreIcon />} />
           </div>
         ))}
         {data.filter((row) => ['Completed'].includes(row.name)).map((row) => (
@@ -491,7 +491,7 @@ function UseMaterialCardContent({ data }) {
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         {data.filter((row) => ['Vendor Name'].includes(row.name)).map((row) => (
           <div key={row.name}>
-            <Chip className={classes.chip} color="primary" label={row.value} icon={<FaceIcon />} />
+            <Chip className={classes.chip} color="primary" label={row.value === 'null' ? 'None' : row.value} icon={<StoreIcon />} />
           </div>
         ))}
         {data.filter((row) => ['Count Used'].includes(row.name)).map((row) => (

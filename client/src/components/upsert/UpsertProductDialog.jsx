@@ -138,6 +138,7 @@ export default function UpsertProductDialog() {
                       component={DatePicker}
                       label="Expiration Date"
                       name="expirationDate"
+                      clearable
                     />
                   </Grid>
                   <Grid item>

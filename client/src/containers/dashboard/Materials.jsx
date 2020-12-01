@@ -60,7 +60,9 @@ const MaterialsDashboard = ({ searchString, viewMode }) => {
   const searchFilter = ({ name }) => searchString === null
   || name.toLowerCase().includes(searchString);
 
-  const Cards = edges.map(({ node }) => node).filter(searchFilter).map((node) => (
+  const nodes = edges.map(({ node }) => node).filter(searchFilter);
+
+  const Cards = nodes.map((node) => (
     <InventoryCard
       key={node.id}
       data={Object.entries(node)
@@ -89,7 +91,7 @@ const MaterialsDashboard = ({ searchString, viewMode }) => {
               columns={COLUMNS}
               loading={loading}
               onRowClick={({ data: { id } }) => push(`materials/${id}/update`)}
-              rows={map(edges, ({ node }) => ({
+              rows={map(nodes, (node) => ({
                 ...node,
                 dateCreated: new Date(node.dateCreated),
                 dateModified: new Date(node.dateModified),

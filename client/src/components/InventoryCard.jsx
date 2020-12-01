@@ -20,6 +20,7 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import { Divider } from '@material-ui/core';
 import CachedIcon from '@material-ui/icons/Cached';
 import StoreIcon from '@material-ui/icons/Store';
+import Link from '@material-ui/core/Link';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -292,7 +293,7 @@ function MaterialCardContent({ data }) {
             :
           </b>
           {' '}
-          <a className={classes.link} href={row.value}>{row.value}</a>
+          <Link className={classes.link} href={row.value} target="_blank">{row.value}</Link>
         </div>
       ))}
       <Divider className={classes.divider} />
@@ -473,7 +474,7 @@ function UseMaterialCardContent({ data }) {
             :
           </b>
           {' '}
-          <a className={classes.link} href={row.value}>{row.value}</a>
+          <Link className={classes.link} href={row.value} target="_blank">{row.value}</Link>
         </div>
       ))}
       <Divider className={classes.divider} />

@@ -47,8 +47,8 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(0.5),
   },
   divider: {
-    marginTop: theme.spacing(0.75),
-    marginBottom: theme.spacing(0.75),
+    marginTop: theme.spacing(1.5),
+    marginBottom: theme.spacing(1.5),
   },
   link: {
     color: 'black',
@@ -231,7 +231,7 @@ function ProductCardContent({ data }) {
           {row.value === 'null' ? 'None' : row.value}
         </div>
       ))}
-      <Divider className={classes.divider} variant="middle" />
+      <Divider className={classes.divider} />
       {data.filter((row) => ['Date Modified', 'Date Created'].includes(row.name)).map((row) => (
         <div key={row.name}>
           <b>
@@ -242,7 +242,7 @@ function ProductCardContent({ data }) {
           {row.value}
         </div>
       ))}
-      <Divider className={classes.divider} variant="middle" />
+      <Divider className={classes.divider} />
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         {data.filter((row) => ['Count'].includes(row.name)).map((row) => (
           <div key={row.name}>
@@ -284,7 +284,7 @@ function MaterialCardContent({ data }) {
           {row.value === 'null' ? 'None' : row.value}
         </div>
       ))}
-      <Divider className={classes.divider} variant="middle" />
+      <Divider className={classes.divider} />
       {data.filter((row) => ['Purchase Order Url', 'Certificate Of Analysis Url'].includes(row.name)).map((row) => (
         <div key={row.name}>
           <b>
@@ -295,7 +295,7 @@ function MaterialCardContent({ data }) {
           <a className={classes.link} href={row.value}>{row.value}</a>
         </div>
       ))}
-      <Divider className={classes.divider} variant="middle" />
+      <Divider className={classes.divider} />
       {data.filter((row) => ['Date Modified', 'Date Created'].includes(row.name)).map((row) => (
         <div key={row.name}>
           <b>
@@ -306,7 +306,7 @@ function MaterialCardContent({ data }) {
           {row.value}
         </div>
       ))}
-      <Divider className={classes.divider} variant="middle" />
+      <Divider className={classes.divider} />
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         {data.filter((row) => ['Vendor Name'].includes(row.name)).map((row) => (
           <div key={row.name}>
@@ -353,7 +353,7 @@ function CaseCardContent({ data }) {
           {row.value === 'null' ? 'None' : row.value}
         </div>
       ))}
-      <Divider className={classes.divider} variant="middle" />
+      <Divider className={classes.divider} />
       {data.filter((row) => ['Date Modified', 'Date Created'].includes(row.name)).map((row) => (
         <div key={row.name}>
           <b>
@@ -364,7 +364,7 @@ function CaseCardContent({ data }) {
           {row.value}
         </div>
       ))}
-      <Divider className={classes.divider} variant="middle" />
+      <Divider className={classes.divider} />
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         {data.filter((row) => ['Count'].includes(row.name)).map((row) => (
           <div key={row.name}>
@@ -401,7 +401,7 @@ function OrderCardContent({ data }) {
           {row.value === 'null' ? 'None' : row.value}
         </div>
       ))}
-      <Divider className={classes.divider} variant="middle" />
+      <Divider className={classes.divider} />
       {data.filter((row) => ['Date Modified', 'Date Created'].includes(row.name)).map((row) => (
         <div key={row.name}>
           <b>
@@ -412,7 +412,7 @@ function OrderCardContent({ data }) {
           {row.value}
         </div>
       ))}
-      <Divider className={classes.divider} variant="middle" />
+      <Divider className={classes.divider} />
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         {data.filter((row) => ['Customer Name'].includes(row.name)).map((row) => (
           <div key={row.name}>
@@ -465,7 +465,7 @@ function UseMaterialCardContent({ data }) {
           {row.value === 'null' ? 'None' : row.value}
         </div>
       ))}
-      <Divider className={classes.divider} variant="middle" />
+      <Divider className={classes.divider} />
       {data.filter((row) => ['Purchase Order Url', 'Certificate Of Analysis Url'].includes(row.name)).map((row) => (
         <div key={row.name}>
           <b>
@@ -476,7 +476,7 @@ function UseMaterialCardContent({ data }) {
           <a className={classes.link} href={row.value}>{row.value}</a>
         </div>
       ))}
-      <Divider className={classes.divider} variant="middle" />
+      <Divider className={classes.divider} />
       {data.filter((row) => ['Date Modified', 'Date Created'].includes(row.name)).map((row) => (
         <div key={row.name}>
           <b>
@@ -487,7 +487,7 @@ function UseMaterialCardContent({ data }) {
           {row.value}
         </div>
       ))}
-      <Divider className={classes.divider} variant="middle" />
+      <Divider className={classes.divider} />
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         {data.filter((row) => ['Vendor Name'].includes(row.name)).map((row) => (
           <div key={row.name}>
@@ -546,7 +546,7 @@ function UseProductCardContent({ data }) {
           {row.value === 'null' ? 'None' : row.value}
         </div>
       ))}
-      <Divider className={classes.divider} variant="middle" />
+      <Divider className={classes.divider} />
       {data.filter((row) => ['Date Modified', 'Date Created'].includes(row.name)).map((row) => (
         <div key={row.name}>
           <b>
@@ -557,7 +557,7 @@ function UseProductCardContent({ data }) {
           {row.value}
         </div>
       ))}
-      <Divider className={classes.divider} variant="middle" />
+      <Divider className={classes.divider} />
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         {data.filter((row) => ['Count Used'].includes(row.name)).map((row) => (
           <div key={row.name}>
@@ -599,7 +599,7 @@ function UseCaseCardContent({ data }) {
           {row.value === 'null' ? 'None' : row.value}
         </div>
       ))}
-      <Divider className={classes.divider} variant="middle" />
+      <Divider className={classes.divider} />
       {data.filter((row) => ['Date Modified', 'Date Created'].includes(row.name)).map((row) => (
         <div key={row.name}>
           <b>
@@ -610,7 +610,7 @@ function UseCaseCardContent({ data }) {
           {row.value}
         </div>
       ))}
-      <Divider className={classes.divider} variant="middle" />
+      <Divider className={classes.divider} />
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         {data.filter((row) => ['Order Count', 'Count Shipped'].includes(row.name)).map((row) => (
           <div key={row.name}>

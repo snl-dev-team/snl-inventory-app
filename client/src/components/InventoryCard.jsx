@@ -274,7 +274,7 @@ function MaterialCardContent({ data }) {
   const classes = useStyles();
   return (
     <div>
-      {data.filter((row) => ['Number', 'Vendor Name', 'Purchase Order Number', 'Price', 'Expiration Date'].includes(row.name)).map((row) => (
+      {data.filter((row) => ['Number', 'Purchase Order Number', 'Price', 'Expiration Date'].includes(row.name)).map((row) => (
         <div key={row.name}>
           <b>
             {row.name === 'Number' ? 'Lot Number' : row.name}
@@ -308,6 +308,11 @@ function MaterialCardContent({ data }) {
       ))}
       <Divider className={classes.divider} variant="middle" />
       <div style={{ display: 'flex', flexDirection: 'row' }}>
+        {data.filter((row) => ['Vendor Name'].includes(row.name)).map((row) => (
+          <div key={row.name}>
+            <Chip className={classes.chip} color="primary" label={row.value} icon={<FaceIcon />} />
+          </div>
+        ))}
         {data.filter((row) => ['Count'].includes(row.name)).map((row) => (
           <div key={row.name}>
             <Chip className={classes.chip} color="primary" label={`${row.name}: ${row.value}`} />
@@ -450,7 +455,7 @@ function UseMaterialCardContent({ data }) {
   };
   return (
     <div>
-      {data.filter((row) => ['Number', 'Count', 'Vendor Name', 'Purchase Order Number', 'Price', 'Expiration Date'].includes(row.name)).map((row) => (
+      {data.filter((row) => ['Number', 'Count', 'Purchase Order Number', 'Price', 'Expiration Date'].includes(row.name)).map((row) => (
         <div key={row.name}>
           <b>
             {rename(row.name)}
@@ -484,6 +489,11 @@ function UseMaterialCardContent({ data }) {
       ))}
       <Divider className={classes.divider} variant="middle" />
       <div style={{ display: 'flex', flexDirection: 'row' }}>
+        {data.filter((row) => ['Vendor Name'].includes(row.name)).map((row) => (
+          <div key={row.name}>
+            <Chip className={classes.chip} color="primary" label={row.value} icon={<FaceIcon />} />
+          </div>
+        ))}
         {data.filter((row) => ['Count Used'].includes(row.name)).map((row) => (
           <div key={row.name}>
             <Chip className={classes.chip} color="primary" label={`${row.name}: ${row.value}`} />

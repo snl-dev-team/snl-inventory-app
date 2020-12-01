@@ -4,7 +4,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { useHistory, useParams } from 'react-router-dom';
-import { Button, CircularProgress, LinearProgress } from '@material-ui/core';
+import { Button, LinearProgress } from '@material-ui/core';
 import { useMutation, useQuery } from '@apollo/client';
 import produce from 'immer';
 import { Formik, Form, Field } from 'formik';
@@ -15,6 +15,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import * as Yup from 'yup';
 import { mergeWith, isNull } from 'lodash';
 import UNITS from '../../constants/units';
+import Spinner from '../Spinner';
 import {
   UPDATE_MATERIAL, CREATE_MATERIAL, GET_MATERIALS, GET_MATERIAL,
 } from '../../graphql/materials';
@@ -96,7 +97,7 @@ export default function UpsertMaterialDialog() {
     }
   };
 
-  if (loading) return <CircularProgress />;
+  if (loading) return <Spinner />;
 
   const validationSchema = Yup.object().shape({
     name: Yup.string().required('Required!').default(''),

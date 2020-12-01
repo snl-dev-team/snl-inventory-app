@@ -11,12 +11,12 @@ import { Formik, Form, Field } from 'formik';
 import Grid from '@material-ui/core/Grid';
 import { TextField, CheckboxWithLabel } from 'formik-material-ui';
 import { DatePicker } from 'formik-material-ui-pickers';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import * as Yup from 'yup';
 import { mergeWith, isNull } from 'lodash';
 import {
   UPDATE_PRODUCT, CREATE_PRODUCT, GET_PRODUCTS, GET_PRODUCT,
 } from '../../graphql/products';
+import Spinner from '../Spinner';
 
 export default function UpsertProductDialog() {
   const { id } = useParams();
@@ -74,7 +74,7 @@ export default function UpsertProductDialog() {
     }
   };
 
-  if (loading) return <CircularProgress />;
+  if (loading) return <Spinner />;
 
   const validationSchema = Yup.object().shape({
     name: Yup.string().required('Required!').default(''),

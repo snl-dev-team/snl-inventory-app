@@ -22,8 +22,9 @@ const COLUMNS = [
   {
     field: 'expirationDate', headerName: 'Expiration Date', width: 150, type: 'date',
   },
-  { field: 'units', headerName: 'Units' },
-  { field: 'purchaseOrderNumber', headerName: 'PO Number', width: 150 },
+  { field: 'units', headerName: 'Units', width: 75 },
+  { field: 'vendorName', headerName: 'Vendor Name', width: 150 },
+  { field: 'purchaseOrderNumber', headerName: 'PO Number', width: 100 },
   { field: 'purchaseOrderUrl', headerName: 'PO URL' },
   {
     field: 'dateModified', headerName: 'Date Modified', width: 200, type: 'dateTime',

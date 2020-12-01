@@ -16,6 +16,7 @@ from . import base, types
 | price                       | int(10) unsigned                    | NO   |     | NULL              |                |
 | units                       | enum('UNIT','KG','LB','G','L','ML') | NO   |     | UNIT              |                |
 | count                       | float unsigned                      | NO   |     | NULL              |                |
+| vendor_name                 | varchar(255)                        | YES  |     | NULL              |                |
 | purchase_order_url          | varchar(2083)                       | YES  |     | NULL              |                |
 | purchase_order_number       | varchar(255)                        | YES  |     | NULL              |                |
 | certificate_of_analysis_url | varchar(2083)                       | YES  |     | NULL              |                |

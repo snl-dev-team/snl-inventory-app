@@ -87,6 +87,7 @@ const ProductsDashboard = ({ searchString, viewMode }) => {
               variables: { id: node.id },
               update: updateCache(node.id),
             })}
+            product
           />
         ))}
         {viewMode === VIEW_MODES.GRID && (

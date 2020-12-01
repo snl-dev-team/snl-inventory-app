@@ -79,6 +79,7 @@ export default function CaseUseProductDialog() {
             .map(([name, value]) => ({ name: startCase(name), value: String(value) }))}
           title={node.name}
           onClickDelete={() => onClickDelete(node.id)}
+          useProduct
         />
       )) : []}
     </UseDialog>

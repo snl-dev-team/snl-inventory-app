@@ -72,6 +72,7 @@ const MaterialsDashboard = ({ searchString, viewMode }) => {
         variables: { id: node.id },
         update: updateCache(node.id),
       })}
+      material
     />
   ));
 

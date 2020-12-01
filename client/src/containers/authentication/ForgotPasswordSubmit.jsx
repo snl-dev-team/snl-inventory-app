@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -10,6 +11,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { useDispatch, useSelector } from 'react-redux';
 import { Redirect, useHistory } from 'react-router-dom';
+import Avatar from '@material-ui/core/Avatar';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { forgotPasswordAndSubmit, signOut } from '../../actions/user';
 import AuthAlerts from './AuthAlerts';
 
@@ -70,6 +73,9 @@ const ForgotPasword = () => {
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
+        <Avatar className={classes.avatar}>
+          <LockOutlinedIcon />
+        </Avatar>
         <Typography component="h1" variant="h5">
           Forgot Password
         </Typography>
@@ -111,21 +117,24 @@ const ForgotPasword = () => {
           >
             Reset Password
           </Button>
-          <Button
-            fullWidth
-            variant="contained"
-            className={classes.submit}
-            onClick={() => { dispatch(signOut()); history.push('sign-in'); }}
-          >
-            Go to Sign In
-          </Button>
-          <Button
-            fullWidth
-            variant="contained"
-            onClick={() => { dispatch(signOut()); history.push('sign-up'); }}
-          >
-            Go to Sign Up
-          </Button>
+          <Grid container>
+            <Grid item xs>
+              <Link
+                onClick={() => { dispatch(signOut()); history.push('sign-in'); }}
+                variant="body2"
+              >
+                Go to Sign In
+              </Link>
+            </Grid>
+            <Grid item>
+              <Link
+                onClick={() => { dispatch(signOut()); history.push('sign-up'); }}
+                variant="body2"
+              >
+                Go to Sign Up
+              </Link>
+            </Grid>
+          </Grid>
         </form>
       </div>
       <Box mt={5}>

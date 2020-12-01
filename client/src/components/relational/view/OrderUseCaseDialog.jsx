@@ -82,6 +82,7 @@ export default function OrderUseCaseDialog() {
             .map(([name, value]) => ({ name: startCase(name), value: String(value) }))}
           title={node.name}
           onClickDelete={() => onClickDelete(node.id)}
+          useCase
         />
       )) : []}
     </UseDialog>

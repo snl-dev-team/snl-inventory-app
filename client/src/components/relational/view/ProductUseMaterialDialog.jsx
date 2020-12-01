@@ -81,6 +81,7 @@ export default function ProductUseMaterialDialog() {
             .map(([name, value]) => ({ name: startCase(name), value: String(value) }))}
           title={node.name}
           onClickDelete={() => onClickDelete(node.id)}
+          useMaterial
         />
       )) : []}
     </UseDialog>

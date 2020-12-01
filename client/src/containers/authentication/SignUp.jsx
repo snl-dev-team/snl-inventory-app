@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Redirect, useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import { signUp } from '../../actions/user';
+import { signUp, signOut } from '../../actions/user';
 import AuthAlerts from './AuthAlerts';
 
 const useStyles = makeStyles((theme) => ({
@@ -127,7 +127,7 @@ const SignUp = () => {
             <Grid item xs>
               <Link
                 href="#"
-                onClick={() => { history.push('/forgot-password'); }}
+                onClick={() => { dispatch(signOut()); history.push('/forgot-password'); }}
                 variant="body2"
               >
                 Forgot password?
@@ -136,7 +136,7 @@ const SignUp = () => {
             <Grid item>
               <Link
                 href="#"
-                onClick={() => { history.push('/sign-in'); }}
+                onClick={() => { dispatch(signOut()); history.push('/sign-in'); }}
                 variant="body2"
               >
                 Already have an account? Sign In

@@ -68,6 +68,7 @@ export default function UseDialog({
       PaperProps={{
         style: {
           backgroundColor: '#fafafa',
+          overflowX: 'hidden',
         },
       }}
     >

@@ -5,7 +5,7 @@ import { useQuery, useMutation } from '@apollo/client';
 import { startCase, map } from 'lodash';
 import produce from 'immer';
 import { XGrid } from '@material-ui/x-grid';
-import CheckIcon from '@material-ui/icons/Check';
+
 import {
   GET_ORDERS, DELETE_ORDER,
 } from '../../graphql/orders';
@@ -15,22 +15,7 @@ import GenericDashboard from './Generic';
 import OrderUseCaseDialog from '../../components/relational/view/OrderUseCaseDialog';
 import UpsertOrderUseCaseDialog from '../../components/relational/upsert/UpsertOrderUseCaseDialog';
 import VIEW_MODES from '../../constants/viewModes';
-
-const COLUMNS = [
-  { field: 'id', hide: true },
-  { field: 'number', headerName: 'Number' },
-  { field: 'customerName', headerName: 'Customer Name', width: 150 },
-  {
-    // eslint-disable-next-line react/prop-types
-    field: 'completed', headerName: 'Completed', width: 150, renderCell: ({ data: { completed } }) => (completed ? <CheckIcon /> : ' '),
-  },
-  {
-    field: 'dateModified', headerName: 'Date Modified', width: 200, type: 'dateTime',
-  },
-  {
-    field: 'dateCreated', headerName: 'Date Created', width: 200, type: 'dateTime',
-  },
-];
+import { ORDER_COLUMNS } from '../../constants/columns';
 
 const OrdersDashboard = ({ searchString, viewMode }) => {
   const { push } = useHistory();
@@ -91,7 +76,7 @@ const OrdersDashboard = ({ searchString, viewMode }) => {
         <div style={{ height: 800, width: '100%', marginTop: 20 }}>
           <XGrid
               // eslint-disable-next-line react/jsx-props-no-spreading
-            columns={COLUMNS}
+            columns={ORDER_COLUMNS}
             loading={loading}
             onRowClick={({ data: { id } }) => push(`orders/${id}/update`)}
             rows={map(nodes, (node) => ({

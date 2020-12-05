@@ -12,27 +12,7 @@ import UpsertMaterialDialog from '../../components/upsert/UpsertMaterialDialog';
 import InventoryCard from '../../components/InventoryCard';
 import GenericDashboard from './Generic';
 import VIEW_MODES from '../../constants/viewModes';
-
-const COLUMNS = [
-  { field: 'id', hide: true },
-  { field: 'number', headerName: 'Number' },
-  { field: 'name', headerName: 'Name' },
-  { field: 'count', headerName: 'Count' },
-  { field: 'price', headerName: 'Price' },
-  {
-    field: 'expirationDate', headerName: 'Expiration Date', width: 150, type: 'date',
-  },
-  { field: 'units', headerName: 'Units', width: 75 },
-  { field: 'vendorName', headerName: 'Vendor Name', width: 150 },
-  { field: 'purchaseOrderNumber', headerName: 'PO Number', width: 100 },
-  { field: 'purchaseOrderUrl', headerName: 'PO URL' },
-  {
-    field: 'dateModified', headerName: 'Date Modified', width: 200, type: 'dateTime',
-  },
-  {
-    field: 'dateCreated', headerName: 'Date Created', width: 200, type: 'dateTime',
-  },
-];
+import { MATERIAL_COLUMNS } from '../../constants/columns';
 
 const MaterialsDashboard = ({ searchString, viewMode }) => {
   const { push } = useHistory();
@@ -90,7 +70,7 @@ const MaterialsDashboard = ({ searchString, viewMode }) => {
           <div style={{ height: 800, width: '100%', marginTop: 20 }}>
             <XGrid
               // eslint-disable-next-line react/jsx-props-no-spreading
-              columns={COLUMNS}
+              columns={MATERIAL_COLUMNS}
               loading={loading}
               onRowClick={({ data: { id } }) => push(`materials/${id}/update`)}
               rows={map(nodes, (node) => ({

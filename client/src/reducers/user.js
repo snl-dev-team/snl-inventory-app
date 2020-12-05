@@ -1,11 +1,8 @@
 import {
-  SIGN_UP,
   SIGN_IN,
   SIGN_OUT,
-  CONFIRM_SIGN_UP,
   FORGOT_PASSWORD,
   FORGOT_PASSWORD_AND_SUBMIT,
-  RESEND_CODE,
 } from '../actions/user';
 
 const INITIAL_STATE = {
@@ -20,45 +17,6 @@ const INITIAL_STATE = {
 const userReducer = (state = INITIAL_STATE, action) => {
   const { type, payload, meta } = action;
   switch (type) {
-    case `${SIGN_UP}_FULFILLED`:
-      return {
-        isAuthorized: false,
-        token: null,
-        email: meta.email,
-        error: null,
-        info: null,
-        success: null,
-      };
-    case `${SIGN_UP}_REJECTED`:
-      return {
-        isAuthorized: false,
-        token: null,
-        email: null,
-        error: payload.message,
-        info: null,
-        success: null,
-      };
-
-    case `${CONFIRM_SIGN_UP}_FULFILLED`:
-      return {
-        isAuthorized: false,
-        token: null,
-        email: meta.email,
-        error: null,
-        info: null,
-        success: 'Sign up successful!',
-      };
-    case `${CONFIRM_SIGN_UP}_REJECTED`:
-      return {
-        isAuthorized: false,
-        token: null,
-        email: meta.email,
-        error: payload.message,
-        warning: null,
-        info: null,
-        success: null,
-      };
-
     case `${SIGN_IN}_FULFILLED`:
       return {
         isAuthorized: true,
@@ -113,26 +71,6 @@ const userReducer = (state = INITIAL_STATE, action) => {
         email: meta.email,
         error: payload.message,
         info: null,
-        success: null,
-      };
-
-    case `${RESEND_CODE}_FULFILLED`:
-      return {
-        isAuthorized: false,
-        token: null,
-        email: meta.email,
-        error: null,
-        info: null,
-        success: `A new code has been sent to ${meta.email}.`,
-      };
-
-    case `${RESEND_CODE}_REJECTED`:
-      return {
-        isAuthorized: false,
-        token: null,
-        email: meta.email,
-        error: null,
-        info: `Code resent ${meta.email}! Please check your email.`,
         success: null,
       };
 

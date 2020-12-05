@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
 const Copyright = () => (
   <Typography variant="body2" color="textSecondary" align="center">
     {'Copyright © '}
-    <Link color="inherit" href="https://material-ui.com/">
+    <Link color="inherit" target="_blank" rel="noopener" href="https://sawgrassnutralabs.com/">
       Sawgrass Nutralabs
     </Link>
     {' '}
@@ -124,14 +124,6 @@ const ForgotPasword = () => {
                 variant="body2"
               >
                 Go to Sign In
-              </Link>
-            </Grid>
-            <Grid item>
-              <Link
-                onClick={() => { dispatch(signOut()); history.push('sign-up'); }}
-                variant="body2"
-              >
-                Go to Sign Up
               </Link>
             </Grid>
           </Grid>

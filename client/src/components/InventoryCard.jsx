@@ -311,7 +311,7 @@ function MaterialCardContent({ data }) {
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         {data.filter((row) => ['Vendor Name'].includes(row.name)).map((row) => (
           <div key={row.name}>
-            {row.value !== '' && (<Chip className={classes.chip} color="primary" label={row.value} icon={<FaceIcon />} />)}
+            {row.value !== '' && (<Chip className={classes.chip} color="primary" label={row.value} icon={<StoreIcon />} />)}
           </div>
         ))}
         {data.filter((row) => ['Count'].includes(row.name)).map((row) => (
@@ -417,7 +417,7 @@ function OrderCardContent({ data }) {
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         {data.filter((row) => ['Customer Name'].includes(row.name)).map((row) => (
           <div key={row.name}>
-            {row.value !== '' && (<Chip className={classes.chip} color="primary" label={row.value} icon={<FaceIcon />} />)}
+            {row.value !== '' && (<Chip className={classes.chip} color="primary" label={row.value} icon={<StoreIcon />} />)}
           </div>
         ))}
         {data.filter((row) => ['Completed'].includes(row.name)).map((row) => (

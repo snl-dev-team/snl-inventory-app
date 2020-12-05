@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React, { useState } from 'react';
 import clsx from 'clsx';
 import { makeStyles, useTheme, fade } from '@material-ui/core/styles';
@@ -36,6 +37,7 @@ import OrdersDashboard from './Orders';
 import CasesDashboard from './Cases';
 import { signOut } from '../../actions/user';
 import VIEW_MODES from '../../constants/viewModes';
+import EMAIL from '../../constants/email';
 
 const drawerWidth = 240;
 
@@ -194,7 +196,8 @@ export default function Dashboard() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={() => dispatch(signOut())}>Log out</MenuItem>
+      <MenuItem onClick={() => dispatch(signOut())}>Sign out</MenuItem>
+      <MenuItem onClick={() => window.open(EMAIL, '_blank')}>Create User</MenuItem>
     </Menu>
   );
 

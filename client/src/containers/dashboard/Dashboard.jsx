@@ -37,7 +37,7 @@ import OrdersDashboard from './Orders';
 import CasesDashboard from './Cases';
 import { signOut } from '../../actions/user';
 import VIEW_MODES from '../../constants/viewModes';
-import EMAIL from '../../constants/email';
+import { REPORT_BUG, CREATE_USER } from '../../constants/email';
 
 const drawerWidth = 240;
 
@@ -196,8 +196,18 @@ export default function Dashboard() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={() => dispatch(signOut())}>Sign out</MenuItem>
-      <MenuItem onClick={() => window.open(EMAIL, '_blank')}>Create User</MenuItem>
+      <MenuItem onClick={() => dispatch(signOut())}>
+        <span aria-label="bug" role="img">✌️</span>
+        Sign out
+      </MenuItem>
+      <MenuItem onClick={() => window.open(CREATE_USER, '_blank')}>
+        <span aria-label="bug" role="img">👨‍💻</span>
+        Create User
+      </MenuItem>
+      <MenuItem onClick={() => window.open(REPORT_BUG, '_blank')}>
+        <span aria-label="bug" role="img">🐛</span>
+        Report a Bug
+      </MenuItem>
     </Menu>
   );
 

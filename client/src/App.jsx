@@ -4,8 +4,6 @@ import GraphiQL from 'graphiql';
 import fetch from 'isomorphic-fetch';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import Dashboard from './containers/dashboard/Dashboard';
-import SignUp from './containers/authentication/SignUp';
-import SignUpConfirm from './containers/authentication/SignUpConfirm';
 import ForgotPasswordSubmit from './containers/authentication/ForgotPasswordSubmit';
 import ForgotPassword from './containers/authentication/ForgotPassword';
 import SignIn from './containers/authentication/SignIn';
@@ -34,8 +32,6 @@ const App = () => (
   <ThemeProvider theme={theme}>
     <Router>
       <Switch>
-        <Route exact path="/sign-up" component={SignUp} />
-        <Route exact path="/sign-up/confirm" component={SignUpConfirm} />
         <Route exact path="/forgot-password" component={ForgotPassword} />
         <Route exact path="/forgot-password/submit" component={ForgotPasswordSubmit} />
         <Route exact path="/sign-in" component={SignIn} />

@@ -6,7 +6,6 @@ import { useQuery, useMutation } from '@apollo/client';
 import produce from 'immer';
 import { startCase, map } from 'lodash';
 import { XGrid } from '@material-ui/x-grid';
-import CheckIcon from '@material-ui/icons/Check';
 import {
   GET_PRODUCTS, DELETE_PRODUCT,
 } from '../../graphql/products';
@@ -16,26 +15,7 @@ import ProductUseMaterialDialog from '../../components/relational/view/ProductUs
 import GenericDashboard from './Generic';
 import UpsertProductUseCaseDialog from '../../components/relational/upsert/UpsertProductUseMaterialDialog';
 import VIEW_MODES from '../../constants/viewModes';
-
-const COLUMNS = [
-  { field: 'id', hide: true },
-  { field: 'number', headerName: 'Number' },
-  { field: 'name', headerName: 'Name' },
-  { field: 'count', headerName: 'Count' },
-  {
-    field: 'expirationDate', headerName: 'Expiration Date', width: 150, type: 'date',
-  },
-  {
-    // eslint-disable-next-line react/prop-types
-    field: 'completed', headerName: 'Completed', width: 150, renderCell: ({ data: { completed } }) => (completed ? <CheckIcon /> : ' '),
-  },
-  {
-    field: 'dateModified', headerName: 'Date Modified', width: 200, type: 'dateTime',
-  },
-  {
-    field: 'dateCreated', headerName: 'Date Created', width: 200, type: 'dateTime',
-  },
-];
+import { PRODUCT_COLUMNS } from '../../constants/columns';
 
 const ProductsDashboard = ({ searchString, viewMode }) => {
   const { push } = useHistory();
@@ -96,7 +76,7 @@ const ProductsDashboard = ({ searchString, viewMode }) => {
           <div style={{ height: 800, width: '100%', marginTop: 20 }}>
             <XGrid
               // eslint-disable-next-line react/jsx-props-no-spreading
-              columns={COLUMNS}
+              columns={PRODUCT_COLUMNS}
               loading={loading}
               onRowClick={({ data: { id } }) => push(`products/${id}/update`)}
               rows={map(nodes, (node) => ({

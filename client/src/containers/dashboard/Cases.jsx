@@ -16,22 +16,7 @@ import CaseUseMaterialDialog from '../../components/relational/view/CaseUseMater
 import UpsertCaseUseMaterialDialog from '../../components/relational/upsert/UpsertCaseUseMaterialDialog';
 import UpsertCaseUseProductDialog from '../../components/relational/upsert/UpsertCaseUseProductDialog';
 import VIEW_MODES from '../../constants/viewModes';
-
-const COLUMNS = [
-  { field: 'id', hide: true },
-  { field: 'number', headerName: 'Number' },
-  { field: 'name', headerName: 'Name' },
-  { field: 'count', headerName: 'Count' },
-  {
-    field: 'expirationDate', headerName: 'Expiration Date', width: 150, type: 'date',
-  },
-  {
-    field: 'dateModified', headerName: 'Date Modified', width: 200, type: 'dateTime',
-  },
-  {
-    field: 'dateCreated', headerName: 'Date Created', width: 200, type: 'dateTime',
-  },
-];
+import { CASE_COLUMNS } from '../../constants/columns';
 
 const CasesDashboard = ({ searchString, viewMode }) => {
   const { push } = useHistory();
@@ -90,7 +75,7 @@ const CasesDashboard = ({ searchString, viewMode }) => {
         <div style={{ height: 800, width: '100%', marginTop: 20 }}>
           <XGrid
               // eslint-disable-next-line react/jsx-props-no-spreading
-            columns={COLUMNS}
+            columns={CASE_COLUMNS}
             loading={loading}
             onRowClick={({ data: { id } }) => push(`cases/${id}/update`)}
             rows={map(nodes, (node) => ({

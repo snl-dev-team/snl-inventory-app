@@ -39,6 +39,8 @@ import { signOut } from '../../actions/user';
 import VIEW_MODES from '../../constants/viewModes';
 import { REPORT_BUG, CREATE_USER } from '../../constants/email';
 
+import { toggleView } from '../../actions/view';
+
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -158,15 +160,6 @@ export default function Dashboard() {
   const [searchString, setSearchString] = useState('');
   const [searching, setSearching] = useState(false);
 
-  const [viewMode, setViewMode] = useState(VIEW_MODES.CARDS);
-
-  const toggleViewMode = () => {
-    setViewMode(
-      viewMode === VIEW_MODES.GRID
-        ? VIEW_MODES.CARDS : VIEW_MODES.GRID,
-    );
-  };
-
   const isMenuOpen = Boolean(anchorEl);
 
   const handleDrawerOpen = () => {
@@ -182,6 +175,12 @@ export default function Dashboard() {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+  };
+
+  const viewMode = useSelector((state) => state.view);
+
+  const toggleViewMode = () => {
+    dispatch(toggleView());
   };
 
   const menuId = 'primary-search-account-menu';

@@ -14,6 +14,8 @@ import { DatePicker } from 'formik-material-ui-pickers';
 import MenuItem from '@material-ui/core/MenuItem';
 import * as Yup from 'yup';
 import { mergeWith, isNull } from 'lodash';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import UNITS from '../../constants/units';
 import Spinner from '../Spinner';
 import {
@@ -54,18 +56,15 @@ export default function UpsertMaterialDialog() {
             updateMaterial: { material: newMaterial = {} } = {},
           } = {},
         } = {}) => {
-          const clientData = client.readQuery({
-            query: GET_MATERIALS,
-          });
+          const clientData = client.readQuery({ query: GET_MATERIALS });
+
           const newData = produce(clientData, (draftState) => {
             const idx = clientData.materials.edges.findIndex(({ node }) => node.id === id);
             // eslint-disable-next-line no-param-reassign
             draftState.materials.edges[idx] = { __typename: 'MaterialEdge', node: newMaterial };
           });
-          client.writeQuery({
-            query: GET_MATERIALS,
-            data: newData,
-          });
+
+          client.writeQuery({ query: GET_MATERIALS, data: newData });
         },
       }).then(() => {
         setSubmitting(false);
@@ -76,19 +75,18 @@ export default function UpsertMaterialDialog() {
         variables: newValues,
         update: (client, {
           data: {
-            createMaterial: { material: newMaterial = {} } = {},
+            createMaterial: {
+              material: newMaterial = {},
+            } = {},
           } = {},
         } = {}) => {
-          const clientData = client.readQuery({
-            query: GET_MATERIALS,
-          });
+          const clientData = client.readQuery({ query: GET_MATERIALS });
+
           const newData = produce(clientData, (draftState) => {
             draftState.materials.edges.push({ __typename: 'MaterialEdge', node: newMaterial });
           });
-          client.writeQuery({
-            query: GET_MATERIALS,
-            data: newData,
-          });
+
+          client.writeQuery({ query: GET_MATERIALS, data: newData });
         },
       }).then(() => {
         setSubmitting(false);
@@ -168,7 +166,14 @@ export default function UpsertMaterialDialog() {
                       type="number"
                       label="Price"
                       name="price"
-                      InputProps={{ inputProps: { min: 0 } }}
+                      InputProps={{
+                        inputProps: { min: 0 },
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <AttachMoneyIcon />
+                          </InputAdornment>
+                        ),
+                      }}
                     />
                   </Grid>
 

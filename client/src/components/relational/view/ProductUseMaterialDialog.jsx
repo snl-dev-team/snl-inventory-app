@@ -5,10 +5,12 @@ import {
   find, startCase, remove, findIndex,
 } from 'lodash';
 import produce from 'immer';
+import { XGrid } from '@material-ui/x-grid';
 import { GET_PRODUCT_MATERIALS, PRODUCT_UNUSE_MATERIAL } from '../../../graphql/products';
 import InventoryCard from '../../InventoryCard';
 import UseDialog from './UseDialog';
 import { GET_MATERIALS } from '../../../graphql/materials';
+import { PRODUCT_MATERIAL_COLUMNS } from '../../../constants/columns';
 
 export default function ProductUseMaterialDialog() {
   const { id } = useParams();
@@ -85,6 +87,19 @@ export default function ProductUseMaterialDialog() {
           useMaterial
         />
       )) : []}
+
+      <div style={{
+        height: 800, width: '100%', marginTop: 20, marginBottom: 50, padding: 10, paddingRight: 15,
+      }}
+      >
+        <XGrid
+          disableSelectionOnClick
+          columns={PRODUCT_MATERIAL_COLUMNS}
+          onRowClick={() => {}}
+          rows={edges.map(({ node, count }) => ({ ...node, countUsed: count }))}
+          rowHeight={38}
+        />
+      </div>
     </UseDialog>
   );
 }

@@ -8,10 +8,12 @@ import {
   findIndex,
 } from 'lodash';
 import produce from 'immer';
+import { XGrid } from '@material-ui/x-grid';
 import { GET_ORDER_CASES, ORDER_UNUSE_CASE } from '../../../graphql/orders';
 import InventoryCard from '../../InventoryCard';
 import UseDialog from './UseDialog';
 import { GET_CASES } from '../../../graphql/cases';
+import { ORDER_CASE_COLUMNS } from '../../../constants/columns';
 
 export default function OrderUseCaseDialog() {
   const { id } = useParams();
@@ -86,6 +88,21 @@ export default function OrderUseCaseDialog() {
           useCase
         />
       )) : []}
+
+      <div style={{
+        height: 800, width: '100%', marginTop: 20, marginBottom: 50, padding: 10, paddingRight: 15,
+      }}
+      >
+        <XGrid
+          disableSelectionOnClick
+          columns={ORDER_CASE_COLUMNS}
+          onRowClick={() => {}}
+          rows={edges.map((
+            { node, count, orderCount },
+          ) => ({ ...node, countUsed: count, orderCount }))}
+          rowHeight={38}
+        />
+      </div>
     </UseDialog>
   );
 }

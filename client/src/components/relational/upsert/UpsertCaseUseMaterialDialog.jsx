@@ -44,7 +44,7 @@ export default function UpsertCaseUseMaterialDialog() {
 
   const validationSchema = Yup.object().shape({
     name: Yup.object().required('Required!').defined('Please enter a value!').default(materialToUpdate),
-    count: Yup.number().required('Required!').positive('Must be > 0!').default(0)
+    count: Yup.number().required('Required!').positive('Must be > 0!').default(materials.filter((x) => x.id === materialToUpdate.id)[0].countUsed || 0)
       .test('test-count', 'Need more material!',
         (value, { parent }) => (parent.name !== '' ? value <= parent.name.count + (parent.name.countUsed || 0) : true)),
   });

@@ -64,6 +64,18 @@ const OrdersDashboard = ({ searchString, viewMode }) => {
 
   const nodes = edges.map(({ node }) => node).filter(searchFilter);
 
+  const getCardData = (node) => [
+    Object.entries(node).filter(([name]) => ['defaultCaseCount', 'expirationDate', 'number']
+      .includes(name)).map(([name, value]) => ({ name: startCase(name), value })),
+    Object.entries(node).filter(([name]) => ['dateCreated', 'dateModified']
+      .includes(name)).map(([name, value]) => ({ name: startCase(name), value })),
+  ];
+
+  const getChipData = (node) => ({
+    businessName: node.customerName,
+    completed: node.completed,
+  });
+
   return (
     <>
       <GenericDashboard
@@ -74,9 +86,8 @@ const OrdersDashboard = ({ searchString, viewMode }) => {
         && nodes.map((node) => (
           <InventoryCard
             key={node.id}
-            data={Object.entries(node)
-              .filter(([name]) => !['__typename', 'id'].includes(name))
-              .map(([name, value]) => ({ name: startCase(name), value: String(value) }))}
+            data={getCardData(node)}
+            chips={getChipData(node)}
             title={node.number}
             onClickShowCases={() => push(`/orders/${node.id}/cases`)}
             onClickEdit={() => push(`/orders/${node.id}/update`)}

@@ -63,12 +63,29 @@ const MaterialsDashboard = ({ searchString, viewMode }) => {
 
   const nodes = edges.map(({ node }) => node).filter(searchFilter);
 
+  const getCardData = (node) => [
+    Object.entries(node)
+      .filter(([name]) => ['price', 'expirationDate', 'number'].includes(name))
+      .map(([name, value]) => ({ name: startCase(name), value })),
+    Object.entries(node)
+      .filter(([name]) => ['purchaseOrderNumber', 'purchaseOrderUrl', 'certificateOfAnalysisUrl'].includes(name))
+      .map(([name, value]) => ({ name: startCase(name), value })),
+    Object.entries(node)
+      .filter(([name]) => ['dateCreated', 'dateModified'].includes(name))
+      .map(([name, value]) => ({ name: startCase(name), value })),
+  ];
+
+  const getChipData = (node) => ({
+    businessName: node.vendorName,
+    count: node.count,
+    units: node.units,
+  });
+
   const Cards = nodes.map((node) => (
     <InventoryCard
       key={node.id}
-      data={Object.entries(node)
-        .filter(([name]) => !['__typename', 'id', 'name'].includes(name))
-        .map(([name, value]) => ({ name: startCase(name), value: String(value) }))}
+      data={getCardData(node)}
+      chips={getChipData(node)}
       title={node.name}
       onClickEdit={() => push(`/materials/${node.id}/update`)}
       onClickDelete={() => deleteMaterial({
@@ -86,6 +103,7 @@ const MaterialsDashboard = ({ searchString, viewMode }) => {
         onClickAdd={() => push('/materials/create')}
       >
         {viewMode === VIEW_MODES.CARDS && Cards}
+
         {viewMode === VIEW_MODES.GRID && (
           <div style={{ height: 800, width: '100%', marginTop: 20 }}>
             <XGrid

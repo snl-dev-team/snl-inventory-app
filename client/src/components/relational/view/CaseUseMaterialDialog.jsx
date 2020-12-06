@@ -68,6 +68,26 @@ export default function CaseUseMaterialDialog() {
     });
   };
 
+  const getCardData = (node) => [
+    Object.entries(node)
+      .filter(([name_]) => ['price', 'expirationDate', 'number', 'countUsed'].includes(name_))
+      .map(([name_, value]) => ({ name: startCase(name_), value })),
+    Object.entries(node)
+      .filter(([name_]) => ['purchaseOrderNumber', 'purchaseOrderUrl', 'certificateOfAnalysisUrl'].includes(name_))
+      .map(([name_, value]) => ({ name: startCase(name_), value })),
+    Object.entries(node)
+      .filter(([name_]) => ['dateCreated', 'dateModified'].includes(name_))
+      .map(([name_, value]) => ({ name: startCase(name_), value })),
+  ];
+
+  const getChipData = (node) => ({
+    businessName: node.vendorName,
+    count: node.count,
+    units: node.units,
+  });
+
+  const nodes = edges.map(({ node, count }) => ({ ...node, countUsed: count }));
+
   return (
     <UseDialog
       loading={loading}
@@ -75,13 +95,12 @@ export default function CaseUseMaterialDialog() {
       onClickCancel={() => push('/cases/')}
       title={`Case Materials: ${name || ''}`}
     >
-      {!loading ? edges.map(({ node, count }) => (
+
+      {!loading ? nodes.map((node) => (
         <InventoryCard
           key={node.id}
-          data={Object.entries(node)
-            .filter(([name_]) => !['__typename', 'id', 'name'].includes(name_))
-            .concat([['countUsed', count]])
-            .map(([name_, value]) => ({ name: startCase(name_), value: String(value) }))}
+          data={getCardData(node)}
+          chips={getChipData(node)}
           title={node.name}
           onClickDelete={() => onClickDelete(node.id)}
           useMaterial

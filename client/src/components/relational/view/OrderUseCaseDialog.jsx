@@ -67,6 +67,21 @@ export default function OrderUseCaseDialog() {
     });
   };
 
+  const getCardData = (node) => [Object.entries(node)
+    .filter(([name]) => ['defaultMaterialCount', 'expirationDate', 'number', 'defaultProductCount', 'countUsed', 'orderCount'].includes(name))
+    .map(([name, value]) => ({ name: startCase(name), value })),
+  Object.entries(node)
+    .filter(([name]) => ['dateCreated', 'dateModified'].includes(name))
+    .map(([name, value]) => ({ name: startCase(name), value })),
+  ];
+
+  const getChipData = (node) => ({
+    count: node.count,
+  });
+
+  const nodes = edges
+    .map(({ node, count, orderCount }) => ({ ...node, countUsed: count, orderCount }));
+
   return (
     <UseDialog
       loading={loading}
@@ -74,13 +89,11 @@ export default function OrderUseCaseDialog() {
       onClickCancel={() => push('/orders/')}
       title={`Order Cases: ${number || ''}`}
     >
-      {!loading ? edges.map(({ node, count, orderCount }) => (
+      {!loading ? nodes.map((node) => (
         <InventoryCard
           key={node.id}
-          data={Object.entries(node)
-            .filter(([name_]) => !['__typename', 'id', 'name'].includes(name_))
-            .concat([['countShipped', count], ['orderCount', orderCount]])
-            .map(([name_, value]) => ({ name: startCase(name_), value: String(value) }))}
+          data={getCardData(node)}
+          chips={getChipData(node)}
           title={node.name}
           onClickDelete={() => onClickDelete(node.id)}
           useCase

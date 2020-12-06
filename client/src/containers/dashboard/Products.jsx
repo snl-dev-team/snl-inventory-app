@@ -69,6 +69,18 @@ const ProductsDashboard = ({ searchString, viewMode }) => {
 
   const nodes = edges.map(({ node }) => node).filter(searchFilter);
 
+  const getCardData = (node) => [
+    Object.entries(node).filter(([name]) => ['number', 'defaultMaterialCount', 'expirationDate']
+      .includes(name)).map(([name, value]) => ({ name: startCase(name), value })),
+    Object.entries(node).filter(([name]) => ['dateCreated', 'dateModified']
+      .includes(name)).map(([name, value]) => ({ name: startCase(name), value })),
+  ];
+
+  const getChipData = (node) => ({
+    count: node.count,
+    completed: node.completed,
+  });
+
   return (
     <>
       <GenericDashboard
@@ -79,9 +91,8 @@ const ProductsDashboard = ({ searchString, viewMode }) => {
         && nodes.map((node) => (
           <InventoryCard
             key={node.id}
-            data={Object.entries(node)
-              .filter(([name]) => !['__typename', 'id', 'name'].includes(name))
-              .map(([name, value]) => ({ name: startCase(name), value: String(value) }))}
+            data={getCardData(node)}
+            chips={getChipData(node)}
             title={node.name}
             onClickShowMaterials={() => { push(`/products/${node.id}/materials`); }}
             onClickEdit={() => push(`/products/${node.id}/update`)}

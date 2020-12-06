@@ -17,10 +17,11 @@ import { map, find } from 'lodash';
 import FormikAutocomplete from '../FormikAutoComplete';
 import { GET_ORDER_CASES, ORDER_USE_CASE } from '../../../graphql/orders';
 import { GET_CASES } from '../../../graphql/cases';
+import Spinner from '../../Spinner';
 
 export default function UpsertOrderUseCaseDialog() {
   const { push } = useHistory();
-  const { id } = useParams();
+  const { id, caseId: updateCaseId } = useParams();
   const [orderUseCase] = useMutation(ORDER_USE_CASE);
   const {
     loading, data: {
@@ -44,8 +45,11 @@ export default function UpsertOrderUseCaseDialog() {
   }));
   cases = map(cases, (item) => ({ ...find(orderCases, { id: item.id }), ...item }));
 
+  const isUpdate = updateCaseId !== undefined;
+  const productToUpdate = find(cases, { id: updateCaseId }) || '';
+
   const validationSchema = Yup.object().shape({
-    name: Yup.object().required('Required!').defined('Please enter a value!').default(''),
+    name: Yup.object().required('Required!').defined('Please enter a value!').default(productToUpdate),
     count: Yup.number().required('Required!').positive('Must be > 0!').default(0)
       .test('test-count', 'Need more cases!',
         (value, { parent }) => (parent.name !== '' ? value <= parent.name.count + (parent.name.countUsed || 0) : true)),
@@ -88,6 +92,8 @@ export default function UpsertOrderUseCaseDialog() {
     push(`/orders/${id}/cases`);
   };
 
+  if (loading) return <Spinner />;
+
   return (
     <Dialog
       open
@@ -128,6 +134,7 @@ export default function UpsertOrderUseCaseDialog() {
                       loading={loading}
                       onChange={(value) => { setFieldValue('count', value.count || 0); }}
                       textFieldProps={{ fullWidth: true, margin: 'normal', variant: 'outlined' }}
+                      disabled={isUpdate}
                     />
                   </Grid>
                   <Grid item>

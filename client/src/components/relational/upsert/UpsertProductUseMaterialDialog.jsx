@@ -17,10 +17,11 @@ import { map, find } from 'lodash';
 import FormikAutocomplete from '../FormikAutoComplete';
 import { GET_PRODUCT_MATERIALS, PRODUCT_USE_MATERIAL } from '../../../graphql/products';
 import { GET_MATERIALS } from '../../../graphql/materials';
+import Spinner from '../../Spinner';
 
 export default function UpsertProductUseMaterialDialog() {
   const { push } = useHistory();
-  const { id } = useParams();
+  const { id, materialId: updateMaterialId } = useParams();
   const [productUseMaterial] = useMutation(PRODUCT_USE_MATERIAL);
   const {
     loading, data: {
@@ -44,8 +45,11 @@ export default function UpsertProductUseMaterialDialog() {
   }));
   materials = map(materials, (item) => ({ ...find(productMaterials, { id: item.id }), ...item }));
 
+  const isUpdate = updateMaterialId !== undefined;
+  const materialToUpdate = find(materials, { id: updateMaterialId }) || '';
+
   const validationSchema = Yup.object().shape({
-    name: Yup.object().required('Required!').defined('Please enter a value!').default(''),
+    name: Yup.object().required('Required!').defined('Please enter a value!').default(materialToUpdate),
     count: Yup.number().required('Required!').positive('Must be > 0!').default(0)
       .test('test-count', 'Need more material!',
         (value, { parent }) => (parent.name !== '' ? value <= parent.name.count + (parent.name.countUsed || 0) : true)),
@@ -80,6 +84,8 @@ export default function UpsertProductUseMaterialDialog() {
     });
     push(`/products/${id}/materials`);
   };
+
+  if (loading) return <Spinner />;
 
   return (
     <Dialog
@@ -121,6 +127,7 @@ export default function UpsertProductUseMaterialDialog() {
                       onChange={(value) => { setFieldValue('count', value.count || 0); }}
                       loading={loading}
                       textFieldProps={{ fullWidth: true, margin: 'normal', variant: 'outlined' }}
+                      disabled={isUpdate}
                     />
                   </Grid>
                   <Grid item>

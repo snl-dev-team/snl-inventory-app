@@ -32,7 +32,7 @@ const theme = createMuiTheme({
 const App = () => (
   <ThemeProvider theme={theme}>
     <Router>
-      <Analytics id="G-1181DV1D06" debug>
+      <Analytics id="G-1181DV1D06">
         <Switch>
           <Route exact path="/forgot-password" component={ForgotPassword} />
           <Route exact path="/forgot-password/submit" component={ForgotPasswordSubmit} />

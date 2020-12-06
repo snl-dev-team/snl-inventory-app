@@ -105,7 +105,7 @@ export default function CaseUseMaterialDialog() {
           chips={getChipData(node)}
           title={node.name}
           onClickDelete={() => onClickDelete(node.id)}
-          useMaterial
+          onClickEdit={() => push(`/cases/${id}/materials/${node.id}/use`)}
         />
       )) : []}
 

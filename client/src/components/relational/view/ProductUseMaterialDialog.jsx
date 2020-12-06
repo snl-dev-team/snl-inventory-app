@@ -103,7 +103,7 @@ export default function ProductUseMaterialDialog() {
           chips={getChipData(node)}
           title={node.name}
           onClickDelete={onClickDelete}
-          material
+          onClickEdit={() => push(`/products/${id}/materials/${node.id}/use`)}
         />
       )) : []}
 

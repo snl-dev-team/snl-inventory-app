@@ -17,10 +17,11 @@ import { map, find } from 'lodash';
 import FormikAutocomplete from '../FormikAutoComplete';
 import { GET_CASE_MATERIALS, CASE_USE_MATERIAL } from '../../../graphql/cases';
 import { GET_MATERIALS } from '../../../graphql/materials';
+import Spinner from '../../Spinner';
 
 export default function UpsertCaseUseMaterialDialog() {
   const { push } = useHistory();
-  const { id } = useParams();
+  const { id, materialId: updateMaterialId } = useParams();
   const [caseUseMaterial] = useMutation(CASE_USE_MATERIAL);
   const {
     loading, data: {
@@ -38,8 +39,11 @@ export default function UpsertCaseUseMaterialDialog() {
   }));
   materials = map(materials, (item) => ({ ...find(caseMaterials, { id: item.id }), ...item }));
 
+  const isUpdate = updateMaterialId !== undefined;
+  const materialToUpdate = find(materials, { id: updateMaterialId }) || '';
+
   const validationSchema = Yup.object().shape({
-    name: Yup.object().required('Required!').defined('Please enter a value!').default(''),
+    name: Yup.object().required('Required!').defined('Please enter a value!').default(materialToUpdate),
     count: Yup.number().required('Required!').positive('Must be > 0!').default(0)
       .test('test-count', 'Need more material!',
         (value, { parent }) => (parent.name !== '' ? value <= parent.name.count + (parent.name.countUsed || 0) : true)),
@@ -75,6 +79,8 @@ export default function UpsertCaseUseMaterialDialog() {
     push(`/cases/${id}/materials`);
   };
 
+  if (loading) return <Spinner />;
+
   return (
     <Dialog
       open
@@ -106,7 +112,9 @@ export default function UpsertCaseUseMaterialDialog() {
                       component={FormikAutocomplete}
                       disableClearable
                       label="Material"
-                      getOptionLabel={(option) => (option.name !== undefined ? `${option.name} / ${option.number}` : '')}
+                      getOptionLabel={(option) => (option.name !== undefined
+                        ? `${option.name} / ${option.number}`
+                        : '')}
                       getOptionSelected={(
                         option,
                         value,
@@ -115,6 +123,7 @@ export default function UpsertCaseUseMaterialDialog() {
                       loading={loading}
                       textFieldProps={{ fullWidth: true, margin: 'normal', variant: 'outlined' }}
                       onChange={(value) => { setFieldValue('count', value.count || 0); }}
+                      disabled={isUpdate}
                     />
                   </Grid>
                   <Grid item>

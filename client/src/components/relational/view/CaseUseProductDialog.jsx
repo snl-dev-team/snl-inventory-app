@@ -94,7 +94,7 @@ export default function CaseUseProductDialog() {
           chips={getChipData(node)}
           title={node.name}
           onClickDelete={() => onClickDelete(node.id)}
-          useProduct
+          onClickEdit={() => push(`/cases/${id}/products/${node.id}/use`)}
         />
       )) : []}
 

@@ -114,7 +114,7 @@ const ProductsDashboard = ({ searchString, viewMode }) => {
       />
 
       <Route
-        path="/products/:id/materials/use"
+        path={['/products/:id/materials/use', '/products/:id/materials/:materialId/use']}
         component={UpsertProductUseCaseDialog}
       />
 

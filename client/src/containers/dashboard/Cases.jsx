@@ -118,13 +118,13 @@ const CasesDashboard = ({ searchString, viewMode }) => {
 
       <Route
         exact
-        path="/cases/:id/products/use"
+        path={['/cases/:id/products/use', '/cases/:id/products/:productId/use']}
         component={UpsertCaseUseProductDialog}
       />
 
       <Route
         exact
-        path="/cases/:id/materials/use"
+        path={['/cases/:id/materials/use', '/cases/:id/materials/:materialId/use']}
         component={UpsertCaseUseMaterialDialog}
       />
     </>

@@ -115,7 +115,7 @@ const OrdersDashboard = ({ searchString, viewMode }) => {
 
       <Route
         exact
-        path="/orders/:id/cases/use"
+        path={['/orders/:id/cases/use', '/orders/:id/cases/:caseId/use']}
         component={UpsertOrderUseCaseDialog}
       />
     </>

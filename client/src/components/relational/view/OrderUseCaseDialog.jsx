@@ -98,7 +98,7 @@ export default function OrderUseCaseDialog() {
           chips={getChipData(node)}
           title={node.name}
           onClickDelete={() => onClickDelete(node.id)}
-          useCase
+          onClickEdit={() => push(`/orders/${id}/cases/${node.id}/use`)}
         />
       )) : []}
 

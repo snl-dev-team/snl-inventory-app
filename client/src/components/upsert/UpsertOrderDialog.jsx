@@ -104,56 +104,54 @@ export default function UpsertOrderDialog() {
             {isSubmitting && <LinearProgress />}
             <DialogContent dividers>
               <Form>
-                <Grid container spacing={5} justify="center">
-                  <Grid container item xs={12} spacing={3} justify="left">
-                    <Grid item>
-                      <Field
-                        component={TextField}
-                        type="text"
-                        label="Number"
-                        name="number"
-                      />
-                    </Grid>
-                    <Grid item>
-                      <Field
-                        component={TextField}
-                        name="customerName"
-                        type="text"
-                        label="Customer Name"
-                      />
-                    </Grid>
+                <Grid container spacing={3} justify="center">
+                  <Grid item xs={6} align="center">
+                    <Field
+                      component={TextField}
+                      type="text"
+                      label="Number"
+                      name="number"
+                      fullWidth
+                    />
                   </Grid>
-                  <Grid container item xs={12} spacing={3} justify="left">
-                    <Grid item>
-                      <Field
-                        component={TextField}
-                        name="defaultCaseCount"
-                        type="number"
-                        label="Default Case Count"
-                        InputProps={{ inputProps: { min: 0 } }}
-                      />
-                    </Grid>
-                    <Grid item>
-                      <Field
-                        component={CheckboxWithLabel}
-                        type="checkbox"
-                        name="completed"
-                        Label={{ label: 'Completed' }}
-                      />
-                    </Grid>
+
+                  <Grid item xs={6} align="center">
+                    <Field
+                      component={TextField}
+                      name="customerName"
+                      type="text"
+                      label="Customer Name"
+                      fullWidth
+                    />
                   </Grid>
-                  <Grid container item xs={12} spacing={3} justify="left">
-                    <Grid item xs={12}>
-                      <Field
-                        component={TextField}
-                        name="notes"
-                        type="text"
-                        label="Notes"
-                        multiline
-                        fullWidth
-                        rows={5}
-                      />
-                    </Grid>
+                  <Grid item xs={6} align="center">
+                    <Field
+                      component={TextField}
+                      name="defaultCaseCount"
+                      type="number"
+                      label="Default Case Count"
+                      InputProps={{ inputProps: { min: 0 } }}
+                      fullWidth
+                    />
+                  </Grid>
+                  <Grid item xs={6} align="center">
+                    <Field
+                      component={CheckboxWithLabel}
+                      type="checkbox"
+                      name="completed"
+                      Label={{ label: 'Completed' }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} align="center">
+                    <Field
+                      component={TextField}
+                      name="notes"
+                      type="text"
+                      label="Notes"
+                      multiline
+                      rows={5}
+                      fullWidth
+                    />
                   </Grid>
                 </Grid>
               </Form>

@@ -241,6 +241,7 @@ export default function Dashboard() {
             className={classes.title}
             variant="h6"
             noWrap
+            style={{ cursor: 'default' }}
           >
             SNL Inventory Tracker
           </Typography>

@@ -38,8 +38,9 @@ const MaterialsDashboard = ({ searchString, viewMode }) => {
     });
   };
 
-  const searchFilter = ({ name }) => searchString === null
-  || name.toLowerCase().includes(searchString);
+  const searchFilter = ({ name, number }) => searchString === null
+  || name.toLowerCase().includes(searchString)
+  || number.toLowerCase().includes(searchString);
 
   const nodes = edges.map(({ node }) => node).filter(searchFilter);
 
@@ -84,7 +85,6 @@ const MaterialsDashboard = ({ searchString, viewMode }) => {
           </div>
         )}
       </GenericDashboard>
-
       <Route
         exact
         path={['/materials/create', '/materials/:id/update']}

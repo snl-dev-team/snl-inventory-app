@@ -174,6 +174,17 @@ export default function UpsertCaseDialog() {
                       />
                     </Grid>
                   </Grid>
+                  <Grid item xs={12} align="center">
+                    <Field
+                      component={TextField}
+                      name="notes"
+                      type="text"
+                      label="Notes"
+                      multiline
+                      fullWidth
+                      rows={5}
+                    />
+                  </Grid>
                 </Grid>
               </Form>
             </DialogContent>

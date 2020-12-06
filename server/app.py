@@ -15,7 +15,7 @@ authorizer = CognitoUserPoolAuthorizer(
 )
 
 
-@app.route('/graphql', methods=['POST'])
+@app.route('/graphql', methods=['POST'],  authorizer=authorizer)
 def graphql():
     gql = json.loads(app.current_request.raw_body.decode())
     variables = gql['variables'] if 'variables' in gql else None

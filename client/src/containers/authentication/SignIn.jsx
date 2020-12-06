@@ -121,7 +121,7 @@ const SignIn = () => {
           <Grid container>
             <Grid item xs>
               <Link
-                onClick={() => { dispatch(signOut()); history.push('forgot-password'); }}
+                onClick={() => { dispatch(signOut()); history.push('/forgot-password'); }}
                 variant="body2"
               >
                 Forgot password?

@@ -107,7 +107,7 @@ const ForgotPasword = () => {
           <Grid container>
             <Grid item xs>
               <Link
-                onClick={() => { dispatch(signOut()); history.push('sign-in'); }}
+                onClick={() => { dispatch(signOut()); history.push('/sign-in'); }}
                 variant="body2"
               >
                 Go to Sign In

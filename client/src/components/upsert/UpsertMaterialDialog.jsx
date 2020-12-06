@@ -255,6 +255,7 @@ export default function UpsertMaterialDialog() {
                         type="text"
                         label="Notes"
                         multiline
+                        fullWidth
                         rows={4}
                       />
                     </Grid>

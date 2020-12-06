@@ -73,7 +73,7 @@ const MaterialsDashboard = ({ searchString, viewMode }) => {
               // eslint-disable-next-line react/jsx-props-no-spreading
               columns={MATERIAL_COLUMNS}
               loading={loading}
-              onRowClick={({ data: { id } }) => push(`materials/${id}/update`)}
+              onRowClick={({ data: { id } }) => push(`/materials/${id}/update`)}
               rows={map(nodes, (node) => ({
                 ...node,
                 dateCreated: new Date(node.dateCreated),

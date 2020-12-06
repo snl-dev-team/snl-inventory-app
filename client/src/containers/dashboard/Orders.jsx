@@ -53,7 +53,7 @@ const OrdersDashboard = ({ searchString, viewMode }) => {
     <>
       <GenericDashboard
         loading={loading}
-        onClickAdd={() => push('orders/create')}
+        onClickAdd={() => push('/orders/create')}
       >
         {viewMode === VIEW_MODES.CARDS
         && nodes.map((node) => (
@@ -78,7 +78,7 @@ const OrdersDashboard = ({ searchString, viewMode }) => {
               // eslint-disable-next-line react/jsx-props-no-spreading
             columns={ORDER_COLUMNS}
             loading={loading}
-            onRowClick={({ data: { id } }) => push(`orders/${id}/update`)}
+            onRowClick={({ data: { id } }) => push(`/orders/${id}/update`)}
             rows={map(nodes, (node) => ({
               ...node,
               dateCreated: new Date(node.dateCreated),

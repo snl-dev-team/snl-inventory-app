@@ -78,7 +78,7 @@ const ProductsDashboard = ({ searchString, viewMode }) => {
               // eslint-disable-next-line react/jsx-props-no-spreading
               columns={PRODUCT_COLUMNS}
               loading={loading}
-              onRowClick={({ data: { id } }) => push(`products/${id}/update`)}
+              onRowClick={({ data: { id } }) => push(`/products/${id}/update`)}
               rows={map(nodes, (node) => ({
                 ...node,
                 dateCreated: new Date(node.dateCreated),

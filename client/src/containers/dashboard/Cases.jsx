@@ -77,7 +77,7 @@ const CasesDashboard = ({ searchString, viewMode }) => {
               // eslint-disable-next-line react/jsx-props-no-spreading
             columns={CASE_COLUMNS}
             loading={loading}
-            onRowClick={({ data: { id } }) => push(`cases/${id}/update`)}
+            onRowClick={({ data: { id } }) => push(`/cases/${id}/update`)}
             rows={map(nodes, (node) => ({
               ...node,
               dateCreated: new Date(node.dateCreated),

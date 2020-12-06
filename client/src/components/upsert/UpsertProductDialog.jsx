@@ -107,60 +107,69 @@ export default function UpsertProductDialog() {
             {isSubmitting && <LinearProgress />}
             <DialogContent dividers>
               <Form>
-                <Grid container spacing={3} justify="center">
-                  <Grid item xs={6} align="center">
+                <Grid container spacing={5} justify="center">
+                  <Grid container item xs={12} spacing={3} justify="left">
+                    <Grid item xs={3}>
+                      <Field
+                        component={TextField}
+                        type="text"
+                        label="Name"
+                        name="name"
+                      />
+                    </Grid>
+                    <Grid item>
+                      <Field
+                        component={TextField}
+                        type="text"
+                        label="Number"
+                        name="number"
+                      />
+                    </Grid>
+                    <Grid item>
+                      <Field
+                        component={DatePicker}
+                        label="Expiration Date"
+                        name="expirationDate"
+                        clearable
+                      />
+                    </Grid>
+                  </Grid>
+                  <Grid container item xs={12} spacing={3} justify="left">
+                    <Grid item>
+                      <Field
+                        component={TextField}
+                        type="number"
+                        label="Count"
+                        name="count"
+                        InputProps={{ inputProps: { min: 0 } }}
+                      />
+                    </Grid>
+                    <Grid item>
+                      <Field
+                        component={TextField}
+                        name="defaultMaterialCount"
+                        type="number"
+                        label="Default Material Count"
+                        InputProps={{ inputProps: { min: 0 } }}
+                      />
+                    </Grid>
+                    <Grid item>
+                      <Field
+                        component={CheckboxWithLabel}
+                        type="checkbox"
+                        name="completed"
+                        Label={{ label: 'Completed' }}
+                      />
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={12}>
                     <Field
                       component={TextField}
+                      name="notes"
                       type="text"
-                      label="Name"
-                      name="name"
-                      fullWidth
-                    />
-                  </Grid>
-                  <Grid item xs={6} align="center">
-                    <Field
-                      component={TextField}
-                      type="text"
-                      label="Lot Number"
-                      name="number"
-                      fullWidth
-                    />
-                  </Grid>
-                  <Grid item xs={6} align="center">
-                    <Field
-                      component={TextField}
-                      type="number"
-                      label="Count"
-                      name="count"
-                      InputProps={{ inputProps: { min: 0 } }}
-                      fullWidth
-                    />
-                  </Grid>
-                  <Grid item xs={6} align="center">
-                    <Field
-                      component={TextField}
-                      name="defaultMaterialCount"
-                      type="number"
-                      label="Default Material Count"
-                      InputProps={{ inputProps: { min: 0 } }}
-                      fullWidth
-                    />
-                  </Grid>
-                  <Grid item xs={6} align="center">
-                    <Field
-                      component={DatePicker}
-                      label="Expiration Date"
-                      name="expirationDate"
-                      clearable
-                      fullWidth
-                    />
-                  </Grid>
-                  <Grid item xs={6} align="center">
-                    <Field
-                      component={CheckboxWithLabel}
-                      type="checkbox"
-                      name="completed"
-                      Label={{ label: 'Completed' }}
+                      label="Notes"
+                      multiline
+                      rows={4}
                     />
                   </Grid>
                   <Grid item xs={12} align="center">

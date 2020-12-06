@@ -46,7 +46,7 @@ const MaterialsDashboard = ({ searchString, viewMode }) => {
 
   const getCardData = (node) => [
     Object.entries(node)
-      .filter(([name]) => ['price', 'expirationDate', 'number'].includes(name))
+      .filter(([name]) => ['expirationDate', 'number'].includes(name))
       .map(([name, value]) => ({ name: startCase(name), value })),
     Object.entries(node)
       .filter(([name]) => ['purchaseOrderNumber', 'purchaseOrderUrl', 'certificateOfAnalysisUrl'].includes(name))
@@ -60,6 +60,7 @@ const MaterialsDashboard = ({ searchString, viewMode }) => {
     businessName: node.vendorName,
     count: node.count,
     units: node.units,
+    price: node.price,
   });
 
   const Cards = nodes.map((node) => (

@@ -72,7 +72,7 @@ export default function ProductUseMaterialDialog() {
 
   const getCardData = (node) => [
     Object.entries(node)
-      .filter(([name_]) => ['price', 'expirationDate', 'number', 'countUsed'].includes(name_))
+      .filter(([name_]) => ['expirationDate', 'number', 'countUsed'].includes(name_))
       .map(([name_, value]) => ({ name: startCase(name_), value })),
     Object.entries(node)
       .filter(([name_]) => ['purchaseOrderNumber', 'purchaseOrderUrl', 'certificateOfAnalysisUrl'].includes(name_))
@@ -86,6 +86,7 @@ export default function ProductUseMaterialDialog() {
     businessName: node.vendorName,
     count: node.count,
     units: node.units,
+    price: node.price,
   });
 
   return (

@@ -22,6 +22,7 @@ import { Divider } from '@material-ui/core';
 import CachedIcon from '@material-ui/icons/Cached';
 import StoreIcon from '@material-ui/icons/Store';
 import Link from '@material-ui/core/Link';
+import { startCase } from 'lodash';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -87,24 +88,6 @@ export default function InventoryCard({
             key={name}
           />
         );
-      case 'count':
-        return (
-          <Chip
-            label={`Count: ${newValue}`}
-            className={classes.chip}
-            color="primary"
-            key={name}
-          />
-        );
-      case 'countUsed':
-        return (
-          <Chip
-            label={`Count Used: ${newValue}`}
-            className={classes.chip}
-            color="primary"
-            key={name}
-          />
-        );
       case 'completed':
         return (
           <Chip
@@ -124,10 +107,19 @@ export default function InventoryCard({
             key={name}
           />
         );
+      case 'price':
+        return (
+          <Chip
+            label={`$${newValue / 10000} / unit`}
+            className={classes.chip}
+            color="secondary"
+            key={name}
+          />
+        );
       default:
         return (
           <Chip
-            label={newValue}
+            label={`${startCase(name)}: ${newValue}`}
             className={classes.chip}
             color="primary"
             key={name}
@@ -220,6 +212,7 @@ InventoryCard.propTypes = {
     countUsed: PropTypes.number,
     completed: PropTypes.bool,
     units: PropTypes.string,
+    price: PropTypes.number,
   }),
   title: PropTypes.string.isRequired,
 };
@@ -231,5 +224,5 @@ InventoryCard.defaultProps = {
   onClickShowProducts: null,
   onClickShowCases: null,
   data: [],
-  chips: [],
+  chips: {},
 };

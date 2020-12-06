@@ -143,8 +143,8 @@ export default function UpsertMaterialDialog() {
             {isSubmitting && <LinearProgress />}
             <DialogContent dividers>
               <Form>
-                <Grid container spacing={5} justify="center">
-                  <Grid item>
+                <Grid container spacing={3} justify="center">
+                  <Grid item xs={4} align="center">
                     <Field
                       component={TextField}
                       type="text"
@@ -152,15 +152,23 @@ export default function UpsertMaterialDialog() {
                       name="name"
                     />
                   </Grid>
-                  <Grid item>
+                  <Grid item xs={4} align="center">
                     <Field
                       component={TextField}
                       type="text"
-                      label="Number"
+                      label="Lot Number"
                       name="number"
                     />
                   </Grid>
-                  <Grid item>
+                  <Grid item xs={4} align="center">
+                    <Field
+                      component={DatePicker}
+                      label="Expiration Date"
+                      name="expirationDate"
+                      clearable
+                    />
+                  </Grid>
+                  <Grid item xs={4} align="center">
                     <Field
                       component={TextField}
                       type="number"
@@ -169,7 +177,7 @@ export default function UpsertMaterialDialog() {
                       InputProps={{ inputProps: { min: 0 } }}
                     />
                   </Grid>
-                  <Grid item>
+                  <Grid item xs={4} align="center">
                     <Field
                       component={TextField}
                       type="number"
@@ -185,60 +193,13 @@ export default function UpsertMaterialDialog() {
                       }}
                     />
                   </Grid>
-
-                  <Grid item>
-                    <Field
-                      component={DatePicker}
-                      label="Expiration Date"
-                      name="expirationDate"
-                      clearable
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Field
-                      component={TextField}
-                      name="notes"
-                      type="text"
-                      label="Notes"
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Field
-                      component={TextField}
-                      name="vendorName"
-                      type="text"
-                      label="Vendor Name"
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Field
-                      component={TextField}
-                      name="purchaseOrderUrl"
-                      type="text"
-                      label="PO URL"
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Field
-                      component={TextField}
-                      name="purchaseOrderNumber"
-                      type="text"
-                      label="PO Number"
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Field
-                      component={TextField}
-                      name="certificateOfAnalysisUrl"
-                      type="text"
-                      label="COA URL"
-                    />
-                  </Grid>
-                  <Grid item>
+                  <Grid item xs={4} align="center">
                     <Field
                       component={Select}
                       name="units"
+                      fullWidth
                       label="Units"
+                      style={{ marginTop: 16 }}
                     >
                       {Object.values(UNITS).map((unit) => (
                         <MenuItem
@@ -249,6 +210,50 @@ export default function UpsertMaterialDialog() {
                         </MenuItem>
                       ))}
                     </Field>
+                  </Grid>
+                  <Grid item xs={4} align="center">
+                    <Field
+                      component={TextField}
+                      name="vendorName"
+                      type="text"
+                      label="Vendor Name"
+                    />
+                  </Grid>
+                  <Grid item xs={4} align="center">
+                    <Field
+                      component={TextField}
+                      name="purchaseOrderNumber"
+                      type="text"
+                      label="PO Number"
+                    />
+                  </Grid>
+                  <Grid item xs={4} align="center">
+                    <Field
+                      component={TextField}
+                      name="purchaseOrderUrl"
+                      type="text"
+                      label="PO URL"
+                    />
+                  </Grid>
+                  <Grid item xs={12} align="center">
+                    <Field
+                      component={TextField}
+                      name="certificateOfAnalysisUrl"
+                      type="text"
+                      label="COA URL"
+                      fullWidth
+                    />
+                  </Grid>
+                  <Grid item xs={12} align="center">
+                    <Field
+                      component={TextField}
+                      name="notes"
+                      type="text"
+                      label="Notes"
+                      rows={5}
+                      multiline
+                      fullWidth
+                    />
                   </Grid>
                 </Grid>
               </Form>

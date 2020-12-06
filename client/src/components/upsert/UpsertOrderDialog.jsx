@@ -104,7 +104,7 @@ export default function UpsertOrderDialog() {
             {isSubmitting && <LinearProgress />}
             <DialogContent dividers>
               <Form>
-                <Grid container spacing={5} justify="center">
+                <Grid container spacing={3} justify="center">
                   <Grid item>
                     <Field
                       component={TextField}
@@ -113,14 +113,7 @@ export default function UpsertOrderDialog() {
                       name="number"
                     />
                   </Grid>
-                  <Grid item>
-                    <Field
-                      component={TextField}
-                      name="notes"
-                      type="text"
-                      label="Notes"
-                    />
-                  </Grid>
+
                   <Grid item>
                     <Field
                       component={TextField}
@@ -144,6 +137,17 @@ export default function UpsertOrderDialog() {
                       type="checkbox"
                       name="completed"
                       Label={{ label: 'Completed' }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} align="center">
+                    <Field
+                      component={TextField}
+                      name="notes"
+                      type="text"
+                      label="Notes"
+                      multiline
+                      fullWidth
+                      rows={5}
                     />
                   </Grid>
                 </Grid>

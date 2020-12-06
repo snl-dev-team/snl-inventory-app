@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import GraphiQL from 'graphiql';
 import fetch from 'isomorphic-fetch';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import Analytics from 'react-router-ga';
 import Dashboard from './containers/dashboard/Dashboard';
 import ForgotPasswordSubmit from './containers/authentication/ForgotPasswordSubmit';
 import ForgotPassword from './containers/authentication/ForgotPassword';
@@ -31,13 +32,15 @@ const theme = createMuiTheme({
 const App = () => (
   <ThemeProvider theme={theme}>
     <Router>
-      <Switch>
-        <Route exact path="/forgot-password" component={ForgotPassword} />
-        <Route exact path="/forgot-password/submit" component={ForgotPasswordSubmit} />
-        <Route exact path="/sign-in" component={SignIn} />
-        <Route exact path="/graphql" component={() => <div style={{ height: '900px' }}><GraphiQL fetcher={graphQLFetcher} /></div>} />
-        <Route path="/" component={Dashboard} />
-      </Switch>
+      <Analytics id="G-1181DV1D06" debug>
+        <Switch>
+          <Route exact path="/forgot-password" component={ForgotPassword} />
+          <Route exact path="/forgot-password/submit" component={ForgotPasswordSubmit} />
+          <Route exact path="/sign-in" component={SignIn} />
+          <Route exact path="/graphql" component={() => <div style={{ height: '900px' }}><GraphiQL fetcher={graphQLFetcher} /></div>} />
+          <Route path="/" component={Dashboard} />
+        </Switch>
+      </Analytics>
     </Router>
   </ThemeProvider>
 );

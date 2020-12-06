@@ -141,6 +141,8 @@ export default function UpsertOrderDialog() {
                         Label={{ label: 'Completed' }}
                       />
                     </Grid>
+                  </Grid>
+                  <Grid container item xs={12} spacing={3} justify="left">
                     <Grid item xs={12}>
                       <Field
                         component={TextField}
@@ -148,20 +150,10 @@ export default function UpsertOrderDialog() {
                         type="text"
                         label="Notes"
                         multiline
-                        rows={4}
+                        fullWidth
+                        rows={5}
                       />
                     </Grid>
-                  </Grid>
-                  <Grid item xs={12} align="center">
-                    <Field
-                      component={TextField}
-                      name="notes"
-                      type="text"
-                      label="Notes"
-                      multiline
-                      fullWidth
-                      rows={5}
-                    />
                   </Grid>
                 </Grid>
               </Form>

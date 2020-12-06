@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 /* eslint-disable no-unused-vars */
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
@@ -64,26 +65,91 @@ export default function InventoryCard({
   onClickShowCases,
   data,
   title,
-  product,
-  material,
-  case_,
-  order,
-  useMaterial,
-  useProduct,
-  useCase,
+  chips,
 }) {
   const classes = useStyles();
-
   const relationButtons = [
     [onClickShowCases, () => <FontAwesomeIcon icon={faBoxOpen} />],
     [onClickShowProducts, () => <FontAwesomeIcon icon={faPrescriptionBottle} />],
     [onClickShowMaterials, () => <FontAwesomeIcon icon={faPills} />],
   ];
 
+  const renderChip = (name, value) => {
+    const newValue = [null, ''].includes(value) ? 'None' : value;
+    switch (name) {
+      case 'businessName':
+        return (
+          <Chip
+            label={newValue}
+            className={classes.chip}
+            color="primary"
+            icon={<StoreIcon />}
+            key={name}
+          />
+        );
+      case 'count':
+        return (
+          <Chip
+            label={`Count: ${newValue}`}
+            className={classes.chip}
+            color="primary"
+            key={name}
+          />
+        );
+      case 'countUsed':
+        return (
+          <Chip
+            label={`Count Used: ${newValue}`}
+            className={classes.chip}
+            color="primary"
+            key={name}
+          />
+        );
+      case 'completed':
+        return (
+          <Chip
+            label={value ? 'Completed' : 'In Progress'}
+            className={classes.chip}
+            color="secondary"
+            icon={value ? <CheckCircleIcon /> : <CachedIcon />}
+            key={name}
+          />
+        );
+      case 'units':
+        return (
+          <Chip
+            label={newValue}
+            className={classes.chip}
+            color="secondary"
+            key={name}
+          />
+        );
+      default:
+        return (
+          <Chip
+            label={newValue}
+            className={classes.chip}
+            color="primary"
+            key={name}
+          />
+        );
+    }
+  };
+
   const itemButtons = [
     [onClickEdit, EditIcon],
     [onClickDelete, DeleteIcon],
   ];
+  const renderData = (name, value) => (
+    <div key={name}>
+      <b>
+        {name}
+        :
+      </b>
+      {' '}
+      {value === null ? 'None' : value}
+    </div>
+  );
 
   return (
     <Card className={classes.root}>
@@ -94,18 +160,14 @@ export default function InventoryCard({
           color="textSecondary"
           component="div"
         >
-          <CardContentSwitch
-            data={data}
-            product={product}
-            material={material}
-            case_={case_}
-            order={order}
-            useMaterial={useMaterial}
-            useProduct={useProduct}
-            useCase={useCase}
-          />
+          {data.map((list, idx) => [(list.map((item) => (
+            <div key={item.name}>{renderData(item.name, item.value)}</div>
+          ))),
+            <Divider className={classes.divider} key={`divider-${idx}`} />])}
+          {Object.entries(chips).map(([name, value]) => renderChip(name, value))}
         </Typography>
       </CardContent>
+
       <CardActions disableSpacing>
         {relationButtons.filter((button) => button[0] !== null).map((button) => {
           const [onClick, Icon] = button;
@@ -130,7 +192,6 @@ export default function InventoryCard({
             </IconButton>
           );
         })}
-
       </CardActions>
     </Card>
   );
@@ -144,15 +205,23 @@ InventoryCard.propTypes = {
   onClickShowCases: PropTypes.func,
   data: PropTypes
     .arrayOf(PropTypes
-      .shape({ name: PropTypes.string.isRequired, value: PropTypes.string.isRequired })),
+      .arrayOf(PropTypes
+        .shape({
+          name: PropTypes.string.isRequired,
+          value: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.bool,
+            PropTypes.number,
+          ]),
+        }))),
+  chips: PropTypes.shape({
+    businessName: PropTypes.string,
+    count: PropTypes.number,
+    countUsed: PropTypes.number,
+    completed: PropTypes.bool,
+    units: PropTypes.string,
+  }),
   title: PropTypes.string.isRequired,
-  product: PropTypes.bool,
-  material: PropTypes.bool,
-  case_: PropTypes.bool,
-  order: PropTypes.bool,
-  useMaterial: PropTypes.bool,
-  useProduct: PropTypes.bool,
-  useCase: PropTypes.bool,
 };
 
 InventoryCard.defaultProps = {
@@ -162,473 +231,5 @@ InventoryCard.defaultProps = {
   onClickShowProducts: null,
   onClickShowCases: null,
   data: [],
-  product: false,
-  material: false,
-  case_: false,
-  order: false,
-  useMaterial: false,
-  useProduct: false,
-  useCase: false,
-};
-
-function CardContentSwitch({
-  data,
-  product,
-  material,
-  case_,
-  order,
-  useMaterial,
-  useProduct,
-  useCase,
-}) {
-  return (
-    <div>
-      {product && <ProductCardContent data={data} />}
-      {material && <MaterialCardContent data={data} />}
-      {case_ && <CaseCardContent data={data} />}
-      {order && <OrderCardContent data={data} />}
-      {useMaterial && <UseMaterialCardContent data={data} />}
-      {useProduct && <UseProductCardContent data={data} />}
-      {useCase && <UseCaseCardContent data={data} />}
-    </div>
-  );
-}
-
-CardContentSwitch.propTypes = {
-  data: PropTypes
-    .arrayOf(PropTypes
-      .shape({ name: PropTypes.string.isRequired, value: PropTypes.string.isRequired })),
-  product: PropTypes.bool,
-  material: PropTypes.bool,
-  case_: PropTypes.bool,
-  order: PropTypes.bool,
-  useMaterial: PropTypes.bool,
-  useProduct: PropTypes.bool,
-  useCase: PropTypes.bool,
-};
-
-CardContentSwitch.defaultProps = {
-  data: [],
-  product: false,
-  material: false,
-  case_: false,
-  order: false,
-  useMaterial: false,
-  useProduct: false,
-  useCase: false,
-};
-
-function ProductCardContent({ data }) {
-  const classes = useStyles();
-  return (
-    <div>
-      {data.filter((row) => ['Number', 'Default Material Count', 'Expiration Date'].includes(row.name)).map((row) => (
-        <div key={row.name}>
-          <b>
-            {row.name === 'Number' ? 'Lot Number' : row.name}
-            :
-          </b>
-          {' '}
-          {row.value === 'null' ? 'None' : row.value}
-        </div>
-      ))}
-      <Divider className={classes.divider} />
-      {data.filter((row) => ['Date Modified', 'Date Created'].includes(row.name)).map((row) => (
-        <div key={row.name}>
-          <b>
-            {row.name}
-            :
-          </b>
-          {' '}
-          {row.value}
-        </div>
-      ))}
-      <Divider className={classes.divider} />
-      <div style={{ display: 'flex', flexDirection: 'row' }}>
-        {data.filter((row) => ['Count'].includes(row.name)).map((row) => (
-          <div key={row.name}>
-            <Chip className={classes.chip} color="primary" label={`${row.name}: ${row.value}`} />
-          </div>
-        ))}
-        {data.filter((row) => ['Completed'].includes(row.name)).map((row) => (
-          <div key={row.name}>
-            <Chip className={classes.chip} color="secondary" label={row.value === 'true' ? 'Completed' : 'In Progress'} icon={row.value === 'true' ? <CheckCircleIcon /> : <CachedIcon />} />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-ProductCardContent.propTypes = {
-  data: PropTypes
-    .arrayOf(PropTypes
-      .shape({ name: PropTypes.string.isRequired, value: PropTypes.string.isRequired })),
-};
-
-ProductCardContent.defaultProps = {
-  data: [],
-};
-
-// eslint-disable-next-line no-unused-vars
-function MaterialCardContent({ data }) {
-  const classes = useStyles();
-  return (
-    <div>
-      {data.filter((row) => ['Number', 'Purchase Order Number', 'Price', 'Expiration Date'].includes(row.name)).map((row) => (
-        <div key={row.name}>
-          <b>
-            {row.name === 'Number' ? 'Lot Number' : row.name}
-            :
-          </b>
-          {' '}
-          {row.value === 'null' ? 'None' : row.value}
-        </div>
-      ))}
-      <Divider className={classes.divider} />
-      {data.filter((row) => ['Purchase Order Url', 'Certificate Of Analysis Url'].includes(row.name)).map((row) => (
-        <div key={row.name}>
-          <b>
-            {row.name}
-            :
-          </b>
-          {' '}
-          <Link className={classes.link} href={row.value} target="_blank">{row.value}</Link>
-        </div>
-      ))}
-      <Divider className={classes.divider} />
-      {data.filter((row) => ['Date Modified', 'Date Created'].includes(row.name)).map((row) => (
-        <div key={row.name}>
-          <b>
-            {row.name}
-            :
-          </b>
-          {' '}
-          {row.value}
-        </div>
-      ))}
-      <Divider className={classes.divider} />
-      <div style={{ display: 'flex', flexDirection: 'row' }}>
-        {data.filter((row) => ['Vendor Name'].includes(row.name)).map((row) => (
-          <div key={row.name}>
-            {row.value !== '' && (<Chip className={classes.chip} color="primary" label={row.value} icon={<StoreIcon />} />)}
-          </div>
-        ))}
-        {data.filter((row) => ['Count'].includes(row.name)).map((row) => (
-          <div key={row.name}>
-            <Chip className={classes.chip} color="primary" label={`${row.name}: ${row.value}`} />
-          </div>
-        ))}
-        {data.filter((row) => ['Units'].includes(row.name)).map((row) => (
-          <div key={row.name}>
-            <Chip className={classes.chip} color="secondary" label={row.value} />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-MaterialCardContent.propTypes = {
-  data: PropTypes
-    .arrayOf(PropTypes
-      .shape({ name: PropTypes.string.isRequired, value: PropTypes.string.isRequired })),
-};
-
-MaterialCardContent.defaultProps = {
-  data: [],
-};
-
-// eslint-disable-next-line no-unused-vars
-function CaseCardContent({ data }) {
-  const classes = useStyles();
-  return (
-    <div>
-      {data.filter((row) => ['Number', 'Default Material Count', 'Default Product Count', 'Expiration Date'].includes(row.name)).map((row) => (
-        <div key={row.name}>
-          <b>
-            {row.name === 'Number' ? 'Case ID Number' : row.name}
-            :
-          </b>
-          {' '}
-          {row.value === 'null' ? 'None' : row.value}
-        </div>
-      ))}
-      <Divider className={classes.divider} />
-      {data.filter((row) => ['Date Modified', 'Date Created'].includes(row.name)).map((row) => (
-        <div key={row.name}>
-          <b>
-            {row.name}
-            :
-          </b>
-          {' '}
-          {row.value}
-        </div>
-      ))}
-      <Divider className={classes.divider} />
-      <div style={{ display: 'flex', flexDirection: 'row' }}>
-        {data.filter((row) => ['Count'].includes(row.name)).map((row) => (
-          <div key={row.name}>
-            <Chip className={classes.chip} color="primary" label={`${row.name}: ${row.value}`} />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-CaseCardContent.propTypes = {
-  data: PropTypes
-    .arrayOf(PropTypes
-      .shape({ name: PropTypes.string.isRequired, value: PropTypes.string.isRequired })),
-};
-
-CaseCardContent.defaultProps = {
-  data: [],
-};
-
-// eslint-disable-next-line no-unused-vars
-function OrderCardContent({ data }) {
-  const classes = useStyles();
-  return (
-    <div>
-      {data.filter((row) => ['Number', 'Default Case Count', 'Expiration Date'].includes(row.name)).map((row) => (
-        <div key={row.name}>
-          <b>
-            {row.name === 'Number' ? 'Order Number' : row.name}
-            :
-          </b>
-          {' '}
-          {row.value === 'null' ? 'None' : row.value}
-        </div>
-      ))}
-      <Divider className={classes.divider} />
-      {data.filter((row) => ['Date Modified', 'Date Created'].includes(row.name)).map((row) => (
-        <div key={row.name}>
-          <b>
-            {row.name}
-            :
-          </b>
-          {' '}
-          {row.value}
-        </div>
-      ))}
-      <Divider className={classes.divider} />
-      <div style={{ display: 'flex', flexDirection: 'row' }}>
-        {data.filter((row) => ['Customer Name'].includes(row.name)).map((row) => (
-          <div key={row.name}>
-            {row.value !== '' && (<Chip className={classes.chip} color="primary" label={row.value} icon={<StoreIcon />} />)}
-          </div>
-        ))}
-        {data.filter((row) => ['Completed'].includes(row.name)).map((row) => (
-          <div key={row.name}>
-            <Chip className={classes.chip} color="secondary" label={row.value === 'true' ? 'Completed' : 'In Progress'} icon={row.value === 'true' ? <CheckCircleIcon /> : <CachedIcon />} />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-OrderCardContent.propTypes = {
-  data: PropTypes
-    .arrayOf(PropTypes
-      .shape({ name: PropTypes.string.isRequired, value: PropTypes.string.isRequired })),
-};
-
-OrderCardContent.defaultProps = {
-  data: [],
-};
-
-// eslint-disable-next-line no-unused-vars
-function UseMaterialCardContent({ data }) {
-  const classes = useStyles();
-
-  const rename = (name) => {
-    switch (name) {
-      case 'Number':
-        return 'Lot Number';
-      case 'Count':
-        return 'Total Count';
-      default:
-        return name;
-    }
-  };
-  return (
-    <div>
-      {data.filter((row) => ['Number', 'Count', 'Purchase Order Number', 'Price', 'Expiration Date'].includes(row.name)).map((row) => (
-        <div key={row.name}>
-          <b>
-            {rename(row.name)}
-            :
-          </b>
-          {' '}
-          {row.value === 'null' ? 'None' : row.value}
-        </div>
-      ))}
-      <Divider className={classes.divider} />
-      {data.filter((row) => ['Purchase Order Url', 'Certificate Of Analysis Url'].includes(row.name)).map((row) => (
-        <div key={row.name}>
-          <b>
-            {row.name}
-            :
-          </b>
-          {' '}
-          <Link className={classes.link} href={row.value} target="_blank">{row.value}</Link>
-        </div>
-      ))}
-      <Divider className={classes.divider} />
-      {data.filter((row) => ['Date Modified', 'Date Created'].includes(row.name)).map((row) => (
-        <div key={row.name}>
-          <b>
-            {row.name}
-            :
-          </b>
-          {' '}
-          {row.value}
-        </div>
-      ))}
-      <Divider className={classes.divider} />
-      <div style={{ display: 'flex', flexDirection: 'row' }}>
-        {data.filter((row) => ['Vendor Name'].includes(row.name)).map((row) => (
-          <div key={row.name}>
-            <Chip className={classes.chip} color="primary" label={row.value === 'null' ? 'None' : row.value} icon={<StoreIcon />} />
-          </div>
-        ))}
-        {data.filter((row) => ['Count Used'].includes(row.name)).map((row) => (
-          <div key={row.name}>
-            <Chip className={classes.chip} color="primary" label={`${row.name}: ${row.value}`} />
-          </div>
-        ))}
-        {data.filter((row) => ['Units'].includes(row.name)).map((row) => (
-          <div key={row.name}>
-            <Chip className={classes.chip} color="secondary" label={row.value} />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-UseMaterialCardContent.propTypes = {
-  data: PropTypes
-    .arrayOf(PropTypes
-      .shape({ name: PropTypes.string.isRequired, value: PropTypes.string.isRequired })),
-};
-
-UseMaterialCardContent.defaultProps = {
-  data: [],
-};
-
-// eslint-disable-next-line no-unused-vars
-function UseProductCardContent({ data }) {
-  const classes = useStyles();
-
-  const rename = (name) => {
-    switch (name) {
-      case 'Number':
-        return 'Lot Number';
-      case 'Count':
-        return 'Total Count';
-      default:
-        return name;
-    }
-  };
-
-  return (
-    <div>
-      {data.filter((row) => ['Number', 'Count', 'Default Material Count', 'Expiration Date'].includes(row.name)).map((row) => (
-        <div key={row.name}>
-          <b>
-            {rename(row.name)}
-            :
-          </b>
-          {' '}
-          {row.value === 'null' ? 'None' : row.value}
-        </div>
-      ))}
-      <Divider className={classes.divider} />
-      {data.filter((row) => ['Date Modified', 'Date Created'].includes(row.name)).map((row) => (
-        <div key={row.name}>
-          <b>
-            {row.name}
-            :
-          </b>
-          {' '}
-          {row.value}
-        </div>
-      ))}
-      <Divider className={classes.divider} />
-      <div style={{ display: 'flex', flexDirection: 'row' }}>
-        {data.filter((row) => ['Count Used'].includes(row.name)).map((row) => (
-          <div key={row.name}>
-            <Chip className={classes.chip} color="primary" label={`${row.name}: ${row.value}`} />
-          </div>
-        ))}
-        {data.filter((row) => ['Completed'].includes(row.name)).map((row) => (
-          <div key={row.name}>
-            <Chip className={classes.chip} color="secondary" label={row.value === 'true' ? 'Completed' : 'In Progress'} icon={row.value === 'true' ? <CheckCircleIcon /> : <CachedIcon />} />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-UseProductCardContent.propTypes = {
-  data: PropTypes
-    .arrayOf(PropTypes
-      .shape({ name: PropTypes.string.isRequired, value: PropTypes.string.isRequired })),
-};
-
-UseProductCardContent.defaultProps = {
-  data: [],
-};
-
-// eslint-disable-next-line no-unused-vars
-function UseCaseCardContent({ data }) {
-  const classes = useStyles();
-  return (
-    <div>
-      {data.filter((row) => ['Number', 'Default Material Count', 'Default Product Count', 'Expiration Date'].includes(row.name)).map((row) => (
-        <div key={row.name}>
-          <b>
-            {row.name === 'Number' ? 'Case ID Number' : row.name}
-            :
-          </b>
-          {' '}
-          {row.value === 'null' ? 'None' : row.value}
-        </div>
-      ))}
-      <Divider className={classes.divider} />
-      {data.filter((row) => ['Date Modified', 'Date Created'].includes(row.name)).map((row) => (
-        <div key={row.name}>
-          <b>
-            {row.name}
-            :
-          </b>
-          {' '}
-          {row.value}
-        </div>
-      ))}
-      <Divider className={classes.divider} />
-      <div style={{ display: 'flex', flexDirection: 'row' }}>
-        {data.filter((row) => ['Order Count', 'Count Shipped'].includes(row.name)).map((row) => (
-          <div key={row.name}>
-            <Chip className={classes.chip} color="primary" label={`${row.name}: ${row.value}`} />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-UseCaseCardContent.propTypes = {
-  data: PropTypes
-    .arrayOf(PropTypes
-      .shape({ name: PropTypes.string.isRequired, value: PropTypes.string.isRequired })),
-};
-
-UseCaseCardContent.defaultProps = {
-  data: [],
+  chips: [],
 };

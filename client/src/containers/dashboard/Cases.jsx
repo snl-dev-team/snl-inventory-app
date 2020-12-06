@@ -79,7 +79,6 @@ const CasesDashboard = ({ searchString, viewMode }) => {
               variables: { id: node.id },
               update: updateCache(node.id),
             })}
-            case_
           />
         ))}
         {viewMode === VIEW_MODES.GRID && (

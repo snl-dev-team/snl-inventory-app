@@ -27,37 +27,44 @@ def graphql():
 def product_report(id):
     try:
         res = schema.execute("""
-        query ProductReport($id:ID!) {
+        query ProductReport($id: ID!) {
             product(id: $id) {
                 id
-                name
-                number
-                count
-                expirationDate
                 dateCreated
                 dateModified
-                notes
+                count
+                name
+                expirationDate
                 completed
+                notes
+                number
+                defaultMaterialCount
                 materials {
                 edges {
-                    countUsed
+                    count
                     node {
                     id
-                    name
-                    number
+                    dateCreated
+                    dateModified
                     count
-                    expirationDate
-                    dateCreated
-                    dateCreated
                     price
-                    units
+                    name
+                    expirationDate
                     notes
+                    number
+                    units
+                    vendorName
+                    purchaseOrderUrl
+                    purchaseOrderNumber
+                    certificateOfAnalysisUrl
                     }
                 }
                 }
             }
         }
-        """, variables={'id': id})
+        """, variables=dict(id=id))
+
+        print(id)
 
         return res.data
 
@@ -72,85 +79,100 @@ def product_report(id):
 def order_report(id):
     try:
         res = schema.execute("""
-            query OrderReport($id: ID!) {
+        query OrderReport($id: ID!) {
             order(id: $id) {
                 id
-                number
                 dateCreated
                 dateModified
+                completed
                 notes
+                number
+                defaultCaseCount
+                customerName
                 cases {
                 edges {
                     node {
                     id
-                    name
-                    productName
-                    productCount
-                    count
-                    expirationDate
+                    number
+                    notes
                     dateCreated
                     dateModified
-                    shipped
-                    notes
+                    expirationDate
+                    name
+                    count
+                    defaultMaterialCount
+                    defaultProductCount
                     materials {
                         edges {
                         node {
                             id
-                            name
-                            number
-                            count
-                            expirationDate
                             dateCreated
                             dateModified
+                            count
                             price
-                            units
+                            name
+                            expirationDate
                             notes
+                            number
+                            units
+                            vendorName
+                            purchaseOrderUrl
+                            purchaseOrderNumber
+                            certificateOfAnalysisUrl
                         }
-                        countUsed
+                        count
                         }
                     }
                     products {
                         edges {
                         node {
                             id
-                            name
-                            number
-                            count
-                            expirationDate
                             dateCreated
                             dateModified
-                            notes
+                            count
+                            name
+                            expirationDate
                             completed
+                            notes
+                            number
+                            defaultMaterialCount
                             materials {
                             edges {
                                 node {
                                 id
-                                name
-                                number
-                                count
-                                expirationDate
                                 dateCreated
                                 dateModified
+                                count
                                 price
-                                units
+                                name
+                                expirationDate
                                 notes
+                                number
+                                units
+                                vendorName
+                                purchaseOrderUrl
+                                purchaseOrderNumber
+                                certificateOfAnalysisUrl
                                 }
-                                countUsed
+                                count
                             }
                             }
                         }
-                        countUsed
+                        count
                         }
                     }
                     }
-                    countUsed
+                    count
                 }
                 }
             }
         }
-        """, variables={'id': id})
+        """, variables=dict(id=id))
 
-        return res.data
+        return Response(
+            body=json.dumps(res.data),
+            status_code=200,
+        )
 
     except Exception as e:
         return Response(

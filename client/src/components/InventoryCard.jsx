@@ -16,6 +16,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
+import GetAppIcon from '@material-ui/icons/GetApp';
 import Chip from '@material-ui/core/Chip';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import { Divider } from '@material-ui/core';
@@ -61,6 +62,7 @@ const useStyles = makeStyles((theme) => ({
 export default function InventoryCard({
   onClickDelete,
   onClickEdit,
+  onClickDownload,
   onClickShowMaterials,
   onClickShowProducts,
   onClickShowCases,
@@ -73,6 +75,12 @@ export default function InventoryCard({
     [onClickShowCases, () => <FontAwesomeIcon icon={faBoxOpen} />],
     [onClickShowProducts, () => <FontAwesomeIcon icon={faPrescriptionBottle} />],
     [onClickShowMaterials, () => <FontAwesomeIcon icon={faPills} />],
+  ];
+
+  const itemButtons = [
+    [onClickDownload, GetAppIcon],
+    [onClickEdit, EditIcon],
+    [onClickDelete, DeleteIcon],
   ];
 
   const renderChip = (name, value) => {
@@ -128,10 +136,6 @@ export default function InventoryCard({
     }
   };
 
-  const itemButtons = [
-    [onClickEdit, EditIcon],
-    [onClickDelete, DeleteIcon],
-  ];
   const renderData = (name, value) => (
     <div key={name}>
       <b>
@@ -195,6 +199,7 @@ InventoryCard.propTypes = {
   onClickShowMaterials: PropTypes.func,
   onClickShowProducts: PropTypes.func,
   onClickShowCases: PropTypes.func,
+  onClickDownload: PropTypes.func,
   data: PropTypes
     .arrayOf(PropTypes
       .arrayOf(PropTypes
@@ -223,6 +228,7 @@ InventoryCard.defaultProps = {
   onClickShowMaterials: null,
   onClickShowProducts: null,
   onClickShowCases: null,
+  onClickDownload: null,
   data: [],
   chips: {},
 };

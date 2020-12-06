@@ -6,6 +6,7 @@ import { startCase, map } from 'lodash';
 import produce from 'immer';
 import { XGrid } from '@material-ui/x-grid';
 
+import axios from 'axios';
 import {
   GET_ORDERS, DELETE_ORDER,
 } from '../../graphql/orders';
@@ -16,6 +17,7 @@ import OrderUseCaseDialog from '../../components/relational/view/OrderUseCaseDia
 import UpsertOrderUseCaseDialog from '../../components/relational/upsert/UpsertOrderUseCaseDialog';
 import VIEW_MODES from '../../constants/viewModes';
 import { ORDER_COLUMNS } from '../../constants/columns';
+import { URL } from '../../constants/url';
 
 const OrdersDashboard = ({ searchString, viewMode }) => {
   const { push } = useHistory();
@@ -61,6 +63,24 @@ const OrdersDashboard = ({ searchString, viewMode }) => {
     completed: node.completed,
   });
 
+  const onClickDownload = (orderId) => {
+    axios({
+      url: `${URL}/order/${orderId}/report`,
+      method: 'GET',
+      responseType: 'blob',
+    }).then((response) => {
+      // eslint-disable-next-line no-undef
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      // eslint-disable-next-line no-undef
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Order ${orderId} Report.json`);
+      // eslint-disable-next-line no-undef
+      document.body.appendChild(link);
+      link.click();
+    });
+  };
+
   return (
     <>
       <GenericDashboard
@@ -80,7 +100,7 @@ const OrdersDashboard = ({ searchString, viewMode }) => {
               variables: { id: node.id },
               update: updateCache(node.id),
             })}
-            order
+            onClickDownload={() => onClickDownload(node.id)}
           />
         ))}
         {viewMode === VIEW_MODES.GRID && (

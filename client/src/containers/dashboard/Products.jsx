@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React from 'react';
 import { Route, useHistory } from 'react-router';
 import PropTypes from 'prop-types';
@@ -6,6 +7,7 @@ import { useQuery, useMutation } from '@apollo/client';
 import produce from 'immer';
 import { startCase, map } from 'lodash';
 import { XGrid } from '@material-ui/x-grid';
+import axios from 'axios';
 import {
   GET_PRODUCTS, DELETE_PRODUCT,
 } from '../../graphql/products';
@@ -16,6 +18,7 @@ import GenericDashboard from './Generic';
 import UpsertProductUseCaseDialog from '../../components/relational/upsert/UpsertProductUseMaterialDialog';
 import VIEW_MODES from '../../constants/viewModes';
 import { PRODUCT_COLUMNS } from '../../constants/columns';
+import { URL } from '../../constants/url';
 
 const ProductsDashboard = ({ searchString, viewMode }) => {
   const { push } = useHistory();
@@ -61,6 +64,21 @@ const ProductsDashboard = ({ searchString, viewMode }) => {
     completed: node.completed,
   });
 
+  const onClickDownload = (productId) => {
+    axios({
+      url: `${URL}/product/${productId}/report`,
+      method: 'GET',
+      responseType: 'blob',
+    }).then((response) => {
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Product ${productId} Report.json`);
+      document.body.appendChild(link);
+      link.click();
+    });
+  };
+
   return (
     <>
       <GenericDashboard
@@ -80,7 +98,7 @@ const ProductsDashboard = ({ searchString, viewMode }) => {
               variables: { id: node.id },
               update: updateCache(node.id),
             })}
-            product
+            onClickDownload={() => onClickDownload(node.id)}
           />
         ))}
         {viewMode === VIEW_MODES.GRID && (

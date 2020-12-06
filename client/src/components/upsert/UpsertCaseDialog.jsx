@@ -119,56 +119,60 @@ export default function UpsertCaseDialog() {
             <DialogContent dividers>
               <Form>
                 <Grid container spacing={5} justify="center">
-                  <Grid item>
-                    <Field
-                      component={TextField}
-                      type="text"
-                      label="Number"
-                      name="number"
-                    />
+                  <Grid container item xs={12} spacing={3} justify="left">
+                    <Grid item xs={3}>
+                      <Field
+                        component={TextField}
+                        type="text"
+                        label="Number"
+                        name="number"
+                      />
+                    </Grid>
+                    <Grid item>
+                      <Field
+                        component={TextField}
+                        name="name"
+                        type="text"
+                        label="Name"
+                      />
+                    </Grid>
+                    <Grid item>
+                      <Field
+                        component={DatePicker}
+                        label="Expiration Date"
+                        name="expirationDate"
+                        clearable
+                      />
+                    </Grid>
                   </Grid>
-                  <Grid item>
-                    <Field
-                      component={TextField}
-                      name="name"
-                      type="text"
-                      label="Name"
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Field
-                      component={TextField}
-                      type="number"
-                      label="Count"
-                      name="count"
-                      InputProps={{ inputProps: { min: 0 } }}
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Field
-                      component={DatePicker}
-                      label="Expiration Date"
-                      name="expirationDate"
-                      clearable
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Field
-                      component={TextField}
-                      type="number"
-                      label="Default Product Count"
-                      name="defaultMaterialCount"
-                      InputProps={{ inputProps: { min: 0 } }}
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Field
-                      component={TextField}
-                      type="number"
-                      label="Default Product Count"
-                      name="defaultProductCount"
-                      InputProps={{ inputProps: { min: 0 } }}
-                    />
+                  <Grid container item xs={12} spacing={3} justify="left">
+                    <Grid item xs={3}>
+                      <Field
+                        component={TextField}
+                        type="number"
+                        label="Count"
+                        name="count"
+                        InputProps={{ inputProps: { min: 0 } }}
+                      />
+                    </Grid>
+                    <Grid item>
+                      <Field
+                        component={TextField}
+                        type="number"
+                        label="Default Product Count"
+                        name="defaultMaterialCount"
+                        InputProps={{ inputProps: { min: 0 } }}
+                      />
+                    </Grid>
+                    <Grid item>
+                      <Field
+                        component={TextField}
+                        type="number"
+                        label="Default Product Count"
+                        name="defaultProductCount"
+                        InputProps={{ inputProps: { min: 0 } }}
+                      />
+                    </Grid>
                   </Grid>
                 </Grid>
               </Form>

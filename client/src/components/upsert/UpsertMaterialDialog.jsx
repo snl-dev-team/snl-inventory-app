@@ -144,111 +144,120 @@ export default function UpsertMaterialDialog() {
             <DialogContent dividers>
               <Form>
                 <Grid container spacing={5} justify="center">
-                  <Grid item>
-                    <Field
-                      component={TextField}
-                      type="text"
-                      label="Name"
-                      name="name"
-                    />
+                  <Grid container item xs={12} spacing={3} justify="left">
+                    <Grid item xs={3}>
+                      <Field
+                        component={TextField}
+                        type="text"
+                        label="Name"
+                        name="name"
+                      />
+                    </Grid>
+                    <Grid item>
+                      <Field
+                        component={TextField}
+                        type="text"
+                        label="Number"
+                        name="number"
+                      />
+                    </Grid>
+                    <Grid item>
+                      <Field
+                        component={TextField}
+                        name="vendorName"
+                        type="text"
+                        label="Vendor Name"
+                      />
+                    </Grid>
+                    <Grid item>
+                      <Field
+                        component={DatePicker}
+                        label="Expiration Date"
+                        name="expirationDate"
+                        clearable
+                      />
+                    </Grid>
                   </Grid>
-                  <Grid item>
-                    <Field
-                      component={TextField}
-                      type="text"
-                      label="Number"
-                      name="number"
-                    />
+                  <Grid container item xs={12} spacing={3} justify="left">
+                    <Grid item>
+                      <Field
+                        component={TextField}
+                        type="number"
+                        label="Count"
+                        name="count"
+                        InputProps={{ inputProps: { min: 0 } }}
+                      />
+                    </Grid>
+                    <Grid item style={{ marginTop: '15px' }}>
+                      <Field
+                        component={Select}
+                        name="units"
+                        label="Units"
+                      >
+                        {Object.values(UNITS).map((unit) => (
+                          <MenuItem
+                            key={unit}
+                            value={unit}
+                          >
+                            {unit}
+                          </MenuItem>
+                        ))}
+                      </Field>
+                    </Grid>
+                    <Grid item>
+                      <Field
+                        component={TextField}
+                        type="number"
+                        label="Price Per Unit"
+                        name="price"
+                        InputProps={{
+                          inputProps: { min: 0 },
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <AttachMoneyIcon />
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    </Grid>
                   </Grid>
-                  <Grid item>
-                    <Field
-                      component={TextField}
-                      type="number"
-                      label="Count"
-                      name="count"
-                      InputProps={{ inputProps: { min: 0 } }}
-                    />
+                  <Grid container item xs={12} spacing={3} justify="left">
+                    <Grid item xs={3}>
+                      <Field
+                        component={TextField}
+                        name="purchaseOrderNumber"
+                        type="text"
+                        label="PO Number"
+                      />
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Field
+                        component={TextField}
+                        name="purchaseOrderUrl"
+                        type="text"
+                        label="PO URL"
+                      />
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Field
+                        component={TextField}
+                        name="certificateOfAnalysisUrl"
+                        type="text"
+                        label="COA URL"
+                      />
+                    </Grid>
                   </Grid>
-                  <Grid item>
-                    <Field
-                      component={TextField}
-                      type="number"
-                      label="Price Per Unit"
-                      name="price"
-                      InputProps={{
-                        inputProps: { min: 0 },
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <AttachMoneyIcon />
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                  </Grid>
-
-                  <Grid item>
-                    <Field
-                      component={DatePicker}
-                      label="Expiration Date"
-                      name="expirationDate"
-                      clearable
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Field
-                      component={TextField}
-                      name="notes"
-                      type="text"
-                      label="Notes"
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Field
-                      component={TextField}
-                      name="vendorName"
-                      type="text"
-                      label="Vendor Name"
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Field
-                      component={TextField}
-                      name="purchaseOrderUrl"
-                      type="text"
-                      label="PO URL"
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Field
-                      component={TextField}
-                      name="purchaseOrderNumber"
-                      type="text"
-                      label="PO Number"
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Field
-                      component={TextField}
-                      name="certificateOfAnalysisUrl"
-                      type="text"
-                      label="COA URL"
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Field
-                      component={Select}
-                      name="units"
-                      label="Units"
-                    >
-                      {Object.values(UNITS).map((unit) => (
-                        <MenuItem
-                          key={unit}
-                          value={unit}
-                        >
-                          {unit}
-                        </MenuItem>
-                      ))}
-                    </Field>
+                  <Grid container item xs={12} spacing={3} justify="left">
+                    <Grid item xs={12}>
+                      <Field
+                        component={TextField}
+                        name="notes"
+                        type="text"
+                        label="Notes"
+                        multiline
+                        rows={4}
+                      />
+                    </Grid>
                   </Grid>
                 </Grid>
               </Form>

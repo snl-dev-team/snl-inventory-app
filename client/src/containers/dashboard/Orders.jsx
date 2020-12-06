@@ -7,6 +7,7 @@ import produce from 'immer';
 import { XGrid } from '@material-ui/x-grid';
 
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 import {
   GET_ORDERS, DELETE_ORDER,
 } from '../../graphql/orders';
@@ -63,11 +64,16 @@ const OrdersDashboard = ({ searchString, viewMode }) => {
     completed: node.completed,
   });
 
+  const token = useSelector((state) => state.user.token);
+
   const onClickDownload = (orderId) => {
     axios({
       url: `${URL}/order/${orderId}/report`,
       method: 'GET',
       responseType: 'blob',
+      headers: {
+        Authorization: token,
+      },
     }).then((response) => {
       // eslint-disable-next-line no-undef
       const url = window.URL.createObjectURL(new Blob([response.data]));

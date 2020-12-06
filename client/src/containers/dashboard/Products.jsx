@@ -8,6 +8,7 @@ import produce from 'immer';
 import { startCase, map } from 'lodash';
 import { XGrid } from '@material-ui/x-grid';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 import {
   GET_PRODUCTS, DELETE_PRODUCT,
 } from '../../graphql/products';
@@ -64,11 +65,16 @@ const ProductsDashboard = ({ searchString, viewMode }) => {
     completed: node.completed,
   });
 
+  const token = useSelector((state) => state.user.token);
+
   const onClickDownload = (productId) => {
     axios({
       url: `${URL}/product/${productId}/report`,
       method: 'GET',
       responseType: 'blob',
+      headers: {
+        Authorization: token,
+      },
     }).then((response) => {
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');

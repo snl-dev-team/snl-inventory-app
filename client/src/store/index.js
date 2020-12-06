@@ -8,7 +8,6 @@ import rootReducer from '../reducers/index';
 const persistConfig = {
   key: 'root',
   storage,
-  blacklist: ['materials', 'products', 'cases', 'orders'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

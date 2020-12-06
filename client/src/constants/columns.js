@@ -3,7 +3,7 @@ const MATERIAL_COLUMNS = [
   { field: 'number', headerName: 'Number' },
   { field: 'name', headerName: 'Name' },
   { field: 'count', headerName: 'Count' },
-  { field: 'price', headerName: 'Price' },
+  { field: 'price', headerName: 'Price', renderCell: (row) => `$${row.value / 10000}` },
   {
     field: 'expirationDate', headerName: 'Expiration Date', width: 150, type: 'date',
   },

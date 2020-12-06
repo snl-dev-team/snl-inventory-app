@@ -46,6 +46,11 @@ export default function UpsertMaterialDialog() {
         // eslint-disable-next-line no-param-reassign
         draft.expirationDate = `${year}-${month}-${day}`;
       }
+
+      if (values.price !== null) {
+        // eslint-disable-next-line no-param-reassign
+        draft.price *= 10000;
+      }
     });
     setSubmitting(true);
     if (isUpdate) {
@@ -113,6 +118,12 @@ export default function UpsertMaterialDialog() {
     certificateOfAnalysisUrl: Yup.string().url().nullable().default(''),
   });
 
+  const initialValues = mergeWith({},
+    validationSchema.getDefault(),
+    material, (o, s) => (isNull(s) ? o : s));
+
+  initialValues.price /= 10000;
+
   return (
     <Dialog
       open
@@ -124,9 +135,7 @@ export default function UpsertMaterialDialog() {
       </DialogTitle>
       <Formik
         validationSchema={validationSchema}
-        initialValues={mergeWith({},
-          validationSchema.getDefault(),
-          material, (o, s) => (isNull(s) ? o : s))}
+        initialValues={initialValues}
         onSubmit={onSubmit}
       >
         {({ submitForm, isSubmitting }) => (
@@ -164,7 +173,7 @@ export default function UpsertMaterialDialog() {
                     <Field
                       component={TextField}
                       type="number"
-                      label="Price"
+                      label="Price Per Unit"
                       name="price"
                       InputProps={{
                         inputProps: { min: 0 },

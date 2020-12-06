@@ -161,7 +161,6 @@ export default function UpsertProductDialog() {
                       type="checkbox"
                       name="completed"
                       Label={{ label: 'Completed' }}
-                      fullWidth
                     />
                   </Grid>
                   <Grid item xs={12} align="center">

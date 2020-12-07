@@ -1,6 +1,7 @@
 from chalice import Chalice, Response, CognitoUserPoolAuthorizer
 import json
 from chalicelib.schema import schema
+from chalicelib.report import PRODUCT_REPORT, ORDER_REPORT
 
 app = Chalice(app_name='snl-inventory-app')
 
@@ -26,45 +27,7 @@ def graphql():
 @app.route('/product/{id}/report', methods=['GET'], authorizer=authorizer)
 def product_report(id):
     try:
-        res = schema.execute("""
-        query ProductReport($id: ID!) {
-            product(id: $id) {
-                id
-                dateCreated
-                dateModified
-                count
-                name
-                expirationDate
-                completed
-                notes
-                number
-                defaultMaterialCount
-                materials {
-                edges {
-                    count
-                    node {
-                    id
-                    dateCreated
-                    dateModified
-                    count
-                    price
-                    name
-                    expirationDate
-                    notes
-                    number
-                    units
-                    vendorName
-                    purchaseOrderUrl
-                    purchaseOrderNumber
-                    certificateOfAnalysisUrl
-                    }
-                }
-                }
-            }
-        }
-        """, variables=dict(id=id))
-
-        print(id)
+        res = schema.execute(PRODUCT_REPORT, variables=dict(id=id))
 
         return res.data
 
@@ -78,96 +41,7 @@ def product_report(id):
 @app.route('/order/{id}/report', methods=['GET'], authorizer=authorizer)
 def order_report(id):
     try:
-        res = schema.execute("""
-        query OrderReport($id: ID!) {
-            order(id: $id) {
-                id
-                dateCreated
-                dateModified
-                completed
-                notes
-                number
-                defaultCaseCount
-                customerName
-                cases {
-                edges {
-                    node {
-                    id
-                    number
-                    notes
-                    dateCreated
-                    dateModified
-                    expirationDate
-                    name
-                    count
-                    defaultMaterialCount
-                    defaultProductCount
-                    materials {
-                        edges {
-                        node {
-                            id
-                            dateCreated
-                            dateModified
-                            count
-                            price
-                            name
-                            expirationDate
-                            notes
-                            number
-                            units
-                            vendorName
-                            purchaseOrderUrl
-                            purchaseOrderNumber
-                            certificateOfAnalysisUrl
-                        }
-                        count
-                        }
-                    }
-                    products {
-                        edges {
-                        node {
-                            id
-                            dateCreated
-                            dateModified
-                            count
-                            name
-                            expirationDate
-                            completed
-                            notes
-                            number
-                            defaultMaterialCount
-                            materials {
-                            edges {
-                                node {
-                                id
-                                dateCreated
-                                dateModified
-                                count
-                                price
-                                name
-                                expirationDate
-                                notes
-                                number
-                                units
-                                vendorName
-                                purchaseOrderUrl
-                                purchaseOrderNumber
-                                certificateOfAnalysisUrl
-                                }
-                                count
-                            }
-                            }
-                        }
-                        count
-                        }
-                    }
-                    }
-                    count
-                }
-                }
-            }
-        }
-        """, variables=dict(id=id))
+        res = schema.execute(ORDER_REPORT, variables=dict(id=id))
 
         return Response(
             body=json.dumps(res.data),

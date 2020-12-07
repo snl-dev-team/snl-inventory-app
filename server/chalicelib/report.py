@@ -1,5 +1,3 @@
-import xlsxwriter
-
 PRODUCT_REPORT = """
         query ProductReport($id: ID!) {
             product(id: $id) {

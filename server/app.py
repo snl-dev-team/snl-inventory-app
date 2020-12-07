@@ -2,6 +2,7 @@ from chalice import Chalice, Response, CognitoUserPoolAuthorizer
 import json
 from chalicelib.schema import schema
 from chalicelib.report import PRODUCT_REPORT, ORDER_REPORT
+import xlsxwriter
 
 app = Chalice(app_name='snl-inventory-app')
 

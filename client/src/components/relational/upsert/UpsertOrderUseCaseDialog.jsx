@@ -46,11 +46,11 @@ export default function UpsertOrderUseCaseDialog() {
   cases = map(cases, (item) => ({ ...find(orderCases, { id: item.id }), ...item }));
 
   const isUpdate = updateCaseId !== undefined;
-  const caseToUpdate = find(cases, { id: updateCaseId }) || '';
+  const caseToUpdate = find(cases, { id: updateCaseId }) || { countUsed: 0 };
 
   const validationSchema = Yup.object().shape({
     name: Yup.object().required('Required!').defined('Please enter a value!').default(caseToUpdate),
-    count: Yup.number().required('Required!').positive('Must be > 0!').default(0)
+    count: Yup.number().required('Required!').positive('Must be > 0!').default(caseToUpdate.countUsed)
       .test('test-count', 'Need more cases!',
         (value, { parent }) => (parent.name !== '' ? value <= parent.name.count + (parent.name.countUsed || 0) : true)),
     orderCount: Yup.number().required('Required!').min(0).default(0),

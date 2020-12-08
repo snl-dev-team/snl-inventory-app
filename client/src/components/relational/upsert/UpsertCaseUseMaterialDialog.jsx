@@ -29,9 +29,19 @@ export default function UpsertCaseUseMaterialDialog() {
       },
     } = {},
   } = useQuery(GET_MATERIALS);
-  const { data: { case: { materials: { edges: caseEdges = [] } = {} } = {} } = {} } = useQuery(
+
+  const {
+    data: {
+      case: {
+        materials: {
+          edges: caseEdges = [],
+        } = {},
+      } = {},
+    } = {},
+  } = useQuery(
     GET_CASE_MATERIALS, { variables: { id } },
   );
+
   let materials = materialEdges.map(({ node }) => node);
   const caseMaterials = caseEdges.map(({ count, node }) => ({
     countUsed: count,
@@ -40,11 +50,11 @@ export default function UpsertCaseUseMaterialDialog() {
   materials = map(materials, (item) => ({ ...find(caseMaterials, { id: item.id }), ...item }));
 
   const isUpdate = updateMaterialId !== undefined;
-  const materialToUpdate = find(materials, { id: updateMaterialId }) || '';
+  const materialToUpdate = find(materials, { id: updateMaterialId }) || { countUsed: 0 };
 
   const validationSchema = Yup.object().shape({
     name: Yup.object().required('Required!').defined('Please enter a value!').default(materialToUpdate),
-    count: Yup.number().required('Required!').positive('Must be > 0!').default(materials.filter((x) => x.id === materialToUpdate.id)[0].countUsed || 0)
+    count: Yup.number().required('Required!').positive('Must be > 0!').default(materialToUpdate.countUsed)
       .test('test-count', 'Need more material!',
         (value, { parent }) => (parent.name !== '' ? value <= parent.name.count + (parent.name.countUsed || 0) : true)),
   });

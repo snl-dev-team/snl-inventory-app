@@ -29,9 +29,19 @@ export default function UpsertCaseUseProductDialog() {
       },
     } = {},
   } = useQuery(GET_PRODUCTS);
-  const { data: { case: { products: { edges: caseEdges = [] } = {} } = {} } = {} } = useQuery(
+
+  const {
+    data: {
+      case: {
+        products: {
+          edges: caseEdges = [],
+        } = {},
+      } = {},
+    } = {},
+  } = useQuery(
     GET_CASE_PRODUCTS, { variables: { id } },
   );
+
   let products = productEdges.map(({ node }) => node);
   const caseProducts = caseEdges.map(({ count, node }) => ({
     countUsed: count,
@@ -40,11 +50,11 @@ export default function UpsertCaseUseProductDialog() {
   products = map(products, (item) => ({ ...find(caseProducts, { id: item.id }), ...item }));
 
   const isUpdate = updateProductId !== undefined;
-  const productToUpdate = find(products, { id: updateProductId }) || '';
+  const productToUpdate = find(products, { id: updateProductId }) || { countUsed: 0 };
 
   const validationSchema = Yup.object().shape({
     name: Yup.object().required('Required!').defined('Please enter a value!').default(productToUpdate),
-    count: Yup.number().required('Required!').positive('Must be > 0!').default(products.filter((x) => x.id === productToUpdate.id)[0].countUsed || 0)
+    count: Yup.number().required('Required!').positive('Must be > 0!').default(productToUpdate.countUsed)
       .test('test-count', 'Need more product!',
         (value, { parent }) => (parent.name !== '' ? value <= parent.name.count + (parent.name.countUsed || 0) : true)),
   });

@@ -7,7 +7,7 @@ import produce from 'immer';
 import { XGrid } from '@material-ui/x-grid';
 
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { Auth } from 'aws-amplify';
 import {
   GET_ORDERS, DELETE_ORDER,
 } from '../../graphql/orders';
@@ -64,15 +64,15 @@ const OrdersDashboard = ({ searchString, viewMode }) => {
     completed: node.completed,
   });
 
-  const token = useSelector((state) => state.user.token);
-
-  const onClickDownload = (orderId) => {
+  const onClickDownload = async (orderId) => {
+    const idToken = await Auth.currentSession()
+      .then((session) => session.getIdToken().getJwtToken());
     axios({
       url: `${URL}/order/${orderId}/report`,
       method: 'GET',
       responseType: 'blob',
       headers: {
-        Authorization: token,
+        Authorization: idToken,
       },
     }).then((response) => {
       // eslint-disable-next-line no-undef

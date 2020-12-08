@@ -10,11 +10,10 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import { useDispatch, useSelector } from 'react-redux';
-import { Redirect, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import { signIn, signOut } from '../../actions/user';
+import { Auth } from 'aws-amplify';
 import AuthAlerts from './AuthAlerts';
 
 const useStyles = makeStyles((theme) => ({
@@ -50,24 +49,21 @@ const Copyright = () => (
 );
 
 const SignIn = () => {
-  const dispatch = useDispatch();
-  const history = useHistory();
+  const { push } = useHistory();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
 
   const handleSignIn = () => {
-    dispatch(signIn(email, password));
+    Auth.signIn({
+      username: email,
+      password,
+    })
+      .then(() => push('/'))
+      .catch((err) => setError(err.message));
   };
   const classes = useStyles();
-
-  const {
-    isAuthorized, error, info, success,
-  } = useSelector((state) => state.user);
-
-  if (isAuthorized) {
-    return <Redirect to="/" />;
-  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -79,7 +75,7 @@ const SignIn = () => {
         <Typography component="h1" variant="h5">
           Sign In
         </Typography>
-        <AuthAlerts error={error} info={info} success={success} />
+        <AuthAlerts error={error} />
         <form className={classes.form}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -121,7 +117,7 @@ const SignIn = () => {
           <Grid container>
             <Grid item xs>
               <Link
-                onClick={() => { dispatch(signOut()); history.push('/forgot-password'); }}
+                onClick={() => { Auth.signOut(); push('/forgot-password'); }}
                 variant="body2"
               >
                 Forgot password?

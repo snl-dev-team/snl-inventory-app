@@ -9,11 +9,10 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import { useDispatch, useSelector } from 'react-redux';
-import { Redirect, useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import { forgotPasswordAndSubmit, signOut } from '../../actions/user';
+import { Auth } from 'aws-amplify';
 import AuthAlerts from './AuthAlerts';
 
 const useStyles = makeStyles((theme) => ({
@@ -49,25 +48,20 @@ const Copyright = () => (
 );
 
 const ForgotPasword = () => {
-  const dispatch = useDispatch();
   const history = useHistory();
+  const { email } = useParams();
   const [code, setCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
-
-  const {
-    isAuthorized, email, error, info, success,
-  } = useSelector((state) => state.user);
+  const [success, setSuccess] = useState(null);
+  const [error, setError] = useState(null);
 
   const handleForgotPassword = () => {
-    dispatch(forgotPasswordAndSubmit(email, code, newPassword));
-    history.push('/forgot-password/submit');
+    Auth.forgotPasswordSubmit(email, code, newPassword)
+      .then(() => setSuccess('Password has been reset!'))
+      .catch((err) => setError(err.message));
   };
 
   const classes = useStyles();
-
-  if (isAuthorized) {
-    return <Redirect to="/" />;
-  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -79,7 +73,7 @@ const ForgotPasword = () => {
         <Typography component="h1" variant="h5">
           Forgot Password
         </Typography>
-        <AuthAlerts error={error} info={info} success={success} />
+        <AuthAlerts success={success} error={error} info="Please check your inbox for code!" />
         <form className={classes.form}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -120,7 +114,7 @@ const ForgotPasword = () => {
           <Grid container>
             <Grid item xs>
               <Link
-                onClick={() => { dispatch(signOut()); history.push('/sign-in'); }}
+                onClick={() => { Auth.signOut(); history.push('/sign-in'); }}
                 variant="body2"
               >
                 Go to Sign In

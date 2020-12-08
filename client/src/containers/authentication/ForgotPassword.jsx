@@ -9,11 +9,11 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Redirect, useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import { forgotPassword, signOut } from '../../actions/user';
+import { Auth } from 'aws-amplify';
 import AuthAlerts from './AuthAlerts';
 
 const useStyles = makeStyles((theme) => ({
@@ -49,7 +49,6 @@ const Copyright = () => (
 );
 
 const ForgotPasword = () => {
-  const dispatch = useDispatch();
   const history = useHistory();
   const [email, setEmail] = useState('');
 
@@ -58,8 +57,8 @@ const ForgotPasword = () => {
   } = useSelector((state) => state.user);
 
   const handleForgotPassword = () => {
-    dispatch(forgotPassword(email));
-    history.push('/forgot-password/submit');
+    Auth.forgotPassword(email);
+    history.push(`/forgot-password/${email}`);
   };
 
   const classes = useStyles();
@@ -107,7 +106,7 @@ const ForgotPasword = () => {
           <Grid container>
             <Grid item xs>
               <Link
-                onClick={() => { dispatch(signOut()); history.push('/sign-in'); }}
+                onClick={() => { Auth.signOut(); history.push('/sign-in'); }}
                 variant="body2"
               >
                 Go to Sign In

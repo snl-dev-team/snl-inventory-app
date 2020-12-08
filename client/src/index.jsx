@@ -7,7 +7,7 @@ import {
 } from '@apollo/client';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
-import Amplify from 'aws-amplify';
+import Amplify, { Auth } from 'aws-amplify';
 import fetch from 'isomorphic-fetch';
 import produce from 'immer';
 import { LicenseInfo } from '@material-ui/x-grid';
@@ -27,11 +27,12 @@ Amplify.configure({
   },
 });
 
-const authFetch = (uri, options) => {
-  const state = store.getState();
+const authFetch = async (uri, options) => {
+  const idToken = await Auth.currentSession()
+    .then((session) => session.getIdToken().getJwtToken());
   const newOptions = produce(options, (draft) => {
     // eslint-disable-next-line no-param-reassign
-    draft.headers.Authorization = state.user.token;
+    draft.headers.Authorization = idToken;
   });
   return fetch(uri, newOptions);
 };

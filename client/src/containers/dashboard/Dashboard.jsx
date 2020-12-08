@@ -31,11 +31,11 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import ListIcon from '@material-ui/icons/List';
 import GridOnIcon from '@material-ui/icons/GridOn';
+import { Auth } from 'aws-amplify';
 import ProductsDashboard from './Products';
 import MaterialsDashboard from './Materials';
 import OrdersDashboard from './Orders';
 import CasesDashboard from './Cases';
-import { signOut } from '../../actions/user';
 import VIEW_MODES from '../../constants/viewModes';
 import { REPORT_BUG, CREATE_USER } from '../../constants/email';
 
@@ -154,7 +154,7 @@ export default function Dashboard() {
   const theme = useTheme();
   const [open, setOpen] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
-  const history = useHistory();
+  const { push } = useHistory();
   const dispatch = useDispatch();
 
   const [searchString, setSearchString] = useState('');
@@ -169,9 +169,6 @@ export default function Dashboard() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-
-  const { isAuthorized } = useSelector((state) => state.user);
-  if (!isAuthorized) return <Redirect to="/sign-in" />;
 
   const handleMenuClose = () => {
     setAnchorEl(null);
@@ -195,7 +192,7 @@ export default function Dashboard() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={() => dispatch(signOut())}>
+      <MenuItem onClick={() => { Auth.signOut(); push('/sign-in'); }}>
         <span aria-label="bug" role="img">✌️</span>
         Sign out
       </MenuItem>
@@ -311,7 +308,7 @@ export default function Dashboard() {
             button
             key="Orders"
             onClick={() => {
-              history.push('/orders');
+              push('/orders');
             }}
           >
             <ListItemIcon>
@@ -324,7 +321,7 @@ export default function Dashboard() {
             selected={useRouteMatch('/cases') !== null}
             key="Cases"
             onClick={() => {
-              history.push('/cases');
+              push('/cases');
             }}
           >
             <ListItemIcon>
@@ -337,7 +334,7 @@ export default function Dashboard() {
             selected={useRouteMatch('/products') !== null}
             key="Products"
             onClick={() => {
-              history.push('/products');
+              push('/products');
             }}
           >
             <ListItemIcon>
@@ -349,7 +346,7 @@ export default function Dashboard() {
             selected={useRouteMatch('/materials') !== null}
             button
             key="Materials"
-            onClick={() => history.push('/materials')}
+            onClick={() => push('/materials')}
           >
             <ListItemIcon>
               <FontAwesomeIcon icon={faPills} />

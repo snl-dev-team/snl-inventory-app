@@ -57,6 +57,9 @@ const useStyles = makeStyles((theme) => ({
   link: {
     color: 'black',
   },
+  chipDiv: {
+    height: 40,
+  },
 }));
 
 export default function InventoryCard({
@@ -160,7 +163,9 @@ export default function InventoryCard({
             <div key={item.name}>{renderData(item.name, item.value)}</div>
           ))),
             <Divider className={classes.divider} key={`divider-${idx}`} />])}
-          {Object.entries(chips).map(([name, value]) => renderChip(name, value))}
+          <div className={classes.chipDiv}>
+            {Object.entries(chips).map(([name, value]) => renderChip(name, value))}
+          </div>
         </Typography>
       </CardContent>
 

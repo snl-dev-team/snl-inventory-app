@@ -61,6 +61,7 @@ const MaterialsDashboard = ({ searchString, viewMode }) => {
     count: node.count,
     units: node.units,
     price: node.price,
+    value: node.price * node.count,
   });
 
   const Cards = nodes.map((node) => (

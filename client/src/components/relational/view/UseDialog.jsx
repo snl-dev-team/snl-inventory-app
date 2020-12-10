@@ -55,11 +55,11 @@ export default function UseDialog({
   title,
   loading,
   children,
+  costOfMaterials,
 }) {
   const classes = useStyles();
   const [open, setOpen] = useState(true);
   const dispatch = useDispatch();
-
   const handleClose = () => {
     setOpen(false);
     setTimeout(onClickCancel, 100);
@@ -90,6 +90,8 @@ export default function UseDialog({
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
             {title}
+            ,
+            {costOfMaterials}
           </Typography>
           <IconButton
             edge="start"
@@ -138,4 +140,5 @@ UseDialog.propTypes = {
   title: PropTypes.string.isRequired,
   loading: PropTypes.bool.isRequired,
   children: PropTypes.arrayOf(PropTypes.node).isRequired,
+  costOfMaterials: PropTypes.number.isRequired,
 };

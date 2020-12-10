@@ -127,6 +127,15 @@ export default function InventoryCard({
             key={name}
           />
         );
+      case 'value':
+        return (
+          <Chip
+            label={`Value: $${newValue / 10000}`}
+            className={classes.chip}
+            color="secondary"
+            key={name}
+          />
+        );
       default:
         return (
           <Chip

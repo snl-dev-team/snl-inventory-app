@@ -15,7 +15,7 @@ import { PRODUCT_MATERIAL_COLUMNS } from '../../../constants/columns';
 export default function ProductUseMaterialDialog() {
   const { id } = useParams();
   const { push } = useHistory();
-
+  let costOfMaterials;
   const {
     data: {
       product: {
@@ -81,22 +81,26 @@ export default function ProductUseMaterialDialog() {
       .filter(([name_]) => ['dateCreated', 'dateModified'].includes(name_))
       .map(([name_, value]) => ({ name: startCase(name_), value })),
   ];
-
+  const getMaterialValue = (node) => {
+    costOfMaterials += (node.price * node.countUsed);
+  };
   const getChipData = (node) => ({
     businessName: node.vendorName,
     count: node.count,
     units: node.units,
     price: node.price,
+    value: node.price * node.couintUsed,
   });
-
   return (
     <UseDialog
       loading={loading}
       onClickAdd={() => push(`/products/${id}/materials/use`)}
       onClickCancel={() => push('/products/')}
       title={`Product Materials: ${name || ''}`}
+      costOfMaterials={costOfMaterials}
     >
-      {!loading ? nodes.map((node) => (
+      {!loading ? nodes.map((node) => ([
+        getMaterialValue(node),
         <InventoryCard
           key={node.id}
           data={getCardData(node)}
@@ -104,7 +108,7 @@ export default function ProductUseMaterialDialog() {
           title={node.name}
           onClickDelete={onClickDelete}
           onClickEdit={() => push(`/products/${id}/materials/${node.id}/use`)}
-        />
+        />]
       )) : []}
 
       <div style={{

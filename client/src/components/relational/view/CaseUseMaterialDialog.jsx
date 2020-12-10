@@ -8,6 +8,7 @@ import {
   remove,
 } from 'lodash';
 import produce from 'immer';
+import Chip from '@material-ui/core/Chip';
 import { XGrid } from '@material-ui/x-grid';
 import { GET_CASE_MATERIALS, CASE_UNUSE_MATERIAL } from '../../../graphql/cases';
 import { GET_MATERIALS } from '../../../graphql/materials';
@@ -86,8 +87,10 @@ export default function CaseUseMaterialDialog() {
     businessName: node.vendorName,
     count: node.count,
     units: node.units,
+    value: node.price * node.countUsed,
   });
-
+  /* const getTotalValue = (node) => ({
+    value = value + node.countUsed * node.price}); */
   const nodes = edges.map(({ node, count }) => ({ ...node, countUsed: count }));
 
   return (
@@ -120,6 +123,7 @@ export default function CaseUseMaterialDialog() {
           rows={edges.map(({ node, count }) => ({ ...node, countUsed: count }))}
           rowHeight={38}
         />
+        <Chip />
       </div>
     </UseDialog>
   );

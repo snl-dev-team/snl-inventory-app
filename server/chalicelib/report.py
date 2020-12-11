@@ -192,7 +192,8 @@ def write_data(data):
                 if order_count is not None:
                     node['orderCount'] = order_count
 
-                node[user_type + 'Id'] = user_id
+                node['userId'] = user_id
+                node['userType'] = user_type
 
                 nodes.append(node)
                 write_relations(node, edge_name[:-1], node['id'])

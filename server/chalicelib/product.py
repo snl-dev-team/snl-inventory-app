@@ -59,7 +59,8 @@ class Product(base.Object, ProductBase, types.Node, TableName):
 
     @staticmethod
     def resolve_materials(parent, info):
-        return Product.select_uses(parent.id, material.Material)
+        product_id = parent.id if isinstance(parent, Product) else parent['id']
+        return Product.select_uses(product_id, material.Material)
 
     class Meta:
         interfaces = (relay.Node,)

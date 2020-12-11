@@ -1,8 +1,9 @@
 from chalice import Chalice, Response, CognitoUserPoolAuthorizer
 import json
 from chalicelib.schema import schema
-from chalicelib.report import PRODUCT_REPORT, ORDER_REPORT
+from chalicelib.report import PRODUCT_REPORT, ORDER_REPORT, write_dictionary, write_data
 import xlsxwriter
+from io import BytesIO
 
 app = Chalice(app_name='snl-inventory-app')
 
@@ -29,8 +30,16 @@ def graphql():
 def product_report(id):
     try:
         res = schema.execute(PRODUCT_REPORT, variables=dict(id=id))
+        sheet = write_data(res.data)
+        headers = {
+            "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        }
 
-        return res.data
+        return Response(
+            body=sheet,
+            status_code=200,
+            headers=headers,
+        )
 
     except Exception as e:
         return Response(
@@ -43,10 +52,15 @@ def product_report(id):
 def order_report(id):
     try:
         res = schema.execute(ORDER_REPORT, variables=dict(id=id))
+        sheet = write_data(res.data)
+        headers = {
+            "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        }
 
         return Response(
-            body=json.dumps(res.data),
+            body=sheet,
             status_code=200,
+            headers=headers,
         )
 
     except Exception as e:

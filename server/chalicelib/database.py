@@ -53,8 +53,7 @@ def execute_transaction(sqls):
         for sql, sql_parameters in sqls:
             execute_statement(sql, sql_parameters,
                               transaction['transactionId'])
-    except Exception as e:
-        print(f'Error: {e}')
+    except Exception:
         rds_client.rollback_transaction(
             secretArn=database_secrets_arn,
             resourceArn=database_cluster_arn,

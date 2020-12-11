@@ -61,11 +61,13 @@ class Case(base.Object, CaseBase, types.Node, TableName):
 
     @staticmethod
     def resolve_materials(parent, info):
-        return Case.select_uses(parent.id, material.Material)
+        case_id = parent.id if isinstance(parent, Case) else parent['id']
+        return Case.select_uses(case_id, material.Material)
 
     @staticmethod
     def resolve_products(parent, info):
-        return Case.select_uses(parent.id, product.Product)
+        case_id = parent.id if isinstance(parent, Case) else parent['id']
+        return Case.select_uses(case_id, product.Product)
 
     class Meta:
         interfaces = (relay.Node,)

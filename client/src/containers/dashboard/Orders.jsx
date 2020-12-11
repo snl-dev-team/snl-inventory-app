@@ -80,7 +80,7 @@ const OrdersDashboard = ({ searchString, viewMode }) => {
       // eslint-disable-next-line no-undef
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `Order ${orderId} Report.json`);
+      link.setAttribute('download', `Order ${orderId} Report.xlsx`);
       // eslint-disable-next-line no-undef
       document.body.appendChild(link);
       link.click();

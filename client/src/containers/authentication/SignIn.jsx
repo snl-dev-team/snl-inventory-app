@@ -54,13 +54,27 @@ const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  const [newPassword, setNewPassword] = useState(null);
 
   const handleSignIn = () => {
     Auth.signIn({
       username: email,
       password,
     })
-      .then(() => push('/'))
+      .then((user) => {
+        if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
+          if (newPassword === null) {
+            setNewPassword('');
+          } else {
+            Auth.completeNewPassword(
+              user,
+              newPassword,
+            ).then(() => push('/'));
+          }
+        } else {
+          push('/');
+        }
+      })
       .catch((err) => setError(err.message));
   };
   const classes = useStyles();
@@ -103,6 +117,21 @@ const SignIn = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </Grid>
+            {newPassword !== null && (
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                name="new-password"
+                label="New Password"
+                type="password"
+                id="new-password"
+                autoComplete="new-password"
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+            </Grid>
+            )}
           </Grid>
           <Button
             fullWidth
